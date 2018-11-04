@@ -1,5 +1,6 @@
 from components.equipmentslots import EquipmentSlots
 
+
 class Equipment:
     def __init__(self, main_hand=None, off_hand=None):
         self.main_hand = main_hand
@@ -7,15 +8,15 @@ class Equipment:
 
     @property
     def max_hp_bonus(self):
-        return self._get_attrib(lambda e : e.max_hp_bonus)
+        return self._get_attrib(lambda e: e.max_hp_bonus)
 
     @property
     def power_bonus(self):
-        return self._get_attrib(lambda e : e.power_bonus)
+        return self._get_attrib(lambda e: e.power_bonus)
 
     @property
     def defense_bonus(self):
-        return self._get_attrib(lambda e : e.defense_bonus)
+        return self._get_attrib(lambda e: e.defense_bonus)
 
     def _get_attrib(self, getter):
         bonus = 0
@@ -32,20 +33,20 @@ class Equipment:
         if slot == EquipmentSlots.MAIN_HAND:
             if self.main_hand == equippable_entity:
                 self.main_hand = None
-                results.append({"dequipped" : equippable_entity })
+                results.append({"dequipped": equippable_entity})
             else:
                 if self.main_hand:
-                    results.append({"dequipped" : self.main_hand })
+                    results.append({"dequipped": self.main_hand})
                 self.main_hand = equippable_entity
-                results.append({"equipped" : equippable_entity})
+                results.append({"equipped": equippable_entity})
         elif slot == EquipmentSlots.OFF_HAND:
             if self.off_hand == equippable_entity:
                 self.off_hand = None
-                results.append({"dequipped" : equippable_entity })
+                results.append({"dequipped": equippable_entity})
             else:
                 if self.off_hand:
-                    results.append({"dequipped" : self.off_hand })
+                    results.append({"dequipped": self.off_hand})
                 self.off_hand = equippable_entity
-                results.append({"equipped" : equippable_entity})
+                results.append({"equipped": equippable_entity})
 
         return results

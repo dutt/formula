@@ -95,16 +95,20 @@ def get_line(start, end):
         points.reverse()
     return points
 
+from attrdict import AttrDict as attribdict
 
-def render_all(con, bottom_panel, right_panel, entities, player,
+def render_all(con, bottom_panel, right_panel,
+               entities, player,
                game_map, fov_map, fov_recompute, log,
-               screen_size, bar_width, panel_height, panel_y,
+               screen_size, bar_width, bottom_panel_height, bottom_panel_y,
                mouse, colors, state, targeting_spell, spellbuilder):
+
     def draw_ground():
         for y in range(game_map.height):
             for x in range(game_map.width):
                 wall = game_map.tiles[x][y].block_sight
                 visible = tcod.map_is_in_fov(fov_map, x, y)
+                visible = True
                 if visible:
                     if wall:
                         tcod.console_set_char_background(con, x, y, colors.get("light_wall"))
@@ -116,6 +120,9 @@ def render_all(con, bottom_panel, right_panel, entities, player,
                         tcod.console_set_char_background(con, x, y, colors.get("dark_wall"))
                     else:
                         tcod.console_set_char_background(con, x, y, colors.get("dark_ground"))
+    def mouse_pos():
+        return attribdict({"cx": mouse.cx - right_panel.width, "cy": mouse.cy})
+
     def draw_entities_and_action():
         targeting_x = targeting_y = None
         if state == GameState.TARGETING:
@@ -132,14 +139,25 @@ def render_all(con, bottom_panel, right_panel, entities, player,
                     tcod.console_set_char_foreground(con, px, py, tcod.red)
                 tcod.console_set_char(con, px, py, '.')
             if player.distance(mouse.cx, mouse.cy) < targeting_spell.distance:
-                tcod.console_set_char(con, mouse.cx, mouse.cy, 'x')
+                tcod.console_set_char(con, mouse.cx, mouse.cy, 'X')
+                if targeting_spell.distance > 1:  # aoe, let's draw the area
+                    d = int(targeting_spell.area // 2)
+                    for x in range(mouse.cx - d, mouse.cx + d):
+                        for y in range(mouse.cy - d, mouse.cy + d):
+                            tcod.console_set_char_foreground(con, x, y, tcod.red)
+                            tcod.console_set_char(con, x, y, 'x')
+
                 targeting_x, targeting_y = mouse.cx, mouse.cy
 
         ordered_entities = sorted(entities, key=lambda e: e.render_order.value)
         for entity in ordered_entities:
             render_entity(con, entity, fov_map, game_map)
-            if entity.x == targeting_x and entity.y == targeting_y:
+            if (entity.x == targeting_x and entity.y == targeting_y) and \
+                    player.distance(entity.x, entity.y) < targeting_spell.distance and \
+                    tcod.map_is_in_fov(fov_map, entity.x, entity.y):
                 tcod.console_set_char_background(con, targeting_x, targeting_y, tcod.red)
+
+    mouse = mouse_pos()
 
     tcod.console_clear(con)
 
@@ -148,8 +166,27 @@ def render_all(con, bottom_panel, right_panel, entities, player,
 
     draw_entities_and_action()
 
-    tcod.console_blit(con, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)
+    tcod.console_blit(con, 0, 0, screen_size.width - right_panel.width, screen_size.height, 0, right_panel.width, 0)
 
+    # right panel
+    tcod.console_set_default_background(right_panel, tcod.black)
+    tcod.console_set_default_foreground(right_panel, tcod.white)
+    tcod.console_clear(right_panel)
+
+    y = 2
+    x = 1
+    tcod.console_rect(right_panel, 0, 0, 10, 10, clr=False, flag=tcod.BKGND_NONE)
+
+    tcod.console_print_ex(right_panel, x, 1, tcod.BKGND_NONE, tcod.LEFT,
+                          "Spells:")
+    for idx, spell in enumerate(player.caster.spells):
+        tcod.console_print_ex(right_panel, x, y, tcod.BKGND_NONE, tcod.LEFT,
+                              "{}: {}".format(idx+1, spell.text_repr))
+        y += 2
+
+    tcod.console_blit(right_panel, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)
+
+    # bottom panel
     tcod.console_set_default_background(bottom_panel, tcod.black)
     tcod.console_clear(bottom_panel)
 
@@ -168,8 +205,9 @@ def render_all(con, bottom_panel, right_panel, entities, player,
     tcod.console_print_ex(bottom_panel, 1, 0, tcod.BKGND_NONE, tcod.LEFT,
                           get_names_under_mouse(mouse, entities, fov_map))
 
-    tcod.console_blit(bottom_panel, 0, 0, screen_size.width, panel_height, 0, 0, panel_y)
+    tcod.console_blit(bottom_panel, 0, 0, screen_size.width, bottom_panel_height, 0, 0, bottom_panel_y)
 
+    # optionally draw menus on top
     if state in [GameState.SHOW_INVENTORY, GameState.DROP_INVENTORY]:
         if state == GameState.SHOW_INVENTORY:
             title = "Press the key next to the item to use it, or Esc to cancel"

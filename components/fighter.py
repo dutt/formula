@@ -2,6 +2,7 @@ import tcod
 
 from messages import Message
 
+
 class Fighter:
     def __init__(self, hp, defense, power, xp=0):
         self.hp = self.base_max_hp = hp
@@ -35,7 +36,7 @@ class Fighter:
         results = []
         self.hp -= amount
         if self.hp <= 0:
-            results.append({ "dead" : self.owner, "xp" : self.xp })
+            results.append({"dead": self.owner, "xp": self.xp})
         return results
 
     def attack(self, target):

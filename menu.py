@@ -102,7 +102,6 @@ def help_screen(screen_size):
     lines = [
         "How to play",
         "Arrow keys: to walk around",
-        "G: pick up",
         "M: spellmaker screen",
         "    number keys 1,2,3: select slot",
         "    Q,W,E: set ingredient for current slot",
@@ -119,8 +118,6 @@ def help_screen(screen_size):
         tcod.console_print_rect_ex(window, 0, idx + 1, screen_size.width, screen_size.height, tcod.BKGND_SET,
                                    tcod.LEFT, line)
 
-    # x = screen_size.width // 2 - screen_size.width // 4
-    # y = screen_size.height // 2 - screen_size.height // 4
     x = screen_size.width // 10
     y = screen_size.height // 10
     tcod.console_blit(window, 0, 0, screen_size.width, screen_size.height, 0, x, y, 1.0, 0.7)

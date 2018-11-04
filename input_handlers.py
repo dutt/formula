@@ -1,6 +1,7 @@
 import tcod
 
 from game_states import GameState
+from components.ingredients import Ingredient
 
 
 class Event:
@@ -42,14 +43,11 @@ def handle_keys(key, state):
     return {}
 
 
-from components.ingredients import Ingredient
-
-
 def handle_spellmaker_screen_keys(key):
     key_char = chr(key.c)
     if key.vk == tcod.KEY_ESCAPE or key_char == 'm':
         return {Event.exit: True}
-    if key.vk == tcod.KEY_1:
+    elif key.vk == tcod.KEY_1:
         return {"slot": 0}
     elif key.vk == tcod.KEY_2:
         return {"slot": 1}
@@ -59,7 +57,7 @@ def handle_spellmaker_screen_keys(key):
         return {"slot": 3}
     elif key.vk == tcod.KEY_5:
         return {"slot": 4}
-    if key_char == 'q':
+    elif key_char == 'q':
         return {"ingredient": Ingredient.FIRE}
     elif key_char == 'w':
         return {"ingredient": Ingredient.RANGE}
@@ -136,22 +134,14 @@ def handle_player_dead_keys(key):
 def handle_player_turn_keys(key):
     key_char = chr(key.c)
 
-    if key.vk == tcod.KEY_UP or key_char == 'k':
+    if key.vk == tcod.KEY_UP:
         return {Event.move: (0, - 1)}
-    elif key.vk == tcod.KEY_DOWN or key_char == 'j':
+    elif key.vk == tcod.KEY_DOWN:
         return {Event.move: (0, 1)}
-    elif key.vk == tcod.KEY_LEFT or key_char == 'h':
+    elif key.vk == tcod.KEY_LEFT:
         return {Event.move: (-1, 0)}
-    elif key.vk == tcod.KEY_RIGHT or key_char == 'l':
+    elif key.vk == tcod.KEY_RIGHT:
         return {Event.move: (1, 0)}
-    elif key_char == 'y':
-        return {Event.move: (-1, -1)}
-    elif key_char == 'u':
-        return {Event.move: (1, -1)}
-    elif key_char == 'b':
-        return {Event.move: (-1, 1)}
-    elif key_char == 'n':
-        return {Event.move: (1, 1)}
     elif key_char == 'z':
         return {Event.wait: True}
     elif key.vk == tcod.KEY_1:

@@ -7,6 +7,7 @@ class Inventory:
     def __init__(self, capacity):
         self.capacity = capacity
         self.items = []
+        self.owner = None
 
     def add_item(self, item):
         results = []

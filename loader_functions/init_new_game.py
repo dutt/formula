@@ -9,7 +9,7 @@ def get_constants():
     window_title = "spellmaker"
 
     screen_size = Size(80, 50)
-    map_size = Size(80, 43)
+    map_size = Size(70, 43)
 
     bar_width = 20
     bottom_panel_height = 7
@@ -29,10 +29,10 @@ def get_constants():
     fov_radius = 10
 
     colors = {
-        "dark_wall": tcod.Color(0, 0, 100),
-        "dark_ground": tcod.Color(50, 50, 150),
-        "light_wall": tcod.Color(130, 110, 50),
-        "light_ground": tcod.Color(200, 180, 50)
+        "dark_wall": tcod.Color(30, 30, 30),
+        "dark_ground": tcod.Color(60, 60, 60),
+        "light_wall": tcod.Color(90, 90, 90),
+        "light_ground": tcod.Color(140, 140, 140)
     }
 
     retr = attribdict({

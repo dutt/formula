@@ -1,15 +1,16 @@
 import tcod
 
 import gfx
-from input_handlers import Event, handle_keys, handle_mouse
-from game_states import GameState
-from fov import initialize_fov, recompute_fov
-from entity import get_blocking_entites_at_location
 from death import kill_player, kill_monster
-from messages import Message
+from entity import get_blocking_entites_at_location
+from fov import initialize_fov, recompute_fov
+from game_states import GameState
+from input_handlers import Event, handle_keys, handle_mouse
 from loader_functions.init_new_game import get_constants, get_game_variables
+from messages import Message
 from spell_engine import SpellBuilder
 from spell_engine import SpellEngine
+
 
 def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel, constants):
     key = tcod.Key()
@@ -20,8 +21,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
     prev_state = GameState.PLAYER_TURN
 
-    targeting_spell=None
-    targeting_item=None
+    targeting_spell = None
+    targeting_item = None
     spellbuilder = SpellBuilder(player.caster.num_slots, player.caster.num_spells)
 
     while not tcod.console_is_window_closed():
@@ -33,7 +34,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
         gfx.render_all(con, bottom_panel, right_panel, entities, player,
                        gmap, fov_map, fov_recompute, log,
-                       constants.screen_size, constants.bar_width, constants.panel_height, constants.panel_y,
+                       constants.screen_size, constants.bar_width, constants.bottom_panel_height,
+                       constants.bottom_panel_y,
                        mouse, constants.colors, state, targeting_spell, spellbuilder)
         tcod.console_flush()
         gfx.clear_all(con, entities)
@@ -50,6 +52,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
         drop_inventory = action.get(Event.drop_inventory)
         inventory_index = action.get(Event.inventory_index)
         left_click = mouse_action.get(Event.left_click)
+        if left_click:
+            left_click = (left_click[0] - right_panel.width, left_click[1])
         right_click = mouse_action.get(Event.right_click)
         take_stairs = action.get(Event.take_stairs)
         level_up = action.get(Event.level_up)
@@ -112,6 +116,19 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             else:
                 state = GameState.PLAYER_TURN
 
+        from map_objects.rect import Rect
+        right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
+        if left_click and state == GameState.PLAYER_TURN:  # UI clicked, not targeting
+            cx, cy = left_click
+            if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
+                casting_spell = None
+                for i in range(player.caster.num_spells):
+                    if Rect(1, 2 + i * 2, 10, 1).contains(cx, cy):
+                        casting_spell = player.caster.spells[i]
+                if casting_spell:
+                    start_cast_spell_results = {"targeting_spell": casting_spell}
+                    player_turn_results.append(start_cast_spell_results)
+
         if show_inventory:
             prev_state = state
             state = GameState.SHOW_INVENTORY
@@ -124,7 +141,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             prev_state = state
             state = GameState.CHARACTER_SCREEN
 
-        if inventory_index is not None and prev_state != GameState.PLAYER_DEAD and inventory_index < len(player.inventory.items):
+        if inventory_index is not None and prev_state != GameState.PLAYER_DEAD and inventory_index < len(
+                player.inventory.items):
             item = player.inventory.items[inventory_index]
 
             if state == GameState.SHOW_INVENTORY:
@@ -144,7 +162,7 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                                                             target_x=target_x, target_y=target_y)
                     player_turn_results.extend(item_use_results)
             elif right_click:
-                player_turn_results.append({"targeting_cancelled" : True})
+                player_turn_results.append({"targeting_cancelled": True})
 
         if take_stairs and state == GameState.PLAYER_TURN:
             for e in entities:
@@ -189,7 +207,7 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
             next_spell = action.get("next_spell")
             if next_spell:
-                spellbuilder.currspell = (spellbuilder.currspell+1) % spellbuilder.num_spells
+                spellbuilder.currspell = (spellbuilder.currspell + 1) % spellbuilder.num_spells
 
         if exit:
             if state == GameState.SPELLMAKER_SCREEN:
@@ -259,7 +277,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                 leveled_up = player.level.add_xp(xp)
                 log.add_message(Message("You gain {} xp".format(xp)))
                 if leveled_up:
-                    log.add_message(Message("You grow stronger, reached level {}".format(player.level.current_level), tcod.yellow))
+                    log.add_message(
+                        Message("You grow stronger, reached level {}".format(player.level.current_level), tcod.yellow))
                     prev_state = state
                     state = GameState.LEVEL_UP
 
@@ -280,17 +299,19 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             if cast is not None:
                 state = GameState.ENEMY_TURN
 
-        #fullscreen = action.get(event.fullscreen)
-        #if fullscreen:
-            #exiting fullscreen doesn't restore resolution
-            #tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
+        # fullscreen = action.get(event.fullscreen)
+        # if fullscreen:
+        # exiting fullscreen doesn't restore resolution
+        # tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
+
 
 def main():
     constants = get_constants()
     player, entities, gmap, log, state = get_game_variables(constants)
     prev_state = state
 
-    tcod.console_set_custom_font("/home/mikael/workspace/libtcod/data/fonts/arial10x10.png", tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
+    tcod.console_set_custom_font("/home/mikael/workspace/libtcod/data/fonts/arial10x10.png",
+                                 tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
     tcod.console_init_root(constants.screen_size.width, constants.screen_size.height, "spellmaker", False)
 
     con = tcod.console_new(constants.screen_size.width, constants.screen_size.height)
@@ -299,9 +320,11 @@ def main():
 
     play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel, constants)
 
+
 if __name__ == '__main__':
     try:
         main()
     except:
         import traceback
+
         traceback.print_exc()

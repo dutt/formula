@@ -34,15 +34,18 @@ class SpellEngine:
             damage = 10
             distance = 1
             area = 1
+            cooldown = len(slots)
             for slot in slots:
-                if slot == Ingredient.FIRE:
+                if slot == Ingredient.EMPTY:
+                    cooldown -= 1
+                elif slot == Ingredient.FIRE:
                     damage += 10
                 elif slot == Ingredient.RANGE:
-                    distance += 10
+                    distance += 5
                 elif slot == Ingredient.AREA:
                     area += 1
             print("Spell {} evalutaed to range={}, damage={}, area={}".format(idx, distance, damage, area))
-            retr.append(Spell(damage=damage, distance=distance, area=area))
+            retr.append(Spell(slots=slots, cooldown=cooldown, damage=damage, distance=distance, area=area))
         return retr
 
 
