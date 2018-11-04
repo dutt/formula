@@ -21,6 +21,7 @@ class Event:
     start_casting_spell = "start_casting_spell"
     show_help = "show_help"
 
+
 def handle_keys(key, state):
     if state == GameState.PLAYER_TURN:
         return handle_player_turn_keys(key)

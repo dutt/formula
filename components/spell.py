@@ -3,6 +3,8 @@ import tcod
 from messages import Message
 
 class Spell:
+    EMPTY = None #set in spell_engine.py
+
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         self.parse(**kwargs)

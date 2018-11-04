@@ -2,15 +2,17 @@ from enum import Enum, auto
 
 import tcod
 
-from util import Size
 from game_states import GameState
 from menu import inventory_menu, level_up_menu, character_screen, spellmaker_menu, help_screen
+from util import Size
+
 
 class RenderOrder(Enum):
     STAIRS = auto()
     CORPSE = auto()
     ITEM = auto()
     ACTOR = auto()
+
 
 def get_names_under_mouse(mouse, entities, fov_map):
     (x, y) = (mouse.cx, mouse.cy)
@@ -19,6 +21,7 @@ def get_names_under_mouse(mouse, entities, fov_map):
     names = ", ".join(names)
 
     return names.capitalize()
+
 
 def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color):
     bar_width = int(float(value) / maximum * total_width)
@@ -92,6 +95,7 @@ def get_line(start, end):
         points.reverse()
     return points
 
+
 def render_all(con, bottom_panel, right_panel, entities, player,
                game_map, fov_map, fov_recompute, log,
                screen_size, bar_width, panel_height, panel_y,
@@ -112,59 +116,42 @@ def render_all(con, bottom_panel, right_panel, entities, player,
                         tcod.console_set_char_background(con, x, y, colors.get("dark_wall"))
                     else:
                         tcod.console_set_char_background(con, x, y, colors.get("dark_ground"))
+    def draw_entities_and_action():
+        targeting_x = targeting_y = None
+        if state == GameState.TARGETING:
+            points = get_line((player.x, player.y), (mouse.cx, mouse.cy))
+            hit_wall = False
+            for idx, p in enumerate(points):
+                px, py = p
+                if idx > targeting_spell.distance or hit_wall:
+                    tcod.console_set_char_foreground(con, px, py, tcod.grey)
+                elif game_map.tiles[px][py].block_sight:
+                    hit_wall = True
+                    tcod.console_set_char_foreground(con, px, py, tcod.grey)
+                else:
+                    tcod.console_set_char_foreground(con, px, py, tcod.red)
+                tcod.console_set_char(con, px, py, '.')
+            if player.distance(mouse.cx, mouse.cy) < targeting_spell.distance:
+                tcod.console_set_char(con, mouse.cx, mouse.cy, 'x')
+                targeting_x, targeting_y = mouse.cx, mouse.cy
+
+        ordered_entities = sorted(entities, key=lambda e: e.render_order.value)
+        for entity in ordered_entities:
+            render_entity(con, entity, fov_map, game_map)
+            if entity.x == targeting_x and entity.y == targeting_y:
+                tcod.console_set_char_background(con, targeting_x, targeting_y, tcod.red)
 
     tcod.console_clear(con)
-    if False:
-        tcod.console_clear(con)
-        for x in range(screen_size.width):
-            for y in range(screen_size.height):
-                #tcod.console_set_char_background(con, x, y, tcod.yellow)
-                pass
-        tcod.console_set_char_background(con, 1, 1, tcod.yellow)
-        tcod.console_set_default_foreground(con, tcod.white)
-        #tcod.console_set_default_background(con, tcod.green)
-        tcod.console_hline(con, 8, 30, 30)
-        tcod.console_rect(con, 10, 10, 15, 30, True)
-
-        #points = get_line((player.x, player.y), (mouse.x, mouse.y))
-
-
-
-        tcod.console_blit(con, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)
-        return
 
     if fov_recompute:
         draw_ground()
 
-    targeting_x = targeting_y = None
-    if state == GameState.TARGETING:
-        points = get_line((player.x, player.y), (mouse.cx, mouse.cy))
-        hit_wall = False
-        for idx, p in enumerate(points):
-            px, py = p
-            if idx > targeting_spell.distance or hit_wall:
-                tcod.console_set_char_foreground(con, px, py, tcod.grey)
-            elif game_map.tiles[px][py].block_sight:
-                hit_wall = True
-                tcod.console_set_char_foreground(con, px, py, tcod.grey)
-            else:
-                tcod.console_set_char_foreground(con, px, py, tcod.red)
-            tcod.console_set_char(con, px, py, '.')
-        if player.distance(mouse.cx, mouse.cy) < targeting_spell.distance:
-            tcod.console_set_char(con, mouse.cx, mouse.cy, 'x')
-            targeting_x, targeting_y = mouse.cx, mouse.cy
-
-    ordered_entities = sorted(entities, key=lambda e : e.render_order.value)
-    for entity in ordered_entities:
-        render_entity(con, entity, fov_map, game_map)
-        if entity.x == targeting_x and entity.y == targeting_y:
-            tcod.console_set_char_background(con, targeting_x, targeting_y, tcod.red)
+    draw_entities_and_action()
 
     tcod.console_blit(con, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)
 
     tcod.console_set_default_background(bottom_panel, tcod.black)
     tcod.console_clear(bottom_panel)
-
 
     y = 1
     for msg in log.messages:
@@ -205,9 +192,11 @@ def render_entity(con, entity, fov_map, game_map):
         tcod.console_set_default_foreground(con, entity.color)
         tcod.console_put_char(con, entity.x, entity.y, entity.char, tcod.BKGND_NONE)
 
+
 def clear_all(con, entities):
     for entity in entities:
         clear_entity(con, entity)
+
 
 def clear_entity(con, entity):
     tcod.console_put_char(con, entity.x, entity.y, ' ', tcod.BKGND_NONE)

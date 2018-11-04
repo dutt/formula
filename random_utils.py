@@ -1,5 +1,6 @@
 from random import randint
 
+
 def random_choice_index(chances):
     rnd = randint(1, sum(chances))
 
@@ -12,10 +13,12 @@ def random_choice_index(chances):
             return choice
         choice += 1
 
+
 def random_choice_from_dict(data):
     choices = list(data.keys())
     chances = list(data.values())
     return choices[random_choice_index(chances)]
+
 
 def from_dungeon_level(table, dungeon_level):
     for (value, level) in reversed(table):

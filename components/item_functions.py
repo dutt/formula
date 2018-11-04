@@ -4,6 +4,7 @@ from messages import Message
 
 from components.ai import ConfusedMonster
 
+
 def heal(*args, **kwargs):
     entity = args[0]
     amount = kwargs.get("amount")
@@ -18,6 +19,7 @@ def heal(*args, **kwargs):
         msg = Message("You feel better", tcod.yellow)
         results.append({ "consumed" : True, "message" : msg})
     return results
+
 
 def cast_lightning(*args, **kwargs):
     caster = args[0]
@@ -48,6 +50,7 @@ def cast_lightning(*args, **kwargs):
 
     return results
 
+
 def cast_fireball(*args, **kwargs):
     entities = kwargs.get("entities")
     fov_map = kwargs.get("fov_map")
@@ -70,6 +73,7 @@ def cast_fireball(*args, **kwargs):
             results.extend(e.fighter.take_damage(damage))
     return results
 
+
 def cast_confuse(*args, **kwargs):
     entities = kwargs.get("entities")
     fov_map = kwargs.get("fov_map")
@@ -83,14 +87,14 @@ def cast_confuse(*args, **kwargs):
 
     for e in entities:
         if e.x == target_x and e.y == target_y and e.ai:
-           confused_ai = ConfusedMonster(e.ai, 10)
-           confused_ai.owner = e
-           e.ai = confused_ai
+            confused_ai = ConfusedMonster(e.ai, 10)
+            confused_ai.owner = e
+            e.ai = confused_ai
 
-           results.append({ "consumed" : True,
+            results.append({ "consumed" : True,
                             "message" : Message("The {} looks confused".format(e.name), tcod.light_green)
                            })
-           break
+            break
     else:
         results.append({"consumed" : False, "message" : Message("There is not targetable enemy there", tcod.yellow)})
 

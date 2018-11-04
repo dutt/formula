@@ -8,6 +8,7 @@ class Fighter:
         self.base_defense = defense
         self.base_power = power
         self.xp = xp
+        self.owner = None
 
     @property
     def max_hp(self):

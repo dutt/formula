@@ -8,9 +8,11 @@ class Equipment:
     @property
     def max_hp_bonus(self):
         return self._get_attrib(lambda e : e.max_hp_bonus)
+
     @property
     def power_bonus(self):
         return self._get_attrib(lambda e : e.power_bonus)
+
     @property
     def defense_bonus(self):
         return self._get_attrib(lambda e : e.defense_bonus)

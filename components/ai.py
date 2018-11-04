@@ -4,6 +4,7 @@ import tcod
 
 from messages import Message
 
+
 class BasicMonster:
     def take_turn(self, target, fov_map, game_map, entities):
         monster = self.owner
@@ -16,10 +17,12 @@ class BasicMonster:
             results.extend(monster.fighter.attack(target))
         return results
 
+
 class ConfusedMonster:
     def __init__(self, previous_ai, number_of_turns=10):
         self.previous_ai = previous_ai
         self.number_of_turns = number_of_turns
+        self.owner = None
 
     def take_turn(self, target, fov_map, game_map, entities):
         results = []

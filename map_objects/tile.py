@@ -1,3 +1,4 @@
+
 class Tile:
 	def __init__(self, blocked, block_sight=None):
 		self.blocked = blocked

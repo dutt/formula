@@ -2,6 +2,7 @@ import tcod
 
 from messages import Message
 
+
 class Inventory:
     def __init__(self, capacity):
         self.capacity = capacity
@@ -11,13 +12,13 @@ class Inventory:
         results = []
         if len(self.items) >= self.capacity:
             results.append({
-                "item_added" : None,
-                "message" : Message("Your inventory is full", tcod.yellow)
+                "item_added": None,
+                "message": Message("Your inventory is full", tcod.yellow)
             })
         else:
             results.append({
-                "item_added" : item,
-                "message" : Message("You pick up {}".format(item.name), tcod.blue)
+                "item_added": item,
+                "message": Message("You pick up {}".format(item.name), tcod.blue)
             })
             self.items.append(item)
         return results
@@ -31,14 +32,14 @@ class Inventory:
             equippable_component = item_entity.equippable
 
             if equippable_component:
-                results.append({"equip" : item_entity})
+                results.append({"equip": item_entity})
             else:
-                results.append({ "message" : Message("The {} can't be used".format(item_entity.name))})
+                results.append({"message": Message("The {} can't be used".format(item_entity.name))})
         else:
             if item_component.targeting and not (kwargs.get("target_x") or kwargs.get("target_y")):
-                results.append({"targeting" : item_entity})
+                results.append({"targeting": item_entity})
             else:
-                kwargs = { **item_component.func_kwargs, **kwargs}
+                kwargs = {**item_component.func_kwargs, **kwargs}
                 item_use_results = item_component.use_func(self.owner, **kwargs)
 
                 for res in item_use_results:
@@ -58,7 +59,7 @@ class Inventory:
         item.y = self.owner.y
         self.remove_item(item)
         msg = Message("You dropped the {}".format(item.name))
-        results.append( {"item_dropped" : item, "message" : msg} )
+        results.append({"item_dropped": item, "message": msg})
         return results
 
     def remove_item(self, item):

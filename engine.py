@@ -181,12 +181,10 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
         if state == GameState.SPELLMAKER_SCREEN:
             slot = action.get("slot")
             if slot is not None:
-                print("current slot will be {}".format(slot))
                 spellbuilder.currslot = slot
 
             ingredient = action.get("ingredient")
             if ingredient:
-                print("setting slot {} to {}".format(spellbuilder.currslot, ingredient))
                 spellbuilder.set_slot(spellbuilder.currslot, ingredient)
 
             next_spell = action.get("next_spell")
@@ -198,13 +196,13 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                 player.caster.spells = SpellEngine.evaluate(spellbuilder)
                 state = prev_state
             elif state in [GameState.SHOW_INVENTORY,
-                         GameState.DROP_INVENTORY,
-                         GameState.CHARACTER_SCREEN,
-                         GameState.SPELLMAKER_SCREEN,
-                         GameState.SHOW_HELP]:
+                           GameState.DROP_INVENTORY,
+                           GameState.CHARACTER_SCREEN,
+                           GameState.SPELLMAKER_SCREEN,
+                           GameState.SHOW_HELP]:
                 state = prev_state
             elif state == GameState.TARGETING:
-                player_turn_results.append({"targeting_cancelled" : True})
+                player_turn_results.append({"targeting_cancelled": True})
             else:
                 return True
 
@@ -280,7 +278,6 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
             cast = res.get("cast")
             if cast is not None:
-                #spell = res.get("spell")
                 state = GameState.ENEMY_TURN
 
         #fullscreen = action.get(event.fullscreen)

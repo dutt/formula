@@ -1,8 +1,9 @@
 import tcod
+from attrdict import AttrDict as attribdict
 
 from game_states import GameState
-from attrdict import AttrDict as attribdict
 from util import Size
+
 
 def get_constants():
     window_title = "spellmaker"
@@ -28,38 +29,39 @@ def get_constants():
     fov_radius = 10
 
     colors = {
-        "dark_wall" : tcod.Color(0, 0, 100),
-        "dark_ground" : tcod.Color(50, 50, 150),
-        "light_wall" : tcod.Color(130, 110, 50),
-        "light_ground" : tcod.Color(200, 180, 50)
+        "dark_wall": tcod.Color(0, 0, 100),
+        "dark_ground": tcod.Color(50, 50, 150),
+        "light_wall": tcod.Color(130, 110, 50),
+        "light_ground": tcod.Color(200, 180, 50)
     }
 
     retr = attribdict({
-        "window_title" : window_title,
-        "screen_size" : screen_size,
-        "map_size" : map_size,
+        "window_title": window_title,
+        "screen_size": screen_size,
+        "map_size": map_size,
 
-        "bar_width" : bar_width,
-        "bottom_panel_height" : bottom_panel_height,
-        "bottom_panel_y" : bottom_panel_y,
+        "bar_width": bar_width,
+        "bottom_panel_height": bottom_panel_height,
+        "bottom_panel_y": bottom_panel_y,
 
-        "right_panel_size" : right_panel_size,
+        "right_panel_size": right_panel_size,
 
-        "message_x" : message_x,
-        "message_size" : message_size,
+        "message_x": message_x,
+        "message_size": message_size,
 
-        "room_max_size" : room_max_size,
-        "room_min_size" : room_min_size,
-        "max_rooms" : max_rooms,
+        "room_max_size": room_max_size,
+        "room_min_size": room_min_size,
+        "max_rooms": max_rooms,
 
-        "fov_algorithm" : fov_algorithm,
-        "fov_light_walls" : fov_light_walls,
-        "fov_radius" : fov_radius,
+        "fov_algorithm": fov_algorithm,
+        "fov_light_walls": fov_light_walls,
+        "fov_radius": fov_radius,
 
-        "colors" : colors
+        "colors": colors
     })
 
     return retr
+
 
 from entity import Entity
 from components.fighter import Fighter
@@ -73,6 +75,7 @@ from components.caster import Caster
 import gfx
 from gamemap import GameMap
 from messages import MessageLog
+
 
 def get_game_variables(constants):
     caster_component = Caster(num_slots=3, num_spells=3)
@@ -89,7 +92,8 @@ def get_game_variables(constants):
     player.equipment.toggle_equip(dagger)
     entities = [player]
     gmap = GameMap(constants.map_size)
-    gmap.make_map(constants.room_min_size, constants.room_max_size, constants.max_rooms, constants.map_size, player, entities)
+    gmap.make_map(constants.room_min_size, constants.room_max_size, constants.max_rooms, constants.map_size, player,
+                  entities)
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameState.PLAYER_TURN
 

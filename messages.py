@@ -1,5 +1,7 @@
-import tcod
 import textwrap
+
+import tcod
+
 
 class Message:
     def __init__(self, text, color=tcod.white):
@@ -11,6 +13,7 @@ class Message:
 
     def __str__(self):
         return "<msg: {}>".format(self.text)
+
 
 class MessageLog:
     def __init__(self, x, size):

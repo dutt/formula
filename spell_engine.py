@@ -1,6 +1,7 @@
 from components.ingredients import Ingredient
 from components.spell import Spell
 
+
 class SpellBuilder:
     def __init__(self, num_slots, num_spells):
         self.currslot = 0
@@ -19,6 +20,7 @@ class SpellBuilder:
 
     def slots_for_spell(self, spell_index):
         return self.slots[spell_index]
+
 
 class SpellEngine:
     def __init__(self, player):

@@ -16,6 +16,7 @@ from components.equipment import EquipmentSlots
 from components.equippable import Equippable
 from random_utils import random_choice_from_dict, from_dungeon_level
 
+
 class GameMap:
     def __init__(self, size, dungeon_level=1):
         self.width = size.width
