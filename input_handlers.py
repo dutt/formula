@@ -63,8 +63,16 @@ def handle_spellmaker_screen_keys(key):
         return {"ingredient": Ingredient.RANGE}
     elif key_char == 'e':
         return {"ingredient": Ingredient.AREA}
-    elif key.vk == tcod.KEY_TAB:
-        return {"next_spell": True}
+    elif key_char == 'r':
+        return {"ingredient": Ingredient.EMPTY}
+    elif key.vk == tcod.KEY_TAB or key.vk == tcod.KEY_LEFT:
+        return {"next_spell": 1}
+    elif key.vk == tcod.KEY_RIGHT:
+        return {"next_spell": -1}
+    elif key.vk == tcod.KEY_DOWN:
+        return {"next_slot": 1}
+    elif key.vk == tcod.KEY_UP:
+        return {"next_slot": -1}
     return {}
 
 
@@ -85,7 +93,9 @@ def handle_character_screen_keys(key):
 def handle_level_up_keys(key):
     if key:
         key_char = chr(key.c)
-        if key_char == 'a':
+        if key.vk == tcod.KEY_ESCAPE:
+            return {Event.exit: True}
+        elif key_char == 'a':
             return {Event.level_up: "hp"}
         elif key_char == 'b':
             return {Event.level_up: "str"}

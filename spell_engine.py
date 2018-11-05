@@ -33,7 +33,7 @@ class SpellEngine:
             slots = spellbuilder.slots_for_spell(spell)
             damage = 10
             distance = 1
-            area = 1
+            area = 0.5
             cooldown = len(slots)
             for slot in slots:
                 if slot == Ingredient.EMPTY:
@@ -43,12 +43,13 @@ class SpellEngine:
                 elif slot == Ingredient.RANGE:
                     distance += 5
                 elif slot == Ingredient.AREA:
-                    area += 1
+                    area += 0.5
             print("Spell {} evalutaed to range={}, damage={}, area={}".format(idx, distance, damage, area))
             retr.append(Spell(slots=slots, cooldown=cooldown, damage=damage, distance=distance, area=area))
         return retr
 
 
 builder = SpellBuilder(num_slots=3, num_spells=1)
-builder.slots = [[Ingredient.FIRE for i in range(3)]]
+#builder.slots = [[Ingredient.FIRE for i in range(3)]]
+builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.AREA]]
 Spell.EMPTY = SpellEngine.evaluate(builder)[0]

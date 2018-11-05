@@ -1,6 +1,8 @@
 from enum import Enum, auto
+import math
 
 import tcod
+from attrdict import AttrDict as attribdict
 
 from game_states import GameState
 from menu import inventory_menu, level_up_menu, character_screen, spellmaker_menu, help_screen
@@ -95,20 +97,18 @@ def get_line(start, end):
         points.reverse()
     return points
 
-from attrdict import AttrDict as attribdict
 
 def render_all(con, bottom_panel, right_panel,
                entities, player,
                game_map, fov_map, fov_recompute, log,
                screen_size, bar_width, bottom_panel_height, bottom_panel_y,
                mouse, colors, state, targeting_spell, spellbuilder):
-
     def draw_ground():
         for y in range(game_map.height):
             for x in range(game_map.width):
                 wall = game_map.tiles[x][y].block_sight
                 visible = tcod.map_is_in_fov(fov_map, x, y)
-                visible = True
+                # visible = True
                 if visible:
                     if wall:
                         tcod.console_set_char_background(con, x, y, colors.get("light_wall"))
@@ -120,11 +120,12 @@ def render_all(con, bottom_panel, right_panel,
                         tcod.console_set_char_background(con, x, y, colors.get("dark_wall"))
                     else:
                         tcod.console_set_char_background(con, x, y, colors.get("dark_ground"))
+
     def mouse_pos():
         return attribdict({"cx": mouse.cx - right_panel.width, "cy": mouse.cy})
 
     def draw_entities_and_action():
-        targeting_x = targeting_y = None
+        targeting_coords = []
         if state == GameState.TARGETING:
             points = get_line((player.x, player.y), (mouse.cx, mouse.cy))
             hit_wall = False
@@ -140,22 +141,34 @@ def render_all(con, bottom_panel, right_panel,
                 tcod.console_set_char(con, px, py, '.')
             if player.distance(mouse.cx, mouse.cy) < targeting_spell.distance:
                 tcod.console_set_char(con, mouse.cx, mouse.cy, 'X')
-                if targeting_spell.distance > 1:  # aoe, let's draw the area
-                    d = int(targeting_spell.area // 2)
+                if targeting_spell.area > 1:  # aoe, let's draw the area
+                    """d = int(targeting_spell.area // 2)
                     for x in range(mouse.cx - d, mouse.cx + d):
                         for y in range(mouse.cy - d, mouse.cy + d):
                             tcod.console_set_char_foreground(con, x, y, tcod.red)
                             tcod.console_set_char(con, x, y, 'x')
-
-                targeting_x, targeting_y = mouse.cx, mouse.cy
+                            targeting_coords.append((x, y))
+                    """
+                    for x in range(math.ceil(mouse.cx - targeting_spell.distance),
+                                   math.ceil(mouse.cx + targeting_spell.distance)):
+                        for y in range(math.ceil(mouse.cy - targeting_spell.distance),
+                                       math.ceil(mouse.cy + targeting_spell.distance)):
+                            dist = (math.sqrt((x - mouse.cx) ** 2 + (y - mouse.cy) ** 2))
+                            #print("from {} to {} it's {}".format())
+                            if dist < targeting_spell.area:
+                                tcod.console_set_char_foreground(con, x, y, tcod.red)
+                                tcod.console_set_char(con, x, y, 'x')
+                                targeting_coords.append((x, y))
+                else:
+                    targeting_coords = [(mouse.cx, mouse.cy)]
 
         ordered_entities = sorted(entities, key=lambda e: e.render_order.value)
         for entity in ordered_entities:
             render_entity(con, entity, fov_map, game_map)
-            if (entity.x == targeting_x and entity.y == targeting_y) and \
+            if (entity.x, entity.y) in targeting_coords and \
                     player.distance(entity.x, entity.y) < targeting_spell.distance and \
                     tcod.map_is_in_fov(fov_map, entity.x, entity.y):
-                tcod.console_set_char_background(con, targeting_x, targeting_y, tcod.red)
+                tcod.console_set_char_background(con, entity.x, entity.y, tcod.red)
 
     mouse = mouse_pos()
 
@@ -170,7 +183,6 @@ def render_all(con, bottom_panel, right_panel,
 
     # right panel
     tcod.console_set_default_background(right_panel, tcod.black)
-    tcod.console_set_default_foreground(right_panel, tcod.white)
     tcod.console_clear(right_panel)
 
     y = 2
@@ -180,8 +192,12 @@ def render_all(con, bottom_panel, right_panel,
     tcod.console_print_ex(right_panel, x, 1, tcod.BKGND_NONE, tcod.LEFT,
                           "Spells:")
     for idx, spell in enumerate(player.caster.spells):
+        if player.caster.is_on_cooldown(spell):
+            tcod.console_set_default_foreground(right_panel, tcod.grey)
+        else:
+            tcod.console_set_default_foreground(right_panel, tcod.white)
         tcod.console_print_ex(right_panel, x, y, tcod.BKGND_NONE, tcod.LEFT,
-                              "{}: {}".format(idx+1, spell.text_repr))
+                              "{}: {}".format(idx + 1, spell.text_repr))
         y += 2
 
     tcod.console_blit(right_panel, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)
@@ -199,7 +215,7 @@ def render_all(con, bottom_panel, right_panel,
     render_bar(bottom_panel, 1, 1, bar_width, "HP", player.fighter.hp, player.fighter.max_hp,
                tcod.light_red, tcod.darker_red)
     tcod.console_print_ex(bottom_panel, 1, 3, tcod.BKGND_NONE, tcod.LEFT,
-                          "Dungeon level {}".format(game_map.dungeon_level))
+                          "Station level {}".format(game_map.dungeon_level))
 
     tcod.console_set_default_foreground(bottom_panel, tcod.light_grey)
     tcod.console_print_ex(bottom_panel, 1, 0, tcod.BKGND_NONE, tcod.LEFT,

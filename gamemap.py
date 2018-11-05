@@ -35,10 +35,12 @@ class GameMap:
                 self.tiles[x][y].block_sight = False
 
     def place_entities(self, room, entities):
-        max_monsters_per_room = from_dungeon_level([[2,1],[3,4],[5,6]], self.dungeon_level)
-        max_items_per_room = from_dungeon_level([[4,1], [2,4]], self.dungeon_level)
+        #max_monsters_per_room = from_dungeon_level([[2,1],[3,4],[5,6]], self.dungeon_level)
+        #max_items_per_room = from_dungeon_level([[4,1], [2,4]], self.dungeon_level)
+        max_monsters_per_room = 100
+        max_items_per_room = 1
 
-        num_monsters = randint(0, max_monsters_per_room)
+        num_monsters = randint(max_monsters_per_room, max_monsters_per_room)
         monster_chances = { "orc" : 80,
                             "troll" : from_dungeon_level([[15, 3],[30, 5], [60, 7]], self.dungeon_level) }
 
@@ -50,7 +52,7 @@ class GameMap:
                 monster_choice = random_choice_from_dict(monster_chances)
 
                 if monster_choice == "orc":
-                    fighter_component = Fighter(hp=20, defense=0, power=4, xp=35)
+                    fighter_component = Fighter(hp=20, defense=0, power=4, xp=0)
                     ai = BasicMonster()
                     monster = Entity(x, y, 'O', tcod.desaturated_green, "Orc",
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
@@ -64,12 +66,12 @@ class GameMap:
                 entities.append(monster)
 
         num_items = randint(0, max_items_per_room)
-        item_chances = { "healing_potion" : 35,
-                         "sword" : from_dungeon_level([[5, 1]], self.dungeon_level),
-                         "shield" : from_dungeon_level([[15, 1]], self.dungeon_level),
-                         "lightning_scroll" : from_dungeon_level([[25, 4]], self.dungeon_level),
-                         "fireball_scroll" : from_dungeon_level([[25, 6]], self.dungeon_level),
-                         "confusion_scroll" : from_dungeon_level([[10, 2]], self.dungeon_level) }
+        item_chances = { "healing_potion" : 100 }
+                         #"sword" : from_dungeon_level([[5, 1]], self.dungeon_level),
+                         #"shield" : from_dungeon_level([[15, 1]], self.dungeon_level),
+                         #"lightning_scroll" : from_dungeon_level([[25, 4]], self.dungeon_level),
+                         #"fireball_scroll" : from_dungeon_level([[25, 6]], self.dungeon_level),
+                         #"confusion_scroll" : from_dungeon_level([[10, 2]], self.dungeon_level) }
         for i in range(num_items):
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)

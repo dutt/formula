@@ -35,7 +35,10 @@ def spellmaker_menu(spellbuilder, menu_screen_size, screen_size):
 
     line = 3
     for idx, s in enumerate(spellbuilder.current_slots):
-        tcod.console_print_ex(window, 0, idx + line, tcod.BKGND_SET, tcod.LEFT, "Slot {}: {}".format(idx, s.name))
+        text = "Slot {}: {}".format(idx, s.name)
+        if idx == spellbuilder.currslot:
+            text += " <-"
+        tcod.console_print_ex(window, 0, idx + line, tcod.BKGND_SET, tcod.LEFT, text)
 
     line += len(spellbuilder.current_slots) + 1
     tcod.console_print_ex(window, 0, line, tcod.BKGND_SET, tcod.LEFT, "Spell {}".format(spellbuilder.currspell + 1))

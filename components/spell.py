@@ -1,3 +1,5 @@
+import uuid
+
 import tcod
 
 from components.ingredients import Ingredient
@@ -46,9 +48,9 @@ class Spell:
         if caster.distance(target_x, target_y) > self.distance:
             results.append({"cast": False, "message": Message("Target out of range, spell not cast", tcod.yellow)})
             return results
-        elif self.area <= 1.5:  # no aoe
+        elif self.area < 1.5:  # no aoe
             for e in entities:
-                if not e.fighter or e == caster or not tcod.map_is_in_fov(fov_map, target_x, target_y):
+                if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue
                 if e.x == target_x and e.y == target_y:
                     msg = "Spell cast, the {} takes {} fire damage".format(e.name, self.damage)
@@ -60,7 +62,7 @@ class Spell:
         else:  # aoe spell
             targets = []
             for e in entities:
-                if not e.fighter or e == caster or not tcod.map_is_in_fov(fov_map, target_x, target_y):
+                if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue
                 if e.distance(target_x, target_y) < self.area:
                     results.extend(e.fighter.take_damage(self.damage))

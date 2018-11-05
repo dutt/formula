@@ -52,8 +52,7 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
         drop_inventory = action.get(Event.drop_inventory)
         inventory_index = action.get(Event.inventory_index)
         left_click = mouse_action.get(Event.left_click)
-        if left_click:
-            left_click = (left_click[0] - right_panel.width, left_click[1])
+        left_map_click = (left_click[0] - right_panel.width, left_click[1]) if left_click else None
         right_click = mouse_action.get(Event.right_click)
         take_stairs = action.get(Event.take_stairs)
         level_up = action.get(Event.level_up)
@@ -63,8 +62,9 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
         start_casting_spell = action.get(Event.start_casting_spell)
         show_help = action.get(Event.show_help)
 
+        do_end_turn = False
         if wait:
-            state = GameState.ENEMY_TURN
+            do_end_turn = True
 
         elif show_help:
             prev_state = state
@@ -81,7 +81,7 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                 else:
                     player.move(dx, dy)
                     fov_recompute = True
-            state = GameState.ENEMY_TURN
+            do_end_turn = True
 
         elif pickup and state == GameState.PLAYER_TURN:
             for e in entities:
@@ -125,6 +125,7 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                 for i in range(player.caster.num_spells):
                     if Rect(1, 2 + i * 2, 10, 1).contains(cx, cy):
                         casting_spell = player.caster.spells[i]
+                        break
                 if casting_spell:
                     start_cast_spell_results = {"targeting_spell": casting_spell}
                     player_turn_results.append(start_cast_spell_results)
@@ -151,8 +152,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                 player_turn_results.extend(player.inventory.drop(item))
 
         if state == GameState.TARGETING:
-            if left_click:
-                target_x, target_y = left_click
+            if left_map_click:
+                target_x, target_y = left_map_click
                 if targeting_spell:
                     spell_cast_results = targeting_spell.apply(entities=entities, fov_map=fov_map, caster=player,
                                                                target_x=target_x, target_y=target_y)
@@ -207,11 +208,15 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
             next_spell = action.get("next_spell")
             if next_spell:
-                spellbuilder.currspell = (spellbuilder.currspell + 1) % spellbuilder.num_spells
+                spellbuilder.currspell = (spellbuilder.currspell + next_spell) % spellbuilder.num_spells
+
+            next_slot = action.get("next_slot")
+            if next_slot:
+                spellbuilder.currslot = (spellbuilder.currslot + next_slot) % spellbuilder.num_slots
 
         if exit:
             if state == GameState.SPELLMAKER_SCREEN:
-                player.caster.spells = SpellEngine.evaluate(spellbuilder)
+                player.caster.set_spells(SpellEngine.evaluate(spellbuilder))
                 state = prev_state
             elif state in [GameState.SHOW_INVENTORY,
                            GameState.DROP_INVENTORY,
@@ -240,17 +245,17 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             item_added = res.get("item_added")
             if item_added:
                 entities.remove(item_added)
-                state = GameState.ENEMY_TURN
+                do_end_turn = True
 
             item_consumed = res.get("consumed")
             if item_consumed:
                 prev_state = state
-                state = GameState.ENEMY_TURN
+                do_end_turn = True
 
             item_dropped = res.get("item_dropped")
             if item_dropped:
                 entities.append(item_dropped)
-                state = GameState.ENEMY_TURN
+                do_end_turn = True
 
             targeting = res.get("targeting")
             if targeting:
@@ -293,12 +298,18 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
                     if dequipped:
                         log.add_message(Message("You dequipped the {}".format(dequipped.name)))
-                state = GameState.ENEMY_TURN
+                do_end_turn = True
 
             cast = res.get("cast")
             if cast is not None:
-                state = GameState.ENEMY_TURN
+                spell = res.get("spell")
+                player.caster.add_cooldown(spell)
+                do_end_turn = True
 
+        if do_end_turn:
+            player.caster.tick_cooldowns()
+            #state = GameState.ENEMY_TURN
+            state = GameState.PLAYER_TURN
         # fullscreen = action.get(event.fullscreen)
         # if fullscreen:
         # exiting fullscreen doesn't restore resolution
