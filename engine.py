@@ -303,13 +303,14 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             cast = res.get("cast")
             if cast is not None:
                 spell = res.get("spell")
-                player.caster.add_cooldown(spell)
+                player.caster.add_cooldown(spell.spellidx, spell.cooldown + 1) #we'll tick right after this, thus +1
                 do_end_turn = True
 
         if do_end_turn:
             player.caster.tick_cooldowns()
             #state = GameState.ENEMY_TURN
             state = GameState.PLAYER_TURN
+
         # fullscreen = action.get(event.fullscreen)
         # if fullscreen:
         # exiting fullscreen doesn't restore resolution

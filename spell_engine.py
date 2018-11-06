@@ -45,7 +45,8 @@ class SpellEngine:
                 elif slot == Ingredient.AREA:
                     area += 0.5
             print("Spell {} evalutaed to range={}, damage={}, area={}".format(idx, distance, damage, area))
-            retr.append(Spell(slots=slots, cooldown=cooldown, damage=damage, distance=distance, area=area))
+            retr.append(Spell(slots=slots, cooldown=cooldown, spellidx=idx,
+                              damage=damage, distance=distance, area=area))
         return retr
 
 

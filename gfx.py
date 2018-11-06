@@ -192,12 +192,12 @@ def render_all(con, bottom_panel, right_panel,
     tcod.console_print_ex(right_panel, x, 1, tcod.BKGND_NONE, tcod.LEFT,
                           "Spells:")
     for idx, spell in enumerate(player.caster.spells):
-        if player.caster.is_on_cooldown(spell):
-            tcod.console_set_default_foreground(right_panel, tcod.grey)
+        if player.caster.is_on_cooldown(idx):
+            render_bar(right_panel, 1, y, right_panel.width, "Spell {}".format(idx+1), player.caster.get_cooldown(idx),
+                       spell.cooldown, tcod.dark_azure, tcod.black)
         else:
-            tcod.console_set_default_foreground(right_panel, tcod.white)
-        tcod.console_print_ex(right_panel, x, y, tcod.BKGND_NONE, tcod.LEFT,
-                              "{}: {}".format(idx + 1, spell.text_repr))
+            tcod.console_print_ex(right_panel, x, y, tcod.BKGND_NONE, tcod.LEFT,
+                                  "{}: {}".format(idx + 1, spell.text_repr))
         y += 2
 
     tcod.console_blit(right_panel, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)

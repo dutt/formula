@@ -18,6 +18,7 @@ class Spell:
         return Message("Targeting spell, dmg={}, range={}, area={}".format(self.damage, self.distance, self.area))
 
     def parse(self, **kwargs):
+        self.spellidx = kwargs["spellidx"]
         self.slots = kwargs["slots"]
         self.cooldown = kwargs["cooldown"]
         self.damage = kwargs["damage"]

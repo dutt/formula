@@ -16,19 +16,23 @@ class Caster:
             s.caster = self
 
     def is_on_cooldown(self, spell_idx):
-        if not spell_idx in self.cooldowns:
+        if spell_idx not in self.cooldowns:
             return False
         return self.cooldowns[spell_idx] > 0
 
     def add_cooldown(self, spell_idx, cooldown):
         self.cooldowns[spell_idx] = cooldown
 
+    def get_cooldown(self, spell_idx):
+        return self.cooldowns[spell_idx]
+
     def tick_cooldowns(self):
         to_remove = []
         for spell_idx in self.cooldowns:
             self.cooldowns[spell_idx] = self.cooldowns[spell_idx] - 1
+            print("Spell {} cooling...".format(spell_idx))
             if self.cooldowns[spell_idx] <= 0:
                 to_remove.append(spell_idx)
         for r in to_remove:
-            print("Spell {} ended cooldown".format(r.text_repr))
+            print("Spell {} ended cooldown".format(r))
             del self.cooldowns[r]
