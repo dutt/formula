@@ -30,7 +30,7 @@ class Spell:
         retr = ""
         for s in self.slots:
             if s == Ingredient.EMPTY:
-                retr += "?"
+                retr += ""
             elif s == Ingredient.FIRE:
                 retr += "F"
             elif s == Ingredient.AREA:

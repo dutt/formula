@@ -12,3 +12,4 @@ class GameState(Enum):
     CHARACTER_SCREEN = auto()
     SPELLMAKER_SCREEN = auto()
     SHOW_HELP = auto()
+    WELCOME_SCREEN = auto()

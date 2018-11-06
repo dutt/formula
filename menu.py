@@ -86,12 +86,6 @@ def character_screen(player, character_screen_size, screen_size):
     tcod.console_print_rect_ex(window, 0, 4, character_screen_size.width, character_screen_size.height, tcod.BKGND_SET,
                                tcod.LEFT, "XP to next level {}".format(player.level.xp_to_next_level))
     tcod.console_print_rect_ex(window, 0, 5, character_screen_size.width, character_screen_size.height, tcod.BKGND_SET,
-                               tcod.LEFT, "Max HP: {}".format(player.fighter.max_hp))
-    tcod.console_print_rect_ex(window, 0, 6, character_screen_size.width, character_screen_size.height, tcod.BKGND_SET,
-                               tcod.LEFT, "Attack {}".format(player.fighter.power))
-    tcod.console_print_rect_ex(window, 0, 7, character_screen_size.width, character_screen_size.height, tcod.BKGND_SET,
-                               tcod.LEFT, "Defense {}".format(player.fighter.defense))
-    tcod.console_print_rect_ex(window, 0, 8, character_screen_size.width, character_screen_size.height, tcod.BKGND_SET,
                                tcod.LEFT, "")
 
     x = screen_size.width // 2 - character_screen_size.width // 2
@@ -99,23 +93,9 @@ def character_screen(player, character_screen_size, screen_size):
     tcod.console_blit(window, 0, 0, character_screen_size.width, character_screen_size.height, 0, x, y, 1.0, 0.7)
 
 
-def help_screen(screen_size):
+def show_lines(screen_size, lines):
     window = tcod.console_new(screen_size.width, screen_size.height)
 
-    lines = [
-        "How to play",
-        "Arrow keys: to walk around",
-        "M: spellmaker screen",
-        "    number keys 1,2,3: select slot",
-        "    Q,W,E: set ingredient for current slot",
-        "    TAB: next spell",
-        "Z: wait",
-        "I: inventory",
-        "    Press the character next to the line to use or equip",
-        "D: drop",
-        "ESCAPE: Close current screen",
-        "TAB: Show this menu"
-    ]
     tcod.console_set_default_foreground(window, tcod.white)
     for idx, line in enumerate(lines):
         tcod.console_print_rect_ex(window, 0, idx + 1, screen_size.width, screen_size.height, tcod.BKGND_SET,
@@ -125,6 +105,32 @@ def help_screen(screen_size):
     y = screen_size.height // 10
     tcod.console_blit(window, 0, 0, screen_size.width, screen_size.height, 0, x, y, 1.0, 0.7)
 
+def welcome_screen(screen_size):
+    lines = [
+        "Welcome to spellmaker",
+        "",
+        "A game of dungeon crawling and spellcrafting",
+        "Next you'll be shown the spellmaker screen:",
+        "    up/down or number keys 1,2,3: select slot",
+        "    Q,W,E: set ingredient for current slot",
+        "    right/left or TAB: next spell",
+        "",
+        "Escape to cancel actions or quit the current menu, or the game",
+    ]
+    show_lines(screen_size, lines)
+
+def help_screen(screen_size):
+    lines = [
+        "How to play",
+        "Arrow keys: to walk around",
+
+        "I: inventory",
+        "    Press the character next to the line to use or equip",
+        "D: drop",
+        "ESCAPE: Close current screen",
+        "TAB: Show this menu"
+    ]
+    show_lines(screen_size, lines)
 
 def main_menu(con, background_image, screen_size):
     tcod.image_blit_2x(background_image, 0, 0, 0)

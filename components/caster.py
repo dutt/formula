@@ -1,3 +1,4 @@
+from messages import Message
 from components.ingredients import Ingredient
 from components.spell import Spell
 
@@ -30,9 +31,9 @@ class Caster:
         to_remove = []
         for spell_idx in self.cooldowns:
             self.cooldowns[spell_idx] = self.cooldowns[spell_idx] - 1
-            print("Spell {} cooling...".format(spell_idx))
             if self.cooldowns[spell_idx] <= 0:
                 to_remove.append(spell_idx)
         for r in to_remove:
-            print("Spell {} ended cooldown".format(r))
             del self.cooldowns[r]
+
+    cooldown_message = Message("That spell is on cooldown")

@@ -28,14 +28,15 @@ def handle_keys(key, state):
         return handle_player_turn_keys(key)
     elif state == GameState.PLAYER_DEAD:
         return handle_player_dead_keys(key)
-    elif state in [GameState.SHOW_INVENTORY, GameState.DROP_INVENTORY]:
+    elif state in [GameState.SHOW_INVENTORY,
+                   GameState.DROP_INVENTORY]:
         return handle_inventory_keys(key)
-    elif state == GameState.TARGETING:
-        return handle_targeting_keys(key)
     elif state == GameState.LEVEL_UP:
         return handle_level_up_keys(key)
-    elif state == GameState.CHARACTER_SCREEN:
-        return handle_character_screen_keys(key)
+    elif state in [GameState.CHARACTER_SCREEN,
+                   GameState.WELCOME_SCREEN,
+                   GameState.TARGETING]:
+        return handle_escape_to_exit(key)
     elif state == GameState.SPELLMAKER_SCREEN:
         return handle_spellmaker_screen_keys(key)
     elif state == GameState.SHOW_HELP:
@@ -66,9 +67,9 @@ def handle_spellmaker_screen_keys(key):
     elif key_char == 'r':
         return {"ingredient": Ingredient.EMPTY}
     elif key.vk == tcod.KEY_TAB or key.vk == tcod.KEY_LEFT:
-        return {"next_spell": 1}
-    elif key.vk == tcod.KEY_RIGHT:
         return {"next_spell": -1}
+    elif key.vk == tcod.KEY_RIGHT:
+        return {"next_spell": 1}
     elif key.vk == tcod.KEY_DOWN:
         return {"next_slot": 1}
     elif key.vk == tcod.KEY_UP:
@@ -77,14 +78,12 @@ def handle_spellmaker_screen_keys(key):
 
 
 def handle_help_keys(key):
-    if key.vk == tcod.KEY_ESCAPE:
+    if key.vk == tcod.KEY_TAB:
         return {Event.exit: True}
-    elif key.vk == tcod.KEY_TAB:
-        return {Event.exit: True}
-    return {}
+    return handle_escape_to_exit(key)
 
 
-def handle_character_screen_keys(key):
+def handle_escape_to_exit(key):
     if key.vk == tcod.KEY_ESCAPE:
         return {Event.exit: True}
     return {}
@@ -93,21 +92,13 @@ def handle_character_screen_keys(key):
 def handle_level_up_keys(key):
     if key:
         key_char = chr(key.c)
-        if key.vk == tcod.KEY_ESCAPE:
-            return {Event.exit: True}
-        elif key_char == 'a':
+        if key_char == 'a':
             return {Event.level_up: "hp"}
         elif key_char == 'b':
             return {Event.level_up: "str"}
         elif key_char == 'c':
             return {Event.level_up: "def"}
-    return {}
-
-
-def handle_targeting_keys(key):
-    if key.vk == tcod.KEY_ESCAPE:
-        return {Event.exit: True}
-    return {}
+    return handle_escape_to_exit(key)
 
 
 def handle_mouse(mouse):
@@ -125,9 +116,7 @@ def handle_inventory_keys(key):
         return {Event.inventory_index: index}
     elif key.vk == tcod.KEY_ENTER and key.lalt:
         return {Event.fullscreen: True}
-    elif key.vk == tcod.KEY_ESCAPE:
-        return {Event.exit: True}
-    return {}
+    return handle_escape_to_exit(key)
 
 
 def handle_player_dead_keys(key):
@@ -136,9 +125,7 @@ def handle_player_dead_keys(key):
         return {Event.show_inventory: True}
     elif key.vk == tcod.KEY_ENTER and key.lalt:
         return {Event.fullscreen: True}
-    elif key.vk == tcod.KEY_ESCAPE:
-        return {Event.exit: True}
-    return {}
+    return handle_escape_to_exit(key)
 
 
 def handle_player_turn_keys(key):
@@ -172,8 +159,6 @@ def handle_player_turn_keys(key):
         return {Event.drop_inventory: True}
     elif key_char == 'c':
         return {Event.character_screen: True}
-    elif key_char == 'm':
-        return {Event.spellmaker_screen: True}
     elif key.vk == tcod.KEY_TAB:
         return {Event.show_help: True}
     elif key.vk == tcod.KEY_ENTER:
@@ -181,7 +166,5 @@ def handle_player_turn_keys(key):
 
     elif key.vk == tcod.KEY_ENTER and key.lalt:
         return {Event.fullscreen: True}
-    elif key.vk == tcod.KEY_ESCAPE:
-        return {Event.exit: True}
 
-    return {}
+    return handle_escape_to_exit(key)

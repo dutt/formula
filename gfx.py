@@ -5,7 +5,7 @@ import tcod
 from attrdict import AttrDict as attribdict
 
 from game_states import GameState
-from menu import inventory_menu, level_up_menu, character_screen, spellmaker_menu, help_screen
+from menu import inventory_menu, level_up_menu, character_screen, spellmaker_menu, help_screen, welcome_screen
 from util import Size
 
 
@@ -36,8 +36,11 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
         tcod.console_rect(panel, x, y, bar_width, 1, False, tcod.BKGND_SCREEN)
 
         tcod.console_set_default_foreground(panel, tcod.white)
-        tcod.console_print_ex(panel, int(x + total_width / 2), y, tcod.BKGND_NONE, tcod.CENTER,
-                              "{}: {}/{}".format(name, value, maximum))
+        if name.strip() != "":
+            text = "{}: {}/{}".format(name, value, maximum)
+        else:
+            text = "{}/{}".format(value, maximum)
+        tcod.console_print_ex(panel, int(x + total_width / 2), y, tcod.BKGND_NONE, tcod.CENTER, text)
 
 
 def get_line(start, end):
@@ -142,19 +145,11 @@ def render_all(con, bottom_panel, right_panel,
             if player.distance(mouse.cx, mouse.cy) < targeting_spell.distance:
                 tcod.console_set_char(con, mouse.cx, mouse.cy, 'X')
                 if targeting_spell.area > 1:  # aoe, let's draw the area
-                    """d = int(targeting_spell.area // 2)
-                    for x in range(mouse.cx - d, mouse.cx + d):
-                        for y in range(mouse.cy - d, mouse.cy + d):
-                            tcod.console_set_char_foreground(con, x, y, tcod.red)
-                            tcod.console_set_char(con, x, y, 'x')
-                            targeting_coords.append((x, y))
-                    """
                     for x in range(math.ceil(mouse.cx - targeting_spell.distance),
                                    math.ceil(mouse.cx + targeting_spell.distance)):
                         for y in range(math.ceil(mouse.cy - targeting_spell.distance),
                                        math.ceil(mouse.cy + targeting_spell.distance)):
                             dist = (math.sqrt((x - mouse.cx) ** 2 + (y - mouse.cy) ** 2))
-                            #print("from {} to {} it's {}".format())
                             if dist < targeting_spell.area:
                                 tcod.console_set_char_foreground(con, x, y, tcod.red)
                                 tcod.console_set_char(con, x, y, 'x')
@@ -193,7 +188,7 @@ def render_all(con, bottom_panel, right_panel,
                           "Spells:")
     for idx, spell in enumerate(player.caster.spells):
         if player.caster.is_on_cooldown(idx):
-            render_bar(right_panel, 1, y, right_panel.width, "Spell {}".format(idx+1), player.caster.get_cooldown(idx),
+            render_bar(right_panel, 1, y, right_panel.width, "", player.caster.get_cooldown(idx),
                        spell.cooldown, tcod.dark_azure, tcod.black)
         else:
             tcod.console_print_ex(right_panel, x, y, tcod.BKGND_NONE, tcod.LEFT,
@@ -238,6 +233,8 @@ def render_all(con, bottom_panel, right_panel,
         spellmaker_menu(spellbuilder, Size(30, 10), screen_size)
     elif state == GameState.SHOW_HELP:
         help_screen(screen_size)
+    elif state == GameState.WELCOME_SCREEN:
+        welcome_screen(screen_size)
 
 
 def render_entity(con, entity, fov_map, game_map):

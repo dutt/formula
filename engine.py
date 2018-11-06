@@ -122,12 +122,14 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             cx, cy = left_click
             if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
                 casting_spell = None
+                spell_idx = None
                 for i in range(player.caster.num_spells):
                     if Rect(1, 2 + i * 2, 10, 1).contains(cx, cy):
                         casting_spell = player.caster.spells[i]
+                        spell_idx = i
                         break
                 if casting_spell:
-                    start_cast_spell_results = {"targeting_spell": casting_spell}
+                    start_cast_spell_results = {"targeting_spell": casting_spell, "spell_idx": spell_idx}
                     player_turn_results.append(start_cast_spell_results)
 
         if show_inventory:
@@ -172,9 +174,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                     fov_map = initialize_fov(gmap)
                     fov_recompute = True
                     tcod.console_clear(con)
+                    state = GameState.SPELLMAKER_SCREEN
                     break
-            else:
-                log.add_message(Message("There are no stairs here", tcod.yellow))
 
         if level_up:
             if level_up == "hp":
@@ -190,7 +191,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             if start_casting_spell >= len(player.caster.spells):
                 log.add_message(Message("You don't have that spell yet", tcod.yellow))
             else:
-                start_cast_spell_results = {"targeting_spell": player.caster.spells[start_casting_spell]}
+                start_cast_spell_results = {"targeting_spell": player.caster.spells[start_casting_spell],
+                                            "spell_idx": start_casting_spell}
                 player_turn_results.append(start_cast_spell_results)
 
         if show_spellmaker_screen:
@@ -226,6 +228,8 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
                 state = prev_state
             elif state == GameState.TARGETING:
                 player_turn_results.append({"targeting_cancelled": True})
+            elif state == GameState.WELCOME_SCREEN:
+                state = GameState.SPELLMAKER_SCREEN
             else:
                 return True
 
@@ -267,10 +271,14 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
             targeting_spell = res.get("targeting_spell")
             if targeting_spell:
-                prev_state = GameState.PLAYER_TURN
-                state = GameState.TARGETING
+                spell_idx = res.get("spell_idx")
+                if player.caster.is_on_cooldown(spell_idx):
+                    log.add_message(player.caster.cooldown_message)
+                else:
+                    prev_state = GameState.PLAYER_TURN
+                    state = GameState.TARGETING
 
-                log.add_message(targeting_spell.targeting_message)
+                    log.add_message(targeting_spell.targeting_message)
 
             targeting_cancelled = res.get("targeting_cancelled")
             if targeting_cancelled:
@@ -302,14 +310,15 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
             cast = res.get("cast")
             if cast is not None:
-                spell = res.get("spell")
-                player.caster.add_cooldown(spell.spellidx, spell.cooldown + 1) #we'll tick right after this, thus +1
+                if cast:
+                    spell = res.get("spell")
+                    player.caster.add_cooldown(spell.spellidx, spell.cooldown + 1) #we'll tick right after this, thus +1
                 do_end_turn = True
 
         if do_end_turn:
             player.caster.tick_cooldowns()
-            #state = GameState.ENEMY_TURN
-            state = GameState.PLAYER_TURN
+            state = GameState.ENEMY_TURN
+            #state = GameState.PLAYER_TURN
 
         # fullscreen = action.get(event.fullscreen)
         # if fullscreen:

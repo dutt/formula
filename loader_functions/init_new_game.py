@@ -22,7 +22,7 @@ def get_constants():
 
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 30
+    max_rooms = 20
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -95,6 +95,6 @@ def get_game_variables(constants):
     gmap.make_map(constants.room_min_size, constants.room_max_size, constants.max_rooms, constants.map_size, player,
                   entities)
     log = MessageLog(constants.message_x, constants.message_size)
-    state = GameState.PLAYER_TURN
+    state = GameState.WELCOME_SCREEN
 
     return player, entities, gmap, log, state
