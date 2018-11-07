@@ -52,13 +52,13 @@ class GameMap:
                 monster_choice = random_choice_from_dict(monster_chances)
 
                 if monster_choice == "orc":
-                    fighter_component = Fighter(hp=20, defense=0, power=4, xp=0)
+                    fighter_component = Fighter(hp=20, defense=0, power=10, xp=0)
                     ai = BasicMonster()
                     monster = Entity(x, y, 'O', tcod.desaturated_green, "Orc",
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai)
                 else:
-                    fighter_component = Fighter(hp=30, defense=2, power=8, xp=100)
+                    fighter_component = Fighter(hp=30, defense=2, power=15, xp=0)
                     ai = BasicMonster()
                     monster = Entity(x, y, 'T', tcod.darker_green, "Troll",
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,

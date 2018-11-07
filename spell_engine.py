@@ -11,7 +11,6 @@ class SpellBuilder:
         self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_spells)]
 
     def set_slot(self, slot, ingredient):
-        print("setting spell {} slot {} to {}".format(self.currspell, slot, ingredient))
         self.slots[self.currspell][slot] = ingredient
 
     @property
@@ -31,26 +30,30 @@ class SpellEngine:
         retr = []
         for idx, spell in enumerate(range(spellbuilder.num_spells)):
             slots = spellbuilder.slots_for_spell(spell)
-            damage = 10
+            damage = 5
+            damage_per_step = 5
             distance = 1
+            distance_per_step = 3
             area = 0.5
-            cooldown = len(slots)
+            area_per_step = 0.5
+            cooldown_per_slot = 3
+            cooldown = len(slots) * cooldown_per_slot
             for slot in slots:
                 if slot == Ingredient.EMPTY:
-                    cooldown -= 1
+                    cooldown -= cooldown_per_slot
                 elif slot == Ingredient.FIRE:
-                    damage += 10
+                    damage += damage_per_step
                 elif slot == Ingredient.RANGE:
-                    distance += 5
+                    distance += distance_per_step
                 elif slot == Ingredient.AREA:
-                    area += 0.5
-            print("Spell {} evalutaed to range={}, damage={}, area={}".format(idx, distance, damage, area))
+                    area += area_per_step
             retr.append(Spell(slots=slots, cooldown=cooldown, spellidx=idx,
                               damage=damage, distance=distance, area=area))
         return retr
 
 
 builder = SpellBuilder(num_slots=3, num_spells=1)
+builder.slots = [[Ingredient.EMPTY for i in range(3)]]
 #builder.slots = [[Ingredient.FIRE for i in range(3)]]
-builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.AREA]]
+#builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.AREA]]
 Spell.EMPTY = SpellEngine.evaluate(builder)[0]

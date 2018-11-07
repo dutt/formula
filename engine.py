@@ -45,6 +45,7 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
 
         player_turn_results = []
 
+        fullscreen = action.get(Event.fullscreen)
         move = action.get(Event.move)
         exit = action.get(Event.exit)
         pickup = action.get(Event.pickup)
@@ -320,10 +321,9 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             state = GameState.ENEMY_TURN
             #state = GameState.PLAYER_TURN
 
-        # fullscreen = action.get(event.fullscreen)
-        # if fullscreen:
-        # exiting fullscreen doesn't restore resolution
-        # tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
+        if fullscreen:
+            #exiting fullscreen doesn't restore resolution
+            tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
 
 
 def main():
@@ -331,7 +331,7 @@ def main():
     player, entities, gmap, log, state = get_game_variables(constants)
     prev_state = state
 
-    tcod.console_set_custom_font("/home/mikael/workspace/libtcod/data/fonts/arial10x10.png",
+    tcod.console_set_custom_font('arial10x10.png',
                                  tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
     tcod.console_init_root(constants.screen_size.width, constants.screen_size.height, "spellmaker", False)
 

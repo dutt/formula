@@ -79,8 +79,8 @@ from messages import MessageLog
 
 def get_game_variables(constants):
     caster_component = Caster(num_slots=3, num_spells=3)
-    fighter_component = Fighter(hp=100, defense=10, power=200)
-    inventory_component = Inventory(capacity=26)
+    fighter_component = Fighter(hp=100, defense=1, power=3)
+    inventory_component = Inventory(capacity=3)
     level_component = Level()
     equipment_component = Equipment()
     player = Entity(0, 0, '@', tcod.white, "Player", blocks=True, render_order=gfx.RenderOrder.ACTOR,
