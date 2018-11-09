@@ -325,14 +325,24 @@ def play_game(player, entities, gmap, log, state, con, bottom_panel, right_panel
             #exiting fullscreen doesn't restore resolution
             tcod.console_set_fullscreen(not tcod.console_is_fullscreen())
 
+import os
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def main():
     constants = get_constants()
     player, entities, gmap, log, state = get_game_variables(constants)
     prev_state = state
-
-    tcod.console_set_custom_font('data/arial10x10.png',
+    tcod.console_set_custom_font(resource_path('data/arial12x12.png'),
                                  tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
+
     tcod.console_init_root(constants.screen_size.width, constants.screen_size.height, "spellmaker", False)
 
     con = tcod.console_new(constants.screen_size.width, constants.screen_size.height)

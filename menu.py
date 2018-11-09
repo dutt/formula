@@ -43,6 +43,14 @@ def spellmaker_menu(spellbuilder, menu_screen_size, screen_size):
     line += len(spellbuilder.current_slots) + 1
     tcod.console_print_ex(window, 0, line, tcod.BKGND_SET, tcod.LEFT, "Spell {}".format(spellbuilder.currspell + 1))
 
+    line += 2
+    tcod.console_print_ex(window, 0, line, tcod.BKGND_SET, tcod.LEFT,
+                          "Adding fire to a spell increases damage")
+    tcod.console_print_ex(window, 0, line+1, tcod.BKGND_SET, tcod.LEFT,
+                          "Adding range to a spell makes it reach further")
+    tcod.console_print_ex(window, 0, line+2, tcod.BKGND_SET, tcod.LEFT,
+                          "Adding area to a spell gives it wider area of effect")
+
     x = screen_size.width // 2 - menu_screen_size.width // 2
     y = screen_size.height // 2 - menu_screen_size.height // 2
 
@@ -114,6 +122,10 @@ def welcome_screen(screen_size):
         "    up/down or number keys 1,2,3: select slot",
         "    Q,W,E: set ingredient for current slot",
         "    right/left or TAB: next spell",
+        "",
+        "    Adding fire to a spell increases damage",
+        "    Adding range to a spell makes it reach further",
+        "    Adding area to a spell gives it wider area of effect",
         "",
         "Escape to cancel actions or quit the current menu, or the game",
     ]

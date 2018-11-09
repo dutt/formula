@@ -230,7 +230,7 @@ def render_all(con, bottom_panel, right_panel,
     elif state == GameState.CHARACTER_SCREEN:
         character_screen(player, Size(30, 10), screen_size)
     elif state == GameState.SPELLMAKER_SCREEN:
-        spellmaker_menu(spellbuilder, Size(30, 10), screen_size)
+        spellmaker_menu(spellbuilder, Size(45, 15), screen_size)
     elif state == GameState.SHOW_HELP:
         help_screen(screen_size)
     elif state == GameState.WELCOME_SCREEN:
