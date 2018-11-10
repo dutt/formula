@@ -14,22 +14,16 @@ class Fighter:
     @property
     def max_hp(self):
         bonus = 0
-        if self.owner and self.owner.equipment:
-            bonus = self.owner.equipment.max_hp_bonus
         return self.base_max_hp + bonus
 
     @property
     def defense(self):
         bonus = 0
-        if self.owner and self.owner.equipment:
-            bonus = self.owner.equipment.defense_bonus
         return self.base_defense + bonus
 
     @property
     def power(self):
         bonus = 0
-        if self.owner and self.owner.equipment:
-            bonus = self.owner.equipment.power_bonus
         return self.base_power + bonus
 
     def take_damage(self, amount):

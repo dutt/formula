@@ -3,19 +3,18 @@ from random import randint
 import tcod
 
 from messages import Message
-
+from components.action import MoveAction, AttackAction
 
 class BasicMonster:
-    def take_turn(self, target, fov_map, game_map, entities):
+    def take_turn(self, game_data):
         monster = self.owner
-        results = []
-        if not tcod.map_is_in_fov(fov_map, monster.x, monster.y):
-            return results
-        if monster.distance_to(target) >= 2:
-            monster.move_astar(target, entities, game_map)
-        elif target.fighter.hp > 0:
-            results.extend(monster.fighter.attack(target))
-        return results
+        if not tcod.map_is_in_fov(game_data.fov_map, monster.pos.x, monster.pos.y):
+            return None
+        if monster.distance_to(game_data.player) >= 2:
+            return MoveAction(monster, target=game_data.player).execute(game_data)
+        elif game_data.player.fighter.hp > 0:
+            return AttackAction(monster, target=game_data.player).execute(game_data)
+        return None
 
 
 class ConfusedMonster:

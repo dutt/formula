@@ -22,7 +22,7 @@ def get_constants():
 
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 20
+    max_rooms = 1
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -63,38 +63,32 @@ def get_constants():
     return retr
 
 
-from entity import Entity
-from components.fighter import Fighter
-from components.inventory import Inventory
-from components.level import Level
-from components.equippable import Equippable
-from components.equipment import Equipment
-from components.equipmentslots import EquipmentSlots
-from components.caster import Caster
-
-import gfx
+from time_system import TimeSystem
+from attrdict import AttrDict
 from gamemap import GameMap
 from messages import MessageLog
-
+from components.player import Player
+from fov import initialize_fov
 
 def get_game_variables(constants):
-    caster_component = Caster(num_slots=3, num_spells=3)
-    fighter_component = Fighter(hp=100, defense=1, power=3)
-    inventory_component = Inventory(capacity=3)
-    level_component = Level()
-    equipment_component = Equipment()
-    player = Entity(0, 0, '@', tcod.white, "Player", blocks=True, render_order=gfx.RenderOrder.ACTOR,
-                    fighter=fighter_component, inventory=inventory_component, level=level_component,
-                    equipment=equipment_component, caster=caster_component)
-    equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=2)
-    dagger = Entity(0, 0, '-', tcod.sky, "Dagger", equippable=equippable_component)
-    player.inventory.add_item(dagger)
-    player.equipment.toggle_equip(dagger)
-    entities = [player]
-    gmap = GameMap(constants.map_size)
-    gmap.make_map(constants.room_min_size, constants.room_max_size, constants.max_rooms, constants.map_size, player,
-                  entities)
-    log = MessageLog(constants.message_x, constants.message_size)
-    state = GameState.WELCOME_SCREEN
 
-    return player, entities, gmap, log, state
+    player = Player()
+    entities = [player]
+    timesystem = TimeSystem()
+    timesystem.register(player)
+    gmap = GameMap(constants.map_size)
+    gmap.make_map(constants, player, entities, timesystem)
+    log = MessageLog(constants.message_x, constants.message_size)
+    #state = GameState.WELCOME_SCREEN
+    state = GameState.PLAY
+    fov_map = initialize_fov(gmap)
+
+    game_data = AttrDict({
+        "fov_map": fov_map,
+        "player": player,
+        "entities": entities,
+        "map": gmap,
+        "log" : log,
+        "constants" : constants
+    })
+    return game_data, timesystem, state

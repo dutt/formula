@@ -2,14 +2,12 @@ from enum import Enum, auto
 
 
 class GameState(Enum):
-    PLAYER_TURN = auto()
-    ENEMY_TURN = auto()
+    PLAY = auto()
     PLAYER_DEAD = auto()
-    SHOW_INVENTORY = auto()
-    DROP_INVENTORY = auto()
     TARGETING = auto()
     LEVEL_UP = auto()
     CHARACTER_SCREEN = auto()
     SPELLMAKER_SCREEN = auto()
-    SHOW_HELP = auto()
+    SPELLMAKER_HELP_SCEEN = auto()
+    GENERAL_HELP_SCREEN = auto()
     WELCOME_SCREEN = auto()

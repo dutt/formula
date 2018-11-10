@@ -1,5 +1,6 @@
 import tcod
 
+from spell_engine import SpellEngine
 
 def menu(con, header, options, width, screen_size):
     if len(options) > 26: raise ValueError("Can't have more than 26 options in a menu")
@@ -42,14 +43,10 @@ def spellmaker_menu(spellbuilder, menu_screen_size, screen_size):
 
     line += len(spellbuilder.current_slots) + 1
     tcod.console_print_ex(window, 0, line, tcod.BKGND_SET, tcod.LEFT, "Spell {}".format(spellbuilder.currspell + 1))
-
-    line += 2
+    line += 1
+    spells = SpellEngine.evaluate(spellbuilder)
     tcod.console_print_ex(window, 0, line, tcod.BKGND_SET, tcod.LEFT,
-                          "Adding fire to a spell increases damage")
-    tcod.console_print_ex(window, 0, line+1, tcod.BKGND_SET, tcod.LEFT,
-                          "Adding range to a spell makes it reach further")
-    tcod.console_print_ex(window, 0, line+2, tcod.BKGND_SET, tcod.LEFT,
-                          "Adding area to a spell gives it wider area of effect")
+                          "Spell {}".format(spells[spellbuilder.currspell].text_stats))
 
     x = screen_size.width // 2 - menu_screen_size.width // 2
     y = screen_size.height // 2 - menu_screen_size.height // 2
@@ -57,26 +54,25 @@ def spellmaker_menu(spellbuilder, menu_screen_size, screen_size):
     tcod.console_blit(window, 0, 0, menu_screen_size.width, menu_screen_size.height, 0, x, y, 1.0, 1.0)
 
 
-def inventory_menu(con, header, player, width, screen_size):
-    if len(player.inventory.items) == 0:
-        options = ['inventory is empty']
-    else:
-        options = []
-        for item in player.inventory.items:
-            if player.equipment.main_hand == item:
-                options.append("{} on main hand".format(item.name))
-            elif player.equipment.off_hand == item:
-                options.append("{} on off hand".format(item.name))
-            else:
-                options.append(item.name)
-
-    menu(con, header, options, width, screen_size)
-
+def spellmaker_help_menu(screen_size):
+    lines = [
+        "Building spells:",
+        "Q,W,E,R,A,S,D: Set current slot to ingredient",
+        "Up/down arrow: Switch to next/previous slot",
+        "Right/left arrow: Switch to next/previous spell",
+        "Cooldown is increased for every used slot",
+        "",
+        "Adding fire to a spell increases damage",
+        "Adding life to a spell increases healing",
+        "Adding range to a spell makes it reach further",
+        "Adding area to a spell gives it wider area of effect"
+    ]
+    show_lines(screen_size, lines)
 
 def level_up_menu(con, header, player, menu_width, screen_size):
-    options = ["Constitution (+20 hp from {})".format(player.fighter.max_hp),
-               "Stregth (+1 attack from {})".format(player.fighter.power),
-               "Agility (+1 defense from {})".format(player.fighter.defense),
+    options = ["More HP (+20 hp from {})".format(player.fighter.max_hp),
+               "One more slot",
+               "One more spell"
                ]
     menu(con, header, options, menu_width, screen_size)
 
@@ -119,28 +115,23 @@ def welcome_screen(screen_size):
         "",
         "A game of dungeon crawling and spellcrafting",
         "Next you'll be shown the spellmaker screen:",
-        "    up/down or number keys 1,2,3: select slot",
-        "    Q,W,E: set ingredient for current slot",
-        "    right/left or TAB: next spell",
-        "",
-        "    Adding fire to a spell increases damage",
-        "    Adding range to a spell makes it reach further",
-        "    Adding area to a spell gives it wider area of effect",
         "",
         "Escape to cancel actions or quit the current menu, or the game",
+        "Tab to show help"
     ]
     show_lines(screen_size, lines)
 
 def help_screen(screen_size):
     lines = [
         "How to play",
-        "Arrow keys: to walk around",
-
-        "I: inventory",
-        "    Press the character next to the line to use or equip",
-        "D: drop",
+        "WASD: to walk around",
+        "1-5: Cast spell",
+        "E: Interact",
+        "You select targets using the mouse",
+        "    Cast with left click, cancel with right click",
+        "",
         "ESCAPE: Close current screen",
-        "TAB: Show this menu"
+        "TAB: Show help for the current screen"
     ]
     show_lines(screen_size, lines)
 

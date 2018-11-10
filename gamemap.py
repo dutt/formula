@@ -6,14 +6,10 @@ from messages import Message
 import gfx
 from map_objects.tile import Tile
 from map_objects.rect import Rect
-from entity import Entity
+from entity import Entity, Pos
 from components.fighter import Fighter
 from components.ai import BasicMonster
-from components.item import Item
-from components.item_functions import heal, cast_lightning, cast_fireball, cast_confuse
 from components.stairs import Stairs
-from components.equipment import EquipmentSlots
-from components.equippable import Equippable
 from random_utils import random_choice_from_dict, from_dungeon_level
 
 
@@ -34,11 +30,8 @@ class GameMap:
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
 
-    def place_entities(self, room, entities):
+    def place_entities(self, room, entities, timesystem):
         max_monsters_per_room = from_dungeon_level([[2,1],[3,4],[5,6]], self.dungeon_level)
-        max_items_per_room = from_dungeon_level([[4,1], [2,4]], self.dungeon_level)
-        #max_monsters_per_room = 100
-        max_items_per_room = 1
 
         num_monsters = randint(max_monsters_per_room, max_monsters_per_room)
         monster_chances = { "orc" : 80,
@@ -48,76 +41,33 @@ class GameMap:
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
 
-            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+            if not any([entity for entity in entities if entity.pos.x == x and entity.pos.y == y]):
                 monster_choice = random_choice_from_dict(monster_chances)
 
                 if monster_choice == "orc":
                     fighter_component = Fighter(hp=20, defense=0, power=10, xp=0)
                     ai = BasicMonster()
-                    monster = Entity(x, y, 'O', tcod.desaturated_green, "Orc",
+                    monster = Entity(x, y, 'O', tcod.desaturated_green, "Orc", speed=100,
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai)
                 else:
                     fighter_component = Fighter(hp=30, defense=2, power=15, xp=0)
                     ai = BasicMonster()
-                    monster = Entity(x, y, 'T', tcod.darker_green, "Troll",
+                    monster = Entity(x, y, 'T', tcod.darker_green, "Troll", speed=100,
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai)
                 entities.append(monster)
+                timesystem.register(monster)
 
-        num_items = randint(0, max_items_per_room)
-        item_chances = { "healing_potion" : 100 }
-                         #"sword" : from_dungeon_level([[5, 1]], self.dungeon_level),
-                         #"shield" : from_dungeon_level([[15, 1]], self.dungeon_level),
-                         #"lightning_scroll" : from_dungeon_level([[25, 4]], self.dungeon_level),
-                         #"fireball_scroll" : from_dungeon_level([[25, 6]], self.dungeon_level),
-                         #"confusion_scroll" : from_dungeon_level([[10, 2]], self.dungeon_level) }
-        for i in range(num_items):
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
-
-            if not any([e for e in entities if e.x == x and e.y == y]):
-                item_choice = random_choice_from_dict(item_chances)
-
-                if item_choice == "healing_potion":
-                    item_component = Item(use_func=heal, amount=40)
-                    new_item = Entity(x, y, '!', tcod.violet, "Healing potion",
-                                      render_order=gfx.RenderOrder.ITEM, item=item_component)
-                elif item_choice == "sword":
-                    equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=3)
-                    new_item = Entity(x, y, '/', tcod.sky, "Sword", equippable=equippable_component)
-                elif item_choice == "shield":
-                    equippable_component = Equippable(EquipmentSlots.OFF_HAND, defense_bonus=3)
-                    new_item = Entity(x, y, '[', tcod.sky, "Shield", equippable=equippable_component)
-                elif item_choice == "fireball_scroll":
-                    msg = Message("Left-click area to cast, right-click to cancel", tcod.light_cyan)
-                    item_component = Item(use_func=cast_fireball, targeting=True, targeting_message=msg,
-                                          damage=25, radius=3)
-                    new_item = Entity(x, y, '#', tcod.red, "Fireball scroll",
-                                      render_order=gfx.RenderOrder.ITEM, item=item_component)
-                elif item_choice == "confusion_scroll":
-                    msg = Message("Left-click enemy to cast, right-click to cancel", tcod.light_cyan)
-                    item_component = Item(use_func=cast_confuse, targeting=True, targeting_message=msg)
-                    new_item = Entity(x, y, '#', tcod.light_pink, "Confusion scroll",
-                                      render_order=gfx.RenderOrder.ITEM, item=item_component)
-                elif item_choice == "lightning_scroll":
-                    item_component = Item(use_func=cast_lightning, damage=40, max_range=5)
-                    new_item = Entity(x, y, '#', tcod.yellow, "Lightning scroll",
-                                      render_order=gfx.RenderOrder.ITEM, item=item_component)
-                else:
-                    raise ValueError("Unknown item choice '{]'".format(item_choice))
-                entities.append(new_item)
-
-    def make_map(self, room_min_size, room_max_size, max_rooms, map_size,
-                 player, entities):
+    def make_map(self, constants, player, entities, timesystem):
         rooms = []
         center_of_last_room_x = None
         center_of_last_room_y = None
-        for i in range(max_rooms):
-            w = randint(room_min_size, room_max_size)
-            h = randint(room_min_size, room_max_size)
-            x = randint(0, map_size.width - w - 1)
-            y = randint(0, map_size.height - h - 1)
+        for i in range(constants.max_rooms):
+            w = randint(constants.room_min_size, constants.room_max_size)
+            h = randint(constants.room_min_size, constants.room_max_size)
+            x = randint(0, constants.map_size.width - w - 1)
+            y = randint(0, constants.map_size.height - h - 1)
 
             new_room = Rect(x, y, w, h)
             for other_room in rooms:
@@ -130,8 +80,7 @@ class GameMap:
                 center_of_last_room_x = new_x
                 center_of_last_room_y = new_y
                 if len(rooms) == 0:
-                    player.x = new_x
-                    player.y = new_y
+                    player.pos = Pos(new_x, new_y)
                 else:
                     (prev_x, prev_y) = rooms[-1].center()
 
@@ -142,20 +91,24 @@ class GameMap:
                         self.create_v_tunnel(prev_y, new_y, new_x)
                         self.create_h_tunnel(prev_x, new_x, prev_y)
                 rooms.append(new_room)
-                self.place_entities(new_room, entities)
+                self.place_entities(new_room, entities, timesystem)
 
         stairs_component = Stairs(self.dungeon_level + 1)
         down_stairs = Entity(center_of_last_room_x, center_of_last_room_y, '>', tcod.white, "Stairs",
                              render_order=gfx.RenderOrder.STAIRS, stairs=stairs_component)
         entities.append(down_stairs)
 
-    def next_floor(self, player, log, constants):
+    def next_floor(self, player, log, constants, entities, timesystem):
+        # remove all on the current floor
+        for e in entities:
+            if e.pos != player.pos:
+                timesystem.release(e)
+
         self.dungeon_level += 1
         entities = [player]
 
         self.tiles = self.initialize_tiles()
-        self.make_map(constants.room_min_size, constants.room_max_size, constants.max_rooms,
-                      constants.map_size, player, entities)
+        self.make_map(constants, player, entities, timesystem)
         player.fighter.heal(player.fighter.max_hp // 2)
         log.add_message(Message("You rest for a moment, and recover your strength", tcod.light_violet))
         return entities

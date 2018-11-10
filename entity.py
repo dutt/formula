@@ -4,22 +4,32 @@ import tcod
 
 from gfx import RenderOrder
 
-from components.item import Item
+
+class Pos:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __ne__(self, other):
+        return (self == other) == False
 
 
 class Entity:
-    def __init__(self, x, y, char, color, name,
+    def __init__(self, x, y, char, color, name, speed=0,
                  blocks=False, render_order=RenderOrder.CORPSE,
-                 fighter=None, ai=None, item=None, inventory=None,
-                 stairs=None, level=None, equipment=None, equippable=None,
+                 fighter=None, ai=None, stairs=None, level=None,
                  caster=None):
-        self.x = int(x)
-        self.y = int(y)
+        self.pos = Pos(int(x), int(y))
         self.char = char
         self.color = color
         self.name = name
         self.blocks = blocks
         self.render_order = render_order
+        self.action_points = 0
+        self.speed = speed
 
         self.fighter = fighter
         if self.fighter:
@@ -29,14 +39,6 @@ class Entity:
         if self.ai:
             self.ai.owner = self
 
-        self.item = item
-        if self.item:
-            self.item.owner = self
-
-        self.inventory = inventory
-        if self.inventory:
-            self.inventory.owner = self
-
         self.stairs = stairs
         if self.stairs:
             self.stairs.owner = self
@@ -44,18 +46,6 @@ class Entity:
         self.level = level
         if self.level:
             self.level.owner = self
-
-        self.equipment = equipment
-        if self.equipment:
-            self.equipment.owner = self
-
-        self.equippable = equippable
-        if self.equippable:
-            self.equippable.owner = self
-            if not self.item:
-                i = Item()
-                self.item = i
-                self.item.owner = self
 
         self.caster = caster
         if self.caster:
@@ -65,32 +55,38 @@ class Entity:
         return str(self)
 
     def __str__(self):
-        return "<{} at ({},{})>".format(self.name, self.x, self.y)
+        return "<{} at ({},{})>".format(self.name, self.pos.x, self.pos.y)
 
     def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
+        self.pos.x += dx
+        self.pos.y += dy
+
+    def take_turn(self, game_data):
+        if self.ai and self.action_points > 0:
+            return self.ai.take_turn(game_data)
+        else:
+            return None
 
     def move_towards(self, dest_x, dest_y, game_map, entities):
-        dx = dest_x - self.x
-        dy = dest_y - self.y
+        dx = dest_x - self.pos.x
+        dy = dest_y - self.pos.y
 
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
         dx = int(round(dx / distance))
         dy = int(round(dy / distance))
 
-        if not (game_map.is_blocked(self.x + dx, self.y + dy) or
-            get_blocking_entites_at_location(entities, self.x + dx, self.y + dy)):
+        if not (game_map.is_blocked(self.pos.x + dx, self.pos.y + dy) or
+                get_blocking_entites_at_location(entities, self.pos.x + dx, self.pos.y + dy)):
             self.move(dx, dy)
 
     def distance_to(self, other):
-        dx = other.x - self.x
-        dy = other.y - self.y
+        dx = other.pos.x - self.pos.x
+        dy = other.pos.y - self.pos.y
         return math.sqrt(dx ** 2 + dy ** 2)
 
     def distance(self, x, y):
-        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+        return math.sqrt((x - self.pos.x) ** 2 + (y - self.pos.y) ** 2)
 
     def move_astar(self, target, entities, game_map):
         # Create a FOV map that has the dimensions of the map
@@ -100,7 +96,7 @@ class Entity:
         for y1 in range(game_map.height):
             for x1 in range(game_map.width):
                 tcod.map_set_properties(fov, x1, y1, not game_map.tiles[x1][y1].block_sight,
-                                           not game_map.tiles[x1][y1].blocked)
+                                        not game_map.tiles[x1][y1].blocked)
 
         # Scan all the objects to see if there are objects that must be navigated around
         # Check also that the object isn't self or the target (so that the start and the end points are free)
@@ -108,14 +104,14 @@ class Entity:
         for entity in entities:
             if entity.blocks and entity != self and entity != target:
                 # Set the tile as a wall so it must be navigated around
-                tcod.map_set_properties(fov, entity.x, entity.y, True, False)
+                tcod.map_set_properties(fov, entity.pos.x, entity.pos.y, True, False)
 
         # Allocate a A* path
         # The 1.41 is the normal diagonal cost of moving, it can be set as 0.0 if diagonal moves are prohibited
         my_path = tcod.path_new_using_map(fov, 1.41)
 
         # Compute the path between self's coordinates and the target's coordinates
-        tcod.path_compute(my_path, self.x, self.y, target.x, target.y)
+        tcod.path_compute(my_path, self.pos.x, self.pos.y, target.pos.x, target.pos.y)
 
         # Check if the path exists, and in this case, also the path is shorter than 25 tiles
         # The path size matters if you want the monster to use alternative longer paths (for example through other
@@ -126,12 +122,12 @@ class Entity:
             x, y = tcod.path_walk(my_path, True)
             if x or y:
                 # Set self's coordinates to the next path tile
-                self.x = x
-                self.y = y
+                self.pos.x = x
+                self.pos.y = y
         else:
             # Keep the old move function as a backup so that if there are no paths, for example another monster
             # blocks a corridor- It will still try to move towards the player (closer to the corridor opening)
-            self.move_towards(target.x, target.y, game_map, entities)
+            self.move_towards(target.pos.x, target.pos.y, game_map, entities)
 
             # Delete the path to free memory
         tcod.path_delete(my_path)
@@ -139,6 +135,6 @@ class Entity:
 
 def get_blocking_entites_at_location(entities, destx, desty):
     for e in entities:
-        if e.blocks and e.x == destx and e.y == desty:
+        if e.blocks and e.pos.x == destx and e.pos.y == desty:
             return e
     return None

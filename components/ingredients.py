@@ -6,3 +6,10 @@ class Ingredient(Enum):
     FIRE = auto()
     RANGE = auto()
     AREA = auto()
+    #COLD = auto()
+    LIFE = auto()
+    #SHIELD = auto()
+
+    @property
+    def shortname(self):
+        return self.name[0:1].capitalize()

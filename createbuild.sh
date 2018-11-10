@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 set -x
-#source venv/bin/activate
-#mkdir -p build
-#rm -rf build/*
-#cd build
-#pyinstaller ../pyinstaller.spec
-#cp dist/spellmaker spellmaker.linux
+source venv/bin/activate
+mkdir -p build
+rm -rf build/*
+cd build
+pyinstaller ../pyinstaller.spec
+cp dist/spellmaker spellmaker.linux
 
 #windows
 # VM psw "Passw0rd!"

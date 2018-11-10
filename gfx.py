@@ -1,11 +1,12 @@
-from enum import Enum, auto
 import math
+from enum import Enum, auto
 
 import tcod
 from attrdict import AttrDict as attribdict
 
 from game_states import GameState
-from menu import inventory_menu, level_up_menu, character_screen, spellmaker_menu, help_screen, welcome_screen
+from menu import level_up_menu, character_screen, spellmaker_menu, spellmaker_help_menu, \
+    help_screen, welcome_screen
 from util import Size
 
 
@@ -19,7 +20,7 @@ class RenderOrder(Enum):
 def get_names_under_mouse(mouse, entities, fov_map):
     (x, y) = (mouse.cx, mouse.cy)
     names = [entity.name for entity in entities
-             if entity.x == x and entity.y == y and tcod.map_is_in_fov(fov_map, entity.x, entity.y)]
+             if entity.pos.x == x and entity.pos.y == y and tcod.map_is_in_fov(fov_map, entity.pos.x, entity.pos.y)]
     names = ", ".join(names)
 
     return names.capitalize()
@@ -104,8 +105,7 @@ def get_line(start, end):
 def render_all(con, bottom_panel, right_panel,
                entities, player,
                game_map, fov_map, fov_recompute, log,
-               screen_size, bar_width, bottom_panel_height, bottom_panel_y,
-               mouse, colors, state, targeting_spell, spellbuilder):
+               constants, mouse, state, targeting_spell, spellbuilder):
     def draw_ground():
         for y in range(game_map.height):
             for x in range(game_map.width):
@@ -114,15 +114,15 @@ def render_all(con, bottom_panel, right_panel,
                 # visible = True
                 if visible:
                     if wall:
-                        tcod.console_set_char_background(con, x, y, colors.get("light_wall"))
+                        tcod.console_set_char_background(con, x, y, constants.colors.get("light_wall"))
                     else:
-                        tcod.console_set_char_background(con, x, y, colors.get("light_ground"))
+                        tcod.console_set_char_background(con, x, y, constants.colors.get("light_ground"))
                     game_map.tiles[x][y].explored = True
                 elif game_map.tiles[x][y].explored:
                     if wall:
-                        tcod.console_set_char_background(con, x, y, colors.get("dark_wall"))
+                        tcod.console_set_char_background(con, x, y, constants.colors.get("dark_wall"))
                     else:
-                        tcod.console_set_char_background(con, x, y, colors.get("dark_ground"))
+                        tcod.console_set_char_background(con, x, y, constants.colors.get("dark_ground"))
 
     def mouse_pos():
         return attribdict({"cx": mouse.cx - right_panel.width, "cy": mouse.cy})
@@ -130,7 +130,7 @@ def render_all(con, bottom_panel, right_panel,
     def draw_entities_and_action():
         targeting_coords = []
         if state == GameState.TARGETING:
-            points = get_line((player.x, player.y), (mouse.cx, mouse.cy))
+            points = get_line((player.pos.x, player.pos.y), (mouse.cx, mouse.cy))
             hit_wall = False
             for idx, p in enumerate(points):
                 px, py = p
@@ -160,10 +160,10 @@ def render_all(con, bottom_panel, right_panel,
         ordered_entities = sorted(entities, key=lambda e: e.render_order.value)
         for entity in ordered_entities:
             render_entity(con, entity, fov_map, game_map)
-            if (entity.x, entity.y) in targeting_coords and \
-                    player.distance(entity.x, entity.y) < targeting_spell.distance and \
-                    tcod.map_is_in_fov(fov_map, entity.x, entity.y):
-                tcod.console_set_char_background(con, entity.x, entity.y, tcod.red)
+            if (entity.pos.x, entity.pos.y) in targeting_coords and \
+                    player.distance(entity.pos.x, entity.pos.y) < targeting_spell.distance and \
+                    tcod.map_is_in_fov(fov_map, entity.pos.x, entity.pos.y):
+                tcod.console_set_char_background(con, entity.pos.x, entity.pos.y, tcod.red)
 
     mouse = mouse_pos()
 
@@ -174,7 +174,8 @@ def render_all(con, bottom_panel, right_panel,
 
     draw_entities_and_action()
 
-    tcod.console_blit(con, 0, 0, screen_size.width - right_panel.width, screen_size.height, 0, right_panel.width, 0)
+    tcod.console_blit(con, 0, 0, constants.screen_size.width - right_panel.width, constants.screen_size.height, 0,
+                      right_panel.width, 0)
 
     # right panel
     tcod.console_set_default_background(right_panel, tcod.black)
@@ -195,7 +196,7 @@ def render_all(con, bottom_panel, right_panel,
                                   "{}: {}".format(idx + 1, spell.text_repr))
         y += 2
 
-    tcod.console_blit(right_panel, 0, 0, screen_size.width, screen_size.height, 0, 0, 0)
+    tcod.console_blit(right_panel, 0, 0, constants.screen_size.width, constants.screen_size.height, 0, 0, 0)
 
     # bottom panel
     tcod.console_set_default_background(bottom_panel, tcod.black)
@@ -207,7 +208,7 @@ def render_all(con, bottom_panel, right_panel,
         tcod.console_print_ex(bottom_panel, log.x, y, tcod.BKGND_NONE, tcod.LEFT, msg.text)
         y += 1
 
-    render_bar(bottom_panel, 1, 1, bar_width, "HP", player.fighter.hp, player.fighter.max_hp,
+    render_bar(bottom_panel, 1, 1, constants.bar_width, "HP", player.fighter.hp, player.fighter.max_hp,
                tcod.light_red, tcod.darker_red)
     tcod.console_print_ex(bottom_panel, 1, 3, tcod.BKGND_NONE, tcod.LEFT,
                           "Station level {}".format(game_map.dungeon_level))
@@ -216,32 +217,29 @@ def render_all(con, bottom_panel, right_panel,
     tcod.console_print_ex(bottom_panel, 1, 0, tcod.BKGND_NONE, tcod.LEFT,
                           get_names_under_mouse(mouse, entities, fov_map))
 
-    tcod.console_blit(bottom_panel, 0, 0, screen_size.width, bottom_panel_height, 0, 0, bottom_panel_y)
+    tcod.console_blit(bottom_panel, 0, 0, constants.screen_size.width, constants.bottom_panel_height, 0, 0,
+                      constants.bottom_panel_y)
 
     # optionally draw menus on top
-    if state in [GameState.SHOW_INVENTORY, GameState.DROP_INVENTORY]:
-        if state == GameState.SHOW_INVENTORY:
-            title = "Press the key next to the item to use it, or Esc to cancel"
-        else:
-            title = "Press the key next to the item to drop it, or Esc to cancel"
-        inventory_menu(con, title + "\n", player, 50, screen_size)
-    elif state == GameState.LEVEL_UP:
-        level_up_menu(con, "Level up, please choose:", player, 40, screen_size)
+    if state == GameState.LEVEL_UP:
+        level_up_menu(con, "Level up, please choose:", player, 40, constants.screen_size)
     elif state == GameState.CHARACTER_SCREEN:
-        character_screen(player, Size(30, 10), screen_size)
-    elif state == GameState.SPELLMAKER_SCREEN:
-        spellmaker_menu(spellbuilder, Size(45, 15), screen_size)
-    elif state == GameState.SHOW_HELP:
-        help_screen(screen_size)
+        character_screen(player, Size(30, 10), constants.screen_size)
+    elif state in [GameState.SPELLMAKER_SCREEN, GameState.SPELLMAKER_HELP_SCEEN]:
+        spellmaker_menu(spellbuilder, Size(45, 15), constants.screen_size)
+        if state == GameState.SPELLMAKER_HELP_SCEEN:
+            spellmaker_help_menu(constants.screen_size)
+    elif state == GameState.GENERAL_HELP_SCREEN:
+        help_screen(constants.screen_size)
     elif state == GameState.WELCOME_SCREEN:
-        welcome_screen(screen_size)
+        welcome_screen(constants.screen_size)
 
 
 def render_entity(con, entity, fov_map, game_map):
-    if tcod.map_is_in_fov(fov_map, entity.x, entity.y) or \
-            (entity.stairs and game_map.tiles[entity.x][entity.y].explored):
+    if tcod.map_is_in_fov(fov_map, entity.pos.x, entity.pos.y) or \
+            (entity.stairs and game_map.tiles[entity.pos.x][entity.pos.y].explored):
         tcod.console_set_default_foreground(con, entity.color)
-        tcod.console_put_char(con, entity.x, entity.y, entity.char, tcod.BKGND_NONE)
+        tcod.console_put_char(con, entity.pos.x, entity.pos.y, entity.char, tcod.BKGND_NONE)
 
 
 def clear_all(con, entities):
@@ -250,4 +248,4 @@ def clear_all(con, entities):
 
 
 def clear_entity(con, entity):
-    tcod.console_put_char(con, entity.x, entity.y, ' ', tcod.BKGND_NONE)
+    tcod.console_put_char(con, entity.pos.x, entity.pos.y, ' ', tcod.BKGND_NONE)
