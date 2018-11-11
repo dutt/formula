@@ -3,7 +3,7 @@ import time
 import tcod
 
 import gfx
-from components.action import MoveAction, AttackAction, ExitAction, CastSpellAction
+from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction
 from components.caster import Caster
 from components.fighter import Fighter
 from components.level import Level
@@ -103,7 +103,7 @@ class Player(Entity):
                         tcod.console_clear(self.con)
                         break
                 else:
-                    print("waiting")
+                    player_action = WaitAction()
                 if game_data.state == GameStates.SPELLMAKER_SCREEN:
                     # we descended
                     continue
@@ -124,7 +124,7 @@ class Player(Entity):
                     if target:
                         player_action = AttackAction(self, target=target)
                     else:
-                        player_action = MoveAction(self, targetpos=Pos(destx, desty))
+                        player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
 
             from map_objects.rect import Rect
             right_panel_rect = Rect(0, 0, self.right_panel.width, self.right_panel.height)
@@ -240,6 +240,6 @@ class Player(Entity):
 
         # end of no action
         assert player_action
-        if type(player_action) == MoveAction:
+        if type(player_action) == MoveToPositionAction:
             game_data.fov_recompute = True
         return player_action.execute(game_data)

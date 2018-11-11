@@ -2,8 +2,9 @@ from random import randint
 
 import tcod
 
+from components.action import MoveToTargetAction, AttackAction
 from messages import Message
-from components.action import MoveAction, AttackAction
+
 
 class BasicMonster:
     def take_turn(self, game_data):
@@ -11,7 +12,7 @@ class BasicMonster:
         if not tcod.map_is_in_fov(game_data.fov_map, monster.pos.x, monster.pos.y):
             return None
         if monster.distance_to(game_data.player) >= 2:
-            return MoveAction(monster, target=game_data.player).execute(game_data)
+            return MoveToTargetAction(monster, target=game_data.player).execute(game_data)
         elif game_data.player.fighter.hp > 0:
             return AttackAction(monster, target=game_data.player).execute(game_data)
         return None

@@ -7,6 +7,7 @@ class Message:
     def __init__(self, text, color=tcod.white):
         self.text = text
         self.color = color
+        self.id = -1
 
     def __repr__(self):
         return str(self)
@@ -20,8 +21,11 @@ class MessageLog:
         self.messages = []
         self.x = x
         self.size = size
+        self.last_id = 0
 
     def add_message(self, msg):
+        msg.id = self.last_id
+        self.last_id += 1
         lines = textwrap.wrap(msg.text, self.size.width)
 
         for l in lines:

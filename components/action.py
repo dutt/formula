@@ -21,24 +21,39 @@ class ExitAction(Action):
         return self.package(result=[{"quit": True}])
 
 
-class MoveAction(Action):
+class WaitAction(Action):
     COST = 100
 
-    def __init__(self, actor, target=None, targetpos=None):
-        super(MoveAction, self).__init__(actor, MoveAction.COST)
-        assert target is not None or targetpos is not None
+    def __init__(self):
+        super(WaitAction, self).__init__(actor=None, cost=WaitAction.COST)
+
+    def execute(self, _):
+        return self.package()
+
+
+class MoveToPositionAction(Action):
+    COST = 100
+
+    def __init__(self, actor, targetpos):
+        super(MoveToPositionAction, self).__init__(actor, MoveToTargetAction.COST)
         self.targetpos = targetpos
+
+    def execute(self, game_data):
+        self.actor.move_towards(self.targetpos.x, self.targetpos.y, game_data.entities, game_data.map)
+        result = [{"moved": True}]
+        return self.package(result)
+
+
+class MoveToTargetAction(Action):
+    COST = 100
+
+    def __init__(self, actor, target):
+        super(MoveToTargetAction, self).__init__(actor, MoveToTargetAction.COST)
         self.target = target
 
     def execute(self, game_data):
-        def helper(x, y):
-            self.actor.move_towards(x, y, game_data.map, game_data.entities)
-            return [{"moved": True}]
-
-        if self.target:
-            result = helper(self.target.pos.x, self.target.pos.y)
-        else:
-            result = helper(self.targetpos.x, self.targetpos.y)
+        self.actor.move_astar(self.target, game_data.entities, game_data.map)
+        result = [{"moved": True}]
         return self.package(result)
 
 

@@ -72,7 +72,7 @@ class Entity:
         else:
             return None
 
-    def move_towards(self, dest_x, dest_y, game_map, entities):
+    def move_towards(self, dest_x, dest_y, entities, game_map):
         dx = dest_x - self.pos.x
         dy = dest_y - self.pos.y
 
@@ -132,7 +132,7 @@ class Entity:
         else:
             # Keep the old move function as a backup so that if there are no paths, for example another monster
             # blocks a corridor- It will still try to move towards the player (closer to the corridor opening)
-            self.move_towards(target.pos.x, target.pos.y, game_map, entities)
+            self.move_towards(target.pos.x, target.pos.y, entities, game_map)
 
             # Delete the path to free memory
         tcod.path_delete(my_path)
