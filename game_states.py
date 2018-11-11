@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class GameState(Enum):
+class GameStates(Enum):
     PLAY = auto()
     PLAYER_DEAD = auto()
     TARGETING = auto()

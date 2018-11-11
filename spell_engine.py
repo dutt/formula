@@ -69,8 +69,9 @@ class SpellEngine:
         return retr
 
 
-builder = SpellBuilder(num_slots=3, num_spells=1)
+builder = SpellBuilder(num_slots=3, num_spells=3)
 #builder.slots = [[Ingredient.EMPTY for i in range(3)]]
-builder.slots = [[Ingredient.FIRE for i in range(3)]]
+builder.slots = [[Ingredient.FIRE for i in range(3)] for i in range(3)]
 #builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.AREA]]
 Spell.EMPTY = SpellEngine.evaluate(builder)[0]
+Spell.DEFAULT = SpellEngine.evaluate(builder)

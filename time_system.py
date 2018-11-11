@@ -19,7 +19,7 @@ class TimeSystem():
             actor.action_points += actor.speed
             turn_data = actor.take_turn(game_data)
             while turn_data:
-                results.append(turn_data)
+                results.extend(turn_data.result)
                 actor.action_points -= turn_data.action.cost
                 turn_data = actor.take_turn(game_data)
         return results

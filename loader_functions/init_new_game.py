@@ -1,7 +1,7 @@
 import tcod
 from attrdict import AttrDict as attribdict
 
-from game_states import GameState
+from game_states import GameStates
 from util import Size
 
 
@@ -64,14 +64,14 @@ def get_constants():
 
 
 from time_system import TimeSystem
-from attrdict import AttrDict
+from state_data import StateData
 from gamemap import GameMap
 from messages import MessageLog
 from components.player import Player
 from fov import initialize_fov
 
-def get_game_variables(constants):
 
+def get_game_variables(constants):
     player = Player()
     entities = [player]
     timesystem = TimeSystem()
@@ -79,16 +79,18 @@ def get_game_variables(constants):
     gmap = GameMap(constants.map_size)
     gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
-    #state = GameState.WELCOME_SCREEN
-    state = GameState.PLAY
+    state = GameStates.WELCOME_SCREEN
+    state = GameStates.PLAY
     fov_map = initialize_fov(gmap)
 
-    game_data = AttrDict({
-        "fov_map": fov_map,
-        "player": player,
-        "entities": entities,
-        "map": gmap,
-        "log" : log,
-        "constants" : constants
-    })
-    return game_data, timesystem, state
+    game_data = StateData(
+            player,
+            entities,
+            gmap,
+            log,
+            constants,
+            timesystem,
+            fov_map,
+            fov_recompute=True
+    )
+    return game_data, state

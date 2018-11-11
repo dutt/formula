@@ -7,7 +7,8 @@ class Caster:
     def __init__(self, num_slots, num_spells):
         self.num_slots = num_slots
         self.num_spells = num_spells
-        self.spells = [Spell.EMPTY for _ in range(num_spells)]
+        #self.spells = [Spell.EMPTY for _ in range(num_spells)]
+        self.spells = Spell.DEFAULT
         self.slots = [Ingredient.FIRE for _ in range(num_slots)]
         self.cooldowns = {}
 

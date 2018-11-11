@@ -4,7 +4,7 @@ from enum import Enum, auto
 import tcod
 from attrdict import AttrDict as attribdict
 
-from game_states import GameState
+from game_states import GameStates
 from menu import level_up_menu, character_screen, spellmaker_menu, spellmaker_help_menu, \
     help_screen, welcome_screen
 from util import Size
@@ -18,8 +18,13 @@ class RenderOrder(Enum):
 
 
 def get_names_under_mouse(mouse, entities, fov_map):
+    def get_name(entity):
+        retr = entity.name
+        if entity.fighter:
+            retr += "{}/{}".format(entity.fighter.hp, entity.fighter.max_hp)
+        return retr
     (x, y) = (mouse.cx, mouse.cy)
-    names = [entity.name for entity in entities
+    names = [get_name(entity) for entity in entities
              if entity.pos.x == x and entity.pos.y == y and tcod.map_is_in_fov(fov_map, entity.pos.x, entity.pos.y)]
     names = ", ".join(names)
 
@@ -129,7 +134,7 @@ def render_all(con, bottom_panel, right_panel,
 
     def draw_entities_and_action():
         targeting_coords = []
-        if state == GameState.TARGETING:
+        if state == GameStates.TARGETING:
             points = get_line((player.pos.x, player.pos.y), (mouse.cx, mouse.cy))
             hit_wall = False
             for idx, p in enumerate(points):
@@ -169,8 +174,9 @@ def render_all(con, bottom_panel, right_panel,
 
     tcod.console_clear(con)
 
-    if fov_recompute:
-        draw_ground()
+    #if fov_recompute:
+    #    draw_ground()
+    draw_ground()
 
     draw_entities_and_action()
 
@@ -211,7 +217,7 @@ def render_all(con, bottom_panel, right_panel,
     render_bar(bottom_panel, 1, 1, constants.bar_width, "HP", player.fighter.hp, player.fighter.max_hp,
                tcod.light_red, tcod.darker_red)
     tcod.console_print_ex(bottom_panel, 1, 3, tcod.BKGND_NONE, tcod.LEFT,
-                          "Station level {}".format(game_map.dungeon_level))
+                          "Dungeon level {}".format(game_map.dungeon_level))
 
     tcod.console_set_default_foreground(bottom_panel, tcod.light_grey)
     tcod.console_print_ex(bottom_panel, 1, 0, tcod.BKGND_NONE, tcod.LEFT,
@@ -221,17 +227,17 @@ def render_all(con, bottom_panel, right_panel,
                       constants.bottom_panel_y)
 
     # optionally draw menus on top
-    if state == GameState.LEVEL_UP:
+    if state == GameStates.LEVEL_UP:
         level_up_menu(con, "Level up, please choose:", player, 40, constants.screen_size)
-    elif state == GameState.CHARACTER_SCREEN:
+    elif state == GameStates.CHARACTER_SCREEN:
         character_screen(player, Size(30, 10), constants.screen_size)
-    elif state in [GameState.SPELLMAKER_SCREEN, GameState.SPELLMAKER_HELP_SCEEN]:
+    elif state in [GameStates.SPELLMAKER_SCREEN, GameStates.SPELLMAKER_HELP_SCEEN]:
         spellmaker_menu(spellbuilder, Size(45, 15), constants.screen_size)
-        if state == GameState.SPELLMAKER_HELP_SCEEN:
+        if state == GameStates.SPELLMAKER_HELP_SCEEN:
             spellmaker_help_menu(constants.screen_size)
-    elif state == GameState.GENERAL_HELP_SCREEN:
+    elif state == GameStates.GENERAL_HELP_SCREEN:
         help_screen(constants.screen_size)
-    elif state == GameState.WELCOME_SCREEN:
+    elif state == GameStates.WELCOME_SCREEN:
         welcome_screen(constants.screen_size)
 
 

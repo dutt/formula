@@ -1,20 +1,20 @@
 import tcod
 
 import gfx
-from game_states import GameState
+from game_states import GameStates
 from messages import Message
 
 
-def kill_player(player):
-    player.char = '%'
-    player.color = tcod.dark_red
-    player.render_order = gfx.RenderOrder.CORPSE
-    player.name = "Your corpse"
+def kill_player(player, game_state):
+    game_state.player.char = '%'
+    game_state.player.color = tcod.dark_red
+    game_state.player.render_order = gfx.RenderOrder.CORPSE
+    game_state.player.name = "Your corpse"
+    game_state.state = GameStates.PLAYER_DEAD
+    return Message("You died", tcod.red), game_state
 
-    return Message("You died", tcod.red), GameState.PLAYER_DEAD
 
-
-def kill_monster(monster):
+def kill_monster(monster, game_state):
     msg = Message("{} is dead".format(monster.name), tcod.orange)
 
     monster.char = '%'
@@ -24,5 +24,7 @@ def kill_monster(monster):
     monster.ai = None
     monster.render_order = gfx.RenderOrder.CORPSE
     monster.name = "Remains of {}".format(monster.name)
+    monster.active = False
+    game_state.timesystem.release(monster)
 
-    return msg
+    return msg, game_state

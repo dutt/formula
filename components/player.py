@@ -3,12 +3,13 @@ import time
 import tcod
 
 import gfx
-from components.action import MoveAction, DecendStairsAction, AttackAction
+from components.action import MoveAction, AttackAction, ExitAction, CastSpellAction
 from components.caster import Caster
 from components.fighter import Fighter
 from components.level import Level
 from entity import Entity, get_blocking_entites_at_location, Pos
-from game_states import GameState
+from fov import recompute_fov, initialize_fov
+from game_states import GameStates
 from gfx import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
@@ -28,58 +29,59 @@ class Player(Entity):
                                      fighter=fighter_component, level=level_component, caster=caster_component)
 
         self.con = self.bottom_panel = self.right_panel = None
-        self.initial_state = None
 
     def set_gui(self, con, bottom_panel, right_panel):
         self.con = con
         self.bottom_panel = bottom_panel
         self.right_panel = right_panel
 
-    def set_initial_state(self, state):
-        self.initial_state = state
+    def set_initial_state(self, state, game_data):
+        game_data.state = state
+        game_data.prev_state = []
 
     def take_turn(self, game_data):
         assert self.con
         assert self.bottom_panel
         assert self.right_panel
-        assert self.initial_state
 
-        if self.action_points == 0:
+        if self.action_points <= 0:
             return None
 
-        action = mouse_action = None
-        prev_state = [GameState.PLAY]
-        if self.initial_state != -1:
-            state = self.initial_state
         player_action = None
 
         targeting_spell = None
+        self.caster.tick_cooldowns()
         spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
-
-        turn_results = []
 
         while not player_action:
 
+            turn_results = []
+
+            if game_data.fov_recompute:
+                recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
+                              game_data.constants.fov_radius, game_data.constants.fov_light_walls,
+                              game_data.constants.fov_algorithm)
             gfx.render_all(self.con, self.bottom_panel, self.right_panel,
                            game_data.entities, self,
                            game_data.map, game_data.fov_map, game_data.fov_recompute, game_data.log,
-                           game_data.constants, mouse, state, targeting_spell, spellbuilder)
+                           game_data.constants, mouse, game_data.state, targeting_spell, spellbuilder)
+
             tcod.console_flush()
+
             gfx.clear_all(self.con, game_data.entities)
 
-            # wait for user input before doing anything
-            while not action and not mouse_action:
-                time.sleep(0.1)
-                tcod.sys_check_for_event(tcod.EVENT_KEY_PRESS | tcod.EVENT_MOUSE, key, mouse)
-                action = handle_keys(key, state)
-                mouse_action = handle_mouse(mouse)
-
+            tcod.sys_check_for_event(tcod.EVENT_KEY_PRESS | tcod.EVENT_MOUSE, key, mouse)
+            action = handle_keys(key, game_data.state)
+            mouse_action = handle_mouse(mouse)
+            if not action and not mouse_action:
+                time.sleep(0.01)  # avoid busy looping
+                continue
 
             fullscreen = action.get(Event.fullscreen)
             move = action.get(Event.move)
             do_exit = action.get(Event.exit)
             left_click = mouse_action.get(Event.left_click)
-            left_map_click = (left_click[0] - game_data.right_panel.width, left_click[1]) if left_click else None
+            left_map_click = (left_click[0] - self.right_panel.width, left_click[1]) if left_click else None
             right_click = mouse_action.get(Event.right_click)
             level_up = action.get(Event.level_up)
             show_character_screen = action.get(Event.character_screen)
@@ -88,29 +90,30 @@ class Player(Entity):
             show_help = action.get(Event.show_help)
             interact = action.get(Event.interact)
 
-            action = mouse_action = None #clear them for next round
-
             if interact:
                 for e in game_data.entities:
                     if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
-                        player_action = DecendStairsAction(self)
-                #        entities = gmap.next_floor(self, log, constants, entities, timesystem)
-                #        fov_map = initialize_fov(gmap)
-                #        fov_recompute = True
-                #        tcod.console_clear(con)
-                #        state = GameState.SPELLMAKER_SCREEN
-                #        prev_state = [GameState.PLAY]
-                #        break
+                        game_data.entities = game_data.map.next_floor(game_data.player, game_data.log,
+                                                                      game_data.constants,
+                                                                      game_data.entities, game_data.timesystem)
+                        game_data.prev_state = [GameStates.PLAY]
+                        game_data.state = GameStates.SPELLMAKER_SCREEN
+                        game_data.fov_map = initialize_fov(game_data.map)
+                        game_data.fov_recompute = True
+                        tcod.console_clear(self.con)
+                        break
                 else:
                     print("waiting")
-                    do_end_turn = True
+                if game_data.state == GameStates.SPELLMAKER_SCREEN:
+                    # we descended
+                    continue
 
             if show_help:
-                prev_state.append(state)
-                if state == GameState.SPELLMAKER_SCREEN:
-                    state = GameState.SPELLMAKER_HELP_SCEEN
+                game_data.prev_state.append(game_data.state)
+                if game_data.state == GameStates.SPELLMAKER_SCREEN:
+                    game_data.state = GameStates.SPELLMAKER_HELP_SCEEN
                 else:
-                    state = GameState.GENERAL_HELP_SCREEN
+                    game_data.state = GameStates.GENERAL_HELP_SCREEN
 
             elif move:
                 dx, dy = move
@@ -125,7 +128,7 @@ class Player(Entity):
 
             from map_objects.rect import Rect
             right_panel_rect = Rect(0, 0, self.right_panel.width, self.right_panel.height)
-            if left_click and state == GameState.PLAY:  # UI clicked, not targeting
+            if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
                 cx, cy = left_click
                 if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
                     casting_spell = None
@@ -140,18 +143,14 @@ class Player(Entity):
                         turn_results.append(start_cast_spell_results)
 
             if show_character_screen:
-                prev_state.append(state)
-                state = GameState.CHARACTER_SCREEN
+                game_data.prev_state.append(game_data.state)
+                game_data.state = GameStates.CHARACTER_SCREEN
 
-            if state == GameState.TARGETING:
+            if game_data.state == GameStates.TARGETING:
                 if left_map_click:
-                    target_x, target_y = left_map_click
-                    if targeting_spell:
-                        spell_cast_results = targeting_spell.apply(entities=game_data.entities,
-                                                                   fov_map=game_data.fov_map, caster=self,
-                                                                   target_x=target_x, target_y=target_y)
-                        turn_results.extend(spell_cast_results)
-                        state = prev_state.pop()
+                    targetx, targety = left_map_click
+                    player_action = CastSpellAction(self, targeting_spell, targetpos=(Pos(targetx, targety)))
+                    game_data.state = game_data.prev_state.pop()
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
 
@@ -163,7 +162,7 @@ class Player(Entity):
                     self.fighter.base_power += 1
                 elif level_up == "def":
                     self.fighter.base_defense += 1
-                state = prev_state.pop()
+                game_data.state = game_data.prev_state.pop()
 
             if start_casting_spell is not None:
                 if start_casting_spell >= len(self.caster.spells):
@@ -174,10 +173,10 @@ class Player(Entity):
                     turn_results.append(start_cast_spell_results)
 
             if show_spellmaker_screen:
-                prev_state.append(state)
-                state = GameState.SPELLMAKER_SCREEN
+                game_data.prev_state.append(game_data.state)
+                game_data.state = GameStates.SPELLMAKER_SCREEN
 
-            if state == GameState.SPELLMAKER_SCREEN:
+            if game_data.state == GameStates.SPELLMAKER_SCREEN:
                 slot = action.get("slot")
                 if slot is not None:
                     spellbuilder.currslot = slot
@@ -195,39 +194,37 @@ class Player(Entity):
                     spellbuilder.currslot = (spellbuilder.currslot + next_slot) % spellbuilder.num_slots
 
             if do_exit:
-                if state == GameState.SPELLMAKER_SCREEN:
+                if game_data.state == GameStates.SPELLMAKER_SCREEN:
                     self.caster.set_spells(SpellEngine.evaluate(spellbuilder))
-                    state = prev_state.pop()
-                elif state in [GameState.CHARACTER_SCREEN,
-                               GameState.SPELLMAKER_HELP_SCEEN,
-                               GameState.GENERAL_HELP_SCREEN]:
-                    state = prev_state.pop()
-                elif state == GameState.TARGETING:
+                    game_data.state = game_data.prev_state.pop()
+                elif game_data.state in [GameStates.CHARACTER_SCREEN,
+                                         GameStates.SPELLMAKER_HELP_SCEEN,
+                                         GameStates.GENERAL_HELP_SCREEN]:
+                    game_data.state = game_data.prev_state.pop()
+                elif game_data.state == GameStates.TARGETING:
                     turn_results.append({"targeting_cancelled": True})
-                elif state == GameState.WELCOME_SCREEN:
-                    state = GameState.SPELLMAKER_SCREEN
+                elif game_data.state == GameStates.WELCOME_SCREEN:
+                    game_data.state = GameStates.SPELLMAKER_SCREEN
                 else:
-                    return True
+                    player_action = ExitAction()
+
+            action = mouse_action = None  # clear them for next round
 
             for res in turn_results:
-                msg = res.get("message")
-                if msg:
-                    game_data.log.add_message(msg)
-
                 targeting_spell = res.get("targeting_spell")
                 if targeting_spell:
                     spell_idx = res.get("spell_idx")
                     if self.caster.is_on_cooldown(spell_idx):
                         game_data.log.add_message(self.caster.cooldown_message)
                     else:
-                        prev_state.append(GameState.PLAY)
-                        state = GameState.TARGETING
+                        game_data.prev_state.append(GameStates.PLAY)
+                        game_data.state = GameStates.TARGETING
 
                         game_data.log.add_message(targeting_spell.targeting_message)
 
                 targeting_cancelled = res.get("targeting_cancelled")
                 if targeting_cancelled:
-                    state = prev_state.pop()
+                    game_data.state = game_data.prev_state.pop()
                     game_data.log.add_message(Message("Targeting cancelled"))
 
                 xp = res.get("xp")
@@ -238,11 +235,11 @@ class Player(Entity):
                         game_data.log.add_message(
                                 Message("You grow stronger, reached level {}".format(self.level.current_level),
                                         tcod.yellow))
-                        prev_state.append(state)
-                        state = GameState.LEVEL_UP
+                        game_data.prev_state.append(game_data.state)
+                        game_data.state = GameStates.LEVEL_UP
+
         # end of no action
         assert player_action
-        self.caster.tick_cooldowns()
         if type(player_action) == MoveAction:
             game_data.fov_recompute = True
         return player_action.execute(game_data)

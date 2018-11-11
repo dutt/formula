@@ -18,10 +18,14 @@ class Pos:
 
 
 class Entity:
+    LAST_ID = 0
     def __init__(self, x, y, char, color, name, speed=0,
                  blocks=False, render_order=RenderOrder.CORPSE,
                  fighter=None, ai=None, stairs=None, level=None,
                  caster=None):
+        self.id = Entity.LAST_ID
+        Entity.LAST_ID += 1
+
         self.pos = Pos(int(x), int(y))
         self.char = char
         self.color = color
@@ -30,6 +34,7 @@ class Entity:
         self.render_order = render_order
         self.action_points = 0
         self.speed = speed
+        self.active = True
 
         self.fighter = fighter
         if self.fighter:
@@ -55,7 +60,7 @@ class Entity:
         return str(self)
 
     def __str__(self):
-        return "<{} at ({},{})>".format(self.name, self.pos.x, self.pos.y)
+        return "<id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
 
     def move(self, dx, dy):
         self.pos.x += dx

@@ -65,11 +65,13 @@ class Spell:
                 results.append({"cast": False, "message": Message("No target"), "targets": [], "spell": self})
         else:  # aoe spell
             targets = []
+            results.append({"cast": True, "targets": targets, "spell": self, "message": Message("AOE spell cast")})
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue
                 if e.distance(target_x, target_y) < self.area:
+                    msg = "Spell cast, the {} takes {} fire damage".format(e.name, self.hp_total_diff)
+                    results.append({"message" : Message(msg)})
                     results.extend(e.fighter.take_damage(self.hp_total_diff))
                     targets.append(e)
-            results.append({"cast": True, "targets": targets, "spell": self, "message": Message("AOE spell cast")})
         return results

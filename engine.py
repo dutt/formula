@@ -1,19 +1,12 @@
+import os, sys
+
 import tcod
 
 from death import kill_player, kill_monster
-from fov import recompute_fov
 from loader_functions.init_new_game import get_constants, get_game_variables
 
-
-def play_game(game_data, timesystem):
-    game_data.fov_recompute = True
-    recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
-                  game_data.constants.fov_radius, game_data.constants.fov_light_walls,
-                  game_data.constants.fov_algorithm)
+def play_game(game_data):
     while not tcod.console_is_window_closed():
-
-        turn_results = []
-
 
         """if state == GameState.ENEMY_TURN:
             for e in entities:
@@ -24,31 +17,23 @@ def play_game(game_data, timesystem):
                         if msg:
                             game_data.log.add_message(msg)
 
-                        dead_entity = res.get("dead")
-                        if dead_entity:
-                            if dead_entity == player:
-                                msg, state = kill_player(dead_entity)
-                            else:
-                                msg = kill_monster(dead_entity)
-                            game_data.log.add_message(msg)
-
-                            if state == GameState.PLAYER_DEAD:
-                                break
                 if state == GameState.PLAYER_DEAD:
                     break
             else:
                 state = GameState.PLAY
         """
 
-        turn_results.extend(timesystem.tick(game_data=game_data))
+        for res in game_data.timesystem.tick(game_data=game_data):
+            msg = res.get("message")
+            if msg:
+                game_data.log.add_message(msg)
 
-        for res in turn_results:
             dead_entity = res.get("dead")
             if dead_entity:
                 if dead_entity == game_data.player:
-                    msg, state = kill_player(dead_entity)
+                    msg, game_data = kill_player(dead_entity, game_data)
                 else:
-                    msg = kill_monster(dead_entity)
+                    msg, game_data = kill_monster(dead_entity, game_data)
                 game_data.log.add_message(msg)
 
             cast = res.get("cast")
@@ -56,21 +41,10 @@ def play_game(game_data, timesystem):
                 if cast:
                     spell = res.get("spell")
                     game_data.player.caster.add_cooldown(spell.spellidx,
-                                                         spell.cooldown + 1)  # we'll tick right after this, thus +1
-                do_end_turn = True
-
-            moved = res.get("moved")
-            if moved:
-                recompute_fov = True
-
-        if game_data.fov_recompute:
-            recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
-                          game_data.constants.fov_radius, game_data.constants.fov_light_walls,
-                          game_data.constants.fov_algorithm)
-
-
-import os, sys
-
+                                                         spell.cooldown+1)
+            quit = res.get("quit")
+            if quit:
+                return
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -85,7 +59,7 @@ def resource_path(relative_path):
 
 def main():
     constants = get_constants()
-    game_data, timesystem, state = get_game_variables(constants)
+    game_data, state = get_game_variables(constants)
     tcod.console_set_custom_font(resource_path('data/arial12x12.png'),
                                  tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
 
@@ -96,8 +70,8 @@ def main():
     right_panel = tcod.console_new(constants.right_panel_size.width, constants.right_panel_size.height)
 
     game_data.player.set_gui(con, bottom_panel, right_panel)
-    game_data.player.set_initial_state(state)
-    play_game(game_data, timesystem)
+    game_data.player.set_initial_state(state, game_data)
+    play_game(game_data)
 
 
 if __name__ == '__main__':
@@ -111,6 +85,6 @@ if __name__ == '__main__':
         try:
             with open("crash.log", 'w') as writer:
                 writer.write(tb)
-        except Exception as ex:
+        except:
             print("failed to write crashlog:")
             traceback.print_exc()

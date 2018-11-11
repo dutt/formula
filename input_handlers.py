@@ -1,6 +1,6 @@
 import tcod
 
-from game_states import GameState
+from game_states import GameStates
 from components.ingredients import Ingredient
 
 
@@ -18,25 +18,27 @@ class Event:
     interact = "interact"
 
 def handle_keys(key, state):
-    if state == GameState.PLAY:
+    if state == GameStates.PLAY:
         return handle_player_turn_keys(key)
-    elif state == GameState.PLAYER_DEAD:
+    elif state == GameStates.PLAYER_DEAD:
         return handle_player_dead_keys(key)
-    elif state == GameState.LEVEL_UP:
+    elif state == GameStates.LEVEL_UP:
         return handle_level_up_keys(key)
-    elif state in [GameState.CHARACTER_SCREEN,
-                   GameState.WELCOME_SCREEN,
-                   GameState.TARGETING,
-                   GameState.GENERAL_HELP_SCREEN,
-                   GameState.SPELLMAKER_HELP_SCEEN]:
+    elif state in [GameStates.CHARACTER_SCREEN,
+                   GameStates.WELCOME_SCREEN,
+                   GameStates.TARGETING,
+                   GameStates.GENERAL_HELP_SCREEN,
+                   GameStates.SPELLMAKER_HELP_SCEEN]:
         return handle_general_keys(key)
-    elif state == GameState.SPELLMAKER_SCREEN:
+    elif state == GameStates.SPELLMAKER_SCREEN:
         return handle_spellmaker_screen_keys(key)
     return {}
 
 
 def handle_spellmaker_screen_keys(key):
     key_char = chr(key.c)
+    if key.pressed:
+        key = key
     if key.vk == tcod.KEY_1:
         return {"slot": 0}
     elif key.vk == tcod.KEY_2:

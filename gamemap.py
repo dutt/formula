@@ -101,7 +101,7 @@ class GameMap:
     def next_floor(self, player, log, constants, entities, timesystem):
         # remove all on the current floor
         for e in entities:
-            if e.pos != player.pos:
+            if e.pos != player.pos and e.active:
                 timesystem.release(e)
 
         self.dungeon_level += 1
