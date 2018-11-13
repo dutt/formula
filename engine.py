@@ -73,6 +73,10 @@ def main():
     game_data.player.set_initial_state(state, game_data)
     play_game(game_data)
 
+    with open("messages.log", 'w') as writer:
+        for msg in game_data.log.messages:
+            writer.write(msg)
+
 
 if __name__ == '__main__':
     try:

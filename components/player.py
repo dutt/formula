@@ -3,12 +3,12 @@ import time
 import tcod
 
 import gfx
-from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction
+from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction, DescendStairsAction
 from components.caster import Caster
 from components.fighter import Fighter
 from components.level import Level
 from entity import Entity, get_blocking_entites_at_location, Pos
-from fov import recompute_fov, initialize_fov
+from fov import recompute_fov
 from game_states import GameStates
 from gfx import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
@@ -44,7 +44,7 @@ class Player(Entity):
         assert self.bottom_panel
         assert self.right_panel
 
-        if self.action_points <= 0:
+        if self.action_points < 100:
             return None
 
         player_action = None
@@ -93,14 +93,9 @@ class Player(Entity):
             if interact:
                 for e in game_data.entities:
                     if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
-                        game_data.entities = game_data.map.next_floor(game_data.player, game_data.log,
-                                                                      game_data.constants,
-                                                                      game_data.entities, game_data.timesystem)
-                        game_data.prev_state = [GameStates.PLAY]
-                        game_data.state = GameStates.SPELLMAKER_SCREEN
-                        game_data.fov_map = initialize_fov(game_data.map)
-                        game_data.fov_recompute = True
+                        player_action = DescendStairsAction(self)
                         tcod.console_clear(self.con)
+                        # TODO clear cooldowns?
                         break
                 else:
                     player_action = WaitAction()
@@ -151,6 +146,7 @@ class Player(Entity):
                     targetx, targety = left_map_click
                     player_action = CastSpellAction(self, targeting_spell, targetpos=(Pos(targetx, targety)))
                     game_data.state = game_data.prev_state.pop()
+                    print("CastSpellAction set")
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
 
