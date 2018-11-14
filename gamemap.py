@@ -11,14 +11,16 @@ from components.fighter import Fighter
 from components.ai import BasicMonster
 from components.stairs import Stairs
 from random_utils import random_choice_from_dict, from_dungeon_level
+from components.drawable import Drawable
 
 
 class GameMap:
-    def __init__(self, size, dungeon_level=1):
+    def __init__(self, size, assets, dungeon_level=1):
         self.width = size.width
         self.height = size.height
         self.tiles = self.initialize_tiles()
         self.dungeon_level = dungeon_level
+        self.assets = assets
 
     def initialize_tiles(self):
         tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
@@ -34,8 +36,8 @@ class GameMap:
         max_monsters_per_room = from_dungeon_level([[2,1],[3,4],[5,6]], self.dungeon_level)
 
         num_monsters = randint(max_monsters_per_room, max_monsters_per_room)
-        monster_chances = { "orc" : 80,
-                            "troll" : from_dungeon_level([[15, 3],[30, 5], [60, 7]], self.dungeon_level) }
+        monster_chances = { "ghost" : 80,
+                            "demon" : from_dungeon_level([[15, 3],[30, 5], [60, 7]], self.dungeon_level) }
 
         for i in range(num_monsters):
             x = randint(room.x1 + 1, room.x2 - 1)
@@ -44,18 +46,20 @@ class GameMap:
             if not any([entity for entity in entities if entity.pos.x == x and entity.pos.y == y]):
                 monster_choice = random_choice_from_dict(monster_chances)
 
-                if monster_choice == "orc":
+                if monster_choice == "ghost":
                     fighter_component = Fighter(hp=20, defense=0, power=10, xp=0)
                     ai = BasicMonster()
-                    monster = Entity(x, y, 'O', tcod.desaturated_green, "Orc", speed=100,
+                    drawable_component = Drawable(self.assets.ghost)
+                    monster = Entity(x, y, "Ghost", speed=100,
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
-                                     fighter=fighter_component, ai=ai)
+                                     fighter=fighter_component, ai=ai, drawable=drawable_component)
                 else:
                     fighter_component = Fighter(hp=30, defense=2, power=15, xp=0)
                     ai = BasicMonster()
-                    monster = Entity(x, y, 'T', tcod.darker_green, "Troll", speed=100,
+                    drawable_component = Drawable(self.assets.demon)
+                    monster = Entity(x, y, "Demon", speed=100,
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
-                                     fighter=fighter_component, ai=ai)
+                                     fighter=fighter_component, ai=ai, drawable=drawable_component)
                 entities.append(monster)
                 timesystem.register(monster)
 

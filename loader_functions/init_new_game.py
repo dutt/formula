@@ -8,6 +8,7 @@ from util import Size
 def get_constants():
     window_title = "spellmaker"
 
+    window_size = Size(1200, 1000)
     screen_size = Size(80, 50)
     map_size = Size(70, 43)
 
@@ -15,28 +16,29 @@ def get_constants():
     bottom_panel_height = 7
     bottom_panel_y = screen_size.height - bottom_panel_height
 
-    right_panel_size = Size(10, screen_size.height - bottom_panel_height)
+    right_panel_size = Size(100, screen_size.height - bottom_panel_height)
 
     message_x = bar_width + 2
     message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)
 
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 1
+    max_rooms = 2
 
     fov_algorithm = 0
     fov_light_walls = True
     fov_radius = 10
 
     colors = {
-        "dark_wall": tcod.Color(30, 30, 30),
-        "dark_ground": tcod.Color(60, 60, 60),
-        "light_wall": tcod.Color(90, 90, 90),
-        "light_ground": tcod.Color(140, 140, 140)
+        "dark_wall": (30, 30, 30),
+        "dark_ground": (60, 60, 60),
+        "light_wall": (90, 90, 90),
+        "light_ground": (140, 140, 140)
     }
 
     retr = attribdict({
         "window_title": window_title,
+        "window_size": window_size,
         "screen_size": screen_size,
         "map_size": map_size,
 
@@ -71,12 +73,12 @@ from components.player import Player
 from fov import initialize_fov
 
 
-def get_game_variables(constants):
-    player = Player()
+def get_game_variables(constants, gfx_data):
+    player = Player(gfx_data.assets)
     entities = [player]
     timesystem = TimeSystem()
     timesystem.register(player)
-    gmap = GameMap(constants.map_size)
+    gmap = GameMap(constants.map_size, gfx_data.assets)
     gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameStates.WELCOME_SCREEN

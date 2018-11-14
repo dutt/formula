@@ -16,19 +16,22 @@ class Pos:
     def __ne__(self, other):
         return (self == other) == False
 
+    def str(self):
+        return "<Pos x={} y={}>".format(self.x, self.y)
+
+    def repr(self):
+        return str(self)
 
 class Entity:
     LAST_ID = 0
-    def __init__(self, x, y, char, color, name, speed=0,
+    def __init__(self, x, y, name, speed=0,
                  blocks=False, render_order=RenderOrder.CORPSE,
                  fighter=None, ai=None, stairs=None, level=None,
-                 caster=None):
+                 caster=None, drawable=None):
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
 
         self.pos = Pos(int(x), int(y))
-        self.char = char
-        self.color = color
         self.name = name
         self.blocks = blocks
         self.render_order = render_order
@@ -55,6 +58,10 @@ class Entity:
         self.caster = caster
         if self.caster:
             self.caster.owner = self
+
+        self.drawable = drawable
+        if self.drawable:
+            self.drawable.owner = self
 
     def __repr__(self):
         return str(self)

@@ -1,12 +1,13 @@
-import time
-
 import tcod
 
-import gfx
-from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction, DescendStairsAction
+from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction, \
+    DescendStairsAction
 from components.caster import Caster
+from components.drawable import Drawable
 from components.fighter import Fighter
 from components.level import Level
+# import gfx
+from components.pygame_gfx import render_all
 from entity import Entity, get_blocking_entites_at_location, Pos
 from fov import recompute_fov
 from game_states import GameStates
@@ -20,30 +21,25 @@ mouse = tcod.Mouse()
 
 
 class Player(Entity):
-    def __init__(self):
+    def __init__(self, assets):
         caster_component = Caster(num_slots=3, num_spells=3)
         fighter_component = Fighter(hp=100, defense=1, power=3)
         level_component = Level()
-        super(Player, self).__init__(0, 0, '@', tcod.white, "Player", speed=100, blocks=True,
+        drawable_component = Drawable(assets.player)
+        super(Player, self).__init__(0, 0, "Player", speed=100, blocks=True,
                                      render_order=RenderOrder.ACTOR,
-                                     fighter=fighter_component, level=level_component, caster=caster_component)
+                                     fighter=fighter_component, level=level_component, caster=caster_component,
+                                     drawable=drawable_component)
 
-        self.con = self.bottom_panel = self.right_panel = None
 
-    def set_gui(self, con, bottom_panel, right_panel):
-        self.con = con
-        self.bottom_panel = bottom_panel
-        self.right_panel = right_panel
+    def set_gui(self, gfx_data):
+        self.gfx_data = gfx_data
 
     def set_initial_state(self, state, game_data):
         game_data.state = state
         game_data.prev_state = []
 
     def take_turn(self, game_data):
-        assert self.con
-        assert self.bottom_panel
-        assert self.right_panel
-
         if self.action_points < 100:
             return None
 
@@ -61,21 +57,10 @@ class Player(Entity):
                 recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
                               game_data.constants.fov_radius, game_data.constants.fov_light_walls,
                               game_data.constants.fov_algorithm)
-            gfx.render_all(self.con, self.bottom_panel, self.right_panel,
-                           game_data.entities, self,
-                           game_data.map, game_data.fov_map, game_data.fov_recompute, game_data.log,
-                           game_data.constants, mouse, game_data.state, targeting_spell, spellbuilder)
+            render_all(self.gfx_data, game_data, targeting_spell, spellbuilder)
 
-            tcod.console_flush()
-
-            gfx.clear_all(self.con, game_data.entities)
-
-            tcod.sys_check_for_event(tcod.EVENT_KEY_PRESS | tcod.EVENT_MOUSE, key, mouse)
-            action = handle_keys(key, game_data.state)
+            action = handle_keys(game_data.state)
             mouse_action = handle_mouse(mouse)
-            if not action and not mouse_action:
-                time.sleep(0.01)  # avoid busy looping
-                continue
 
             fullscreen = action.get(Event.fullscreen)
             move = action.get(Event.move)
@@ -122,8 +107,8 @@ class Player(Entity):
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
 
             from map_objects.rect import Rect
-            right_panel_rect = Rect(0, 0, self.right_panel.width, self.right_panel.height)
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
+                ddright_panel_rect = Rect(0, 0, self.right_panel.width, self.right_panel.height)
                 cx, cy = left_click
                 if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
                     casting_spell = None
