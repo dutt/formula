@@ -8,23 +8,7 @@ from loader_functions.init_new_game import get_constants, get_game_variables
 
 
 def play_game(game_data):
-    # while not tcod.console_is_window_closed():
     while True:
-        """if state == GameState.ENEMY_TURN:
-            for e in entities:
-                if e.ai:
-                    enemy_results = e.ai.take_turn(player, fov_map, gmap, entities)
-                    for res in enemy_results:
-                        msg = res.get("message")
-                        if msg:
-                            game_data.log.add_message(msg)
-
-                if state == GameState.PLAYER_DEAD:
-                    break
-            else:
-                state = GameState.PLAY
-        """
-
         for res in game_data.timesystem.tick(game_data=game_data):
             msg = res.get("message")
             if msg:
@@ -53,14 +37,6 @@ def main():
     constants = get_constants()
     gfx_data = initialize(constants)
     game_data, state = get_game_variables(constants, gfx_data)
-    # tcod.console_set_custom_font(resource_path('data/arial12x12.png'),
-    #                             tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
-
-    # tcod.console_init_root(constants.screen_size.width, constants.screen_size.height, "spellmaker", False)
-
-    # con = tcod.console_new(constants.screen_size.width, constants.screen_size.height)
-    # bottom_panel = tcod.console_new(constants.screen_size.width, constants.bottom_panel_height)
-    # right_panel = tcod.console_new(constants.right_panel_size.width, constants.right_panel_size.height)
 
     game_data.player.set_gui(gfx_data)
     game_data.player.set_initial_state(state, game_data)

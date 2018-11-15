@@ -1,3 +1,5 @@
+import pygame
+
 from graphics.spritesheet import Spritesheet
 import util
 
@@ -18,3 +20,6 @@ class Assets:
 
         self.ghost = self.undead_sheet.get_image(2, 2)
         self.demon = self.undead_sheet.get_image(7, 2)
+
+        self.font_title = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 16)
+        self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 12)

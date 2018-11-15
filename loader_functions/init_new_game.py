@@ -16,7 +16,7 @@ def get_constants():
     bottom_panel_height = 7
     bottom_panel_y = screen_size.height - bottom_panel_height
 
-    right_panel_size = Size(100, screen_size.height - bottom_panel_height)
+    right_panel_size = Size(150, screen_size.height - bottom_panel_height)
 
     message_x = bar_width + 2
     message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)

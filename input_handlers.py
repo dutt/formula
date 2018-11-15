@@ -1,3 +1,5 @@
+import time
+
 import pygame
 
 from components.ingredients import Ingredient
@@ -19,23 +21,25 @@ class Event:
 
 
 def handle_keys(state):
-    e = pygame.event.wait()
-    if e.type == pygame.KEYDOWN:
-        if state == GameStates.PLAY:
-            return handle_player_turn_keys(e.key)
-        elif state == GameStates.PLAYER_DEAD:
-            return handle_player_dead_keys(e.key)
-        elif state == GameStates.LEVEL_UP:
-            return handle_level_up_keys(e.key)
-        elif state in [GameStates.CHARACTER_SCREEN,
-                       GameStates.WELCOME_SCREEN,
-                       GameStates.TARGETING,
-                       GameStates.GENERAL_HELP_SCREEN,
-                       GameStates.SPELLMAKER_HELP_SCEEN]:
-            return handle_general_keys(e.key)
-        elif state == GameStates.SPELLMAKER_SCREEN:
-            return handle_spellmaker_screen_keys(e.key)
-    return {}
+    while True:
+        e = pygame.event.wait()
+        if e.type == pygame.KEYDOWN:
+            if state == GameStates.PLAY:
+                return handle_player_turn_keys(e.key)
+            elif state == GameStates.PLAYER_DEAD:
+                return handle_player_dead_keys(e.key)
+            elif state == GameStates.LEVEL_UP:
+                return handle_level_up_keys(e.key)
+            elif state in [GameStates.CHARACTER_SCREEN,
+                           GameStates.WELCOME_SCREEN,
+                           GameStates.TARGETING,
+                           GameStates.GENERAL_HELP_SCREEN,
+                           GameStates.SPELLMAKER_HELP_SCEEN]:
+                return handle_general_keys(e.key)
+            elif state == GameStates.SPELLMAKER_SCREEN:
+                return handle_spellmaker_screen_keys(e.key)
+            return {}
+        time.sleep(0.01)
 
 
 def handle_spellmaker_screen_keys(key):
