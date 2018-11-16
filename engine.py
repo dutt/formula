@@ -7,7 +7,7 @@ from death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, get_game_variables
 
 
-def play_game(game_data):
+def play_game(game_data, assets):
     while True:
         for res in game_data.timesystem.tick(game_data=game_data):
             msg = res.get("message")
@@ -17,9 +17,9 @@ def play_game(game_data):
             dead_entity = res.get("dead")
             if dead_entity:
                 if dead_entity == game_data.player:
-                    msg, game_data = kill_player(dead_entity, game_data)
+                    msg, game_data = kill_player(game_data, assets)
                 else:
-                    msg, game_data = kill_monster(dead_entity, game_data)
+                    msg, game_data = kill_monster(dead_entity, game_data, assets)
                 game_data.log.add_message(msg)
 
             cast = res.get("cast")
@@ -40,7 +40,7 @@ def main():
 
     game_data.player.set_gui(gfx_data)
     game_data.player.set_initial_state(state, game_data)
-    play_game(game_data)
+    play_game(game_data, gfx_data.assets)
 
     pygame.quit()
 

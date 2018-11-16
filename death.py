@@ -5,19 +5,18 @@ from game_states import GameStates
 from messages import Message
 
 
-def kill_player(player, game_state):
-    game_state.player.char = '%'
-    game_state.player.color = tcod.dark_red
+def kill_player(game_state, assets):
+    game_state.player.drawable.asset = assets.monster_corpse
     game_state.player.render_order = gfx.RenderOrder.CORPSE
     game_state.player.name = "Your corpse"
     game_state.state = GameStates.PLAYER_DEAD
     return Message("You died", tcod.red), game_state
 
 
-def kill_monster(monster, game_state):
+def kill_monster(monster, game_state, assets):
     msg = Message("{} is dead".format(monster.name), tcod.orange)
 
-    monster.char = '%'
+    monster.drawable.asset = assets.monster_corpse
     monster.color = tcod.dark_red
     monster.blocks = False
     monster.fighter = None

@@ -11,6 +11,7 @@ class Assets:
         self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Reptile0.png"))
         self.wall_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Wall.png"))
         self.undead_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Undead0.png"))
+        self.decor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Decor0.png"))
 
         #self.player = self.reptile_sheet.get_animation(15, 5, 16, 16, 2, (32, 32))
         self.player = self.reptile_sheet.get_image(1, 1, 16, 16)
@@ -20,6 +21,7 @@ class Assets:
 
         self.ghost = self.undead_sheet.get_image(2, 2)
         self.demon = self.undead_sheet.get_image(7, 2)
+        self.monster_corpse = self.decor_sheet.get_image(2, 12)
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 16)
         self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 12)
