@@ -1,11 +1,14 @@
+import math
+
 import pygame
 import tcod
 from attrdict import AttrDict
 
-from entity import Pos
+from util import Pos
 from graphics.assets import Assets
 from graphics.constants import CELL_HEIGHT, CELL_WIDTH, colors
 from game_states import GameStates
+import util
 
 def initialize(constants):
     pygame.display.init()
@@ -43,7 +46,7 @@ def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, hei
 
 def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
     gfx_data.main.fill(game_data.constants.colors.dark_wall)
-    assets = Assets()
+    assets = gfx_data.assets
     panel_width = game_data.constants.right_panel_size.width
     main = gfx_data.main
 
@@ -68,7 +71,6 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
     def draw_entities():
         for e in game_data.entities:
             if e.drawable:
-                print(e)
                 main.blit(e.drawable.asset[0],
                           (panel_width + e.pos.x * CELL_WIDTH,
                            e.pos.y * CELL_HEIGHT))
@@ -98,15 +100,50 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
                 display_text(main, msg, assets.font_message, (10, y + idx * 20))
             y += 40
 
+    def global_pos_to_map_pos(x, y):
+        return x - panel_width, y
+
+    def map_pos_to_tile(x, y):
+        return x // CELL_WIDTH, y // CELL_HEIGHT
+
+    def get_tile_rect(x, y):
+        return panel_width + x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
+
     def draw_targeting():
-        if game_data.state == GameStates.TARGETING:
-            pass
+        max_dist = targeting_spell.distance * CELL_WIDTH
+        pos = pygame.mouse.get_pos()
+
+        # find targeted tile
+        map_pos = global_pos_to_map_pos(pos[0], pos[1])
+        tile = map_pos_to_tile(map_pos[0], map_pos[1])
+        rect = get_tile_rect(tile[0], tile[1])
+        rect_center = rect[0] + CELL_WIDTH / 2, rect[1] + CELL_HEIGHT / 2
+
+        # find player position
+        orig = (panel_width + game_data.player.pos.x * CELL_WIDTH, game_data.player.pos.y * CELL_HEIGHT)
+        orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2) #centered
+
+        dist = util.distance(orig[0], orig[1], rect_center[0], rect_center[1])
+        #print("distance from {} to {} is {}".format(orig, rect_center, dist))
+        if dist > max_dist:
+            vec = (pos[0] - orig[0], pos[1] - orig[1])
+            length = math.sqrt(vec[0]**2 + vec[1]**2)
+            normalized = (vec[0] / length, vec[1] / length)
+            partial_dist = (max_dist / dist)  * dist
+            red_part = (orig[0] + normalized[0] * partial_dist, orig[1] + normalized[1] * partial_dist)
+            pygame.draw.line(main, (255, 0, 0), orig, red_part)
+            pygame.draw.line(main, (100, 100, 100), red_part, rect_center)
+            pygame.draw.rect(main, (100, 100, 100), rect)
+        else:
+            pygame.draw.line(main, (255, 0, 0), orig, rect_center)
+            pygame.draw.rect(main, (255, 0, 0), rect)
 
     draw_terrain()
     draw_entities()
     draw_bottom_panel()
     draw_right_panel()
-    draw_targeting()
+    if game_data.state == GameStates.TARGETING:
+        draw_targeting()
 
     # pygame.draw.rect(gfx_data.main, (0, 128, 255), pygame.Rect(30, 30, 60, 60))
 

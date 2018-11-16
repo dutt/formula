@@ -1,4 +1,5 @@
 import tcod
+import pygame
 
 from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction, \
     DescendStairsAction
@@ -6,18 +7,15 @@ from components.caster import Caster
 from components.drawable import Drawable
 from components.fighter import Fighter
 from components.level import Level
-# import gfx
 from components.pygame_gfx import render_all
-from entity import Entity, get_blocking_entites_at_location, Pos
+from entity import Entity, get_blocking_entites_at_location
+from util import Pos
 from fov import recompute_fov
 from game_states import GameStates
 from gfx import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
 from spell_engine import SpellBuilder, SpellEngine
-
-key = tcod.Key()
-mouse = tcod.Mouse()
 
 
 class Player(Entity):
@@ -59,8 +57,12 @@ class Player(Entity):
                               game_data.constants.fov_algorithm)
             render_all(self.gfx_data, game_data, targeting_spell, spellbuilder)
 
-            action = handle_keys(game_data.state)
-            mouse_action = handle_mouse(mouse)
+            events = pygame.event.get()
+            key_events = [e for e in events if e.type == pygame.KEYDOWN]
+            mouse_events = [e for e in events if e.type == pygame.MOUSEBUTTONDOWN]
+            action = handle_keys(key_events, game_data.state)
+            #mouse_action = handle_mouse(mouse_events)
+            mouse_action = {}
 
             fullscreen = action.get(Event.fullscreen)
             move = action.get(Event.move)
@@ -220,6 +222,7 @@ class Player(Entity):
                         game_data.state = GameStates.LEVEL_UP
 
         # end of no action
+        print("END")
         assert player_action
         if type(player_action) == MoveToPositionAction:
             game_data.fov_recompute = True

@@ -20,27 +20,23 @@ class Event:
     interact = "interact"
 
 
-def handle_keys(state):
-    while True:
-        e = pygame.event.wait()
-        if e.type == pygame.KEYDOWN:
-            if state == GameStates.PLAY:
-                return handle_player_turn_keys(e.key)
-            elif state == GameStates.PLAYER_DEAD:
-                return handle_player_dead_keys(e.key)
-            elif state == GameStates.LEVEL_UP:
-                return handle_level_up_keys(e.key)
-            elif state in [GameStates.CHARACTER_SCREEN,
-                           GameStates.WELCOME_SCREEN,
-                           GameStates.TARGETING,
-                           GameStates.GENERAL_HELP_SCREEN,
-                           GameStates.SPELLMAKER_HELP_SCEEN]:
-                return handle_general_keys(e.key)
-            elif state == GameStates.SPELLMAKER_SCREEN:
-                return handle_spellmaker_screen_keys(e.key)
-            return {}
-        time.sleep(0.01)
-
+def handle_keys(events, state):
+    for e in events:
+        if state == GameStates.PLAY:
+            return handle_player_turn_keys(e.key)
+        elif state == GameStates.PLAYER_DEAD:
+            return handle_player_dead_keys(e.key)
+        elif state == GameStates.LEVEL_UP:
+            return handle_level_up_keys(e.key)
+        elif state in [GameStates.CHARACTER_SCREEN,
+                       GameStates.WELCOME_SCREEN,
+                       GameStates.TARGETING,
+                       GameStates.GENERAL_HELP_SCREEN,
+                       GameStates.SPELLMAKER_HELP_SCEEN]:
+            return handle_general_keys(e.key)
+        elif state == GameStates.SPELLMAKER_SCREEN:
+            return handle_spellmaker_screen_keys(e.key)
+    return {}
 
 def handle_spellmaker_screen_keys(key):
     if key == pygame.K_1:
@@ -101,12 +97,13 @@ def handle_level_up_keys(key):
     return handle_general_keys(key)
 
 
-def handle_mouse(mouse):
-    (x, y) = (mouse.cx, mouse.cy)
-    if mouse.lbutton_pressed:
-        return {Event.left_click: (x, y)}
-    elif mouse.rbutton_pressed:
-        return {Event.right_click: (x, y)}
+def handle_mouse(events):
+    for e in events:
+        (x, y) = (mouse.cx, mouse.cy)
+        if mouse.lbutton_pressed:
+            return {Event.left_click: (x, y)}
+        elif mouse.rbutton_pressed:
+            return {Event.right_click: (x, y)}
     return {}
 
 

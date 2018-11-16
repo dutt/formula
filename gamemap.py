@@ -6,13 +6,13 @@ from messages import Message
 import gfx
 from map_objects.tile import Tile
 from map_objects.rect import Rect
-from entity import Entity, Pos
+from entity import Entity
 from components.fighter import Fighter
 from components.ai import BasicMonster
 from components.stairs import Stairs
 from random_utils import random_choice_from_dict, from_dungeon_level
 from components.drawable import Drawable
-
+from util import Pos
 
 class GameMap:
     def __init__(self, size, assets, dungeon_level=1):

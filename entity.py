@@ -2,28 +2,13 @@ import math
 
 import tcod
 
+import util
 from gfx import RenderOrder
 
 
-class Pos:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-    def __ne__(self, other):
-        return (self == other) == False
-
-    def str(self):
-        return "<Pos x={} y={}>".format(self.x, self.y)
-
-    def repr(self):
-        return str(self)
-
 class Entity:
     LAST_ID = 0
+
     def __init__(self, x, y, name, speed=0,
                  blocks=False, render_order=RenderOrder.CORPSE,
                  fighter=None, ai=None, stairs=None, level=None,
@@ -31,7 +16,7 @@ class Entity:
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
 
-        self.pos = Pos(int(x), int(y))
+        self.pos = util.Pos(int(x), int(y))
         self.name = name
         self.blocks = blocks
         self.render_order = render_order
@@ -93,12 +78,10 @@ class Entity:
             self.move(dx, dy)
 
     def distance_to(self, other):
-        dx = other.pos.x - self.pos.x
-        dy = other.pos.y - self.pos.y
-        return math.sqrt(dx ** 2 + dy ** 2)
+        return util.distance(other.pos.x, other.pos.y, self.pos.x, self.pos.y)
 
     def distance(self, x, y):
-        return math.sqrt((x - self.pos.x) ** 2 + (y - self.pos.y) ** 2)
+        return util.distance(x, y, self.x, self.y)
 
     def move_astar(self, target, entities, game_map):
         # Create a FOV map that has the dimensions of the map
