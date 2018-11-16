@@ -81,7 +81,7 @@ class Entity:
         return util.distance(other.pos.x, other.pos.y, self.pos.x, self.pos.y)
 
     def distance(self, x, y):
-        return util.distance(x, y, self.x, self.y)
+        return util.distance(x, y, self.pos.x, self.pos.y)
 
     def move_astar(self, target, entities, game_map):
         # Create a FOV map that has the dimensions of the map

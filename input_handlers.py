@@ -1,10 +1,11 @@
 import time
 
 import pygame
+from attrdict import AttrDict
 
 from components.ingredients import Ingredient
 from game_states import GameStates
-
+from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 
 class Event:
     move = "move"
@@ -97,13 +98,19 @@ def handle_level_up_keys(key):
     return handle_general_keys(key)
 
 
-def handle_mouse(events):
+def handle_mouse(events, constants):
+    pos = pygame.mouse.get_pos()
     for e in events:
-        (x, y) = (mouse.cx, mouse.cy)
-        if mouse.lbutton_pressed:
-            return {Event.left_click: (x, y)}
-        elif mouse.rbutton_pressed:
-            return {Event.right_click: (x, y)}
+        data = AttrDict({
+            "x" : pos[0],
+            "y" : pos[1],
+            "cx" : (pos[0] - constants.right_panel_size.width) // CELL_WIDTH,
+            "cy" : pos[1] // CELL_HEIGHT
+        })
+        if e.button == 1:
+            return {Event.left_click: data}
+        elif e.button == 2:
+            return {Event.right_click: data}
     return {}
 
 

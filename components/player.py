@@ -42,7 +42,7 @@ class Player(Entity):
             return None
 
         player_action = None
-
+        right_panel = game_data.constants.right_panel_size
         targeting_spell = None
         self.caster.tick_cooldowns()
         spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
@@ -61,14 +61,12 @@ class Player(Entity):
             key_events = [e for e in events if e.type == pygame.KEYDOWN]
             mouse_events = [e for e in events if e.type == pygame.MOUSEBUTTONDOWN]
             action = handle_keys(key_events, game_data.state)
-            #mouse_action = handle_mouse(mouse_events)
-            mouse_action = {}
+            mouse_action = handle_mouse(mouse_events, game_data.constants)
 
             fullscreen = action.get(Event.fullscreen)
             move = action.get(Event.move)
             do_exit = action.get(Event.exit)
             left_click = mouse_action.get(Event.left_click)
-            left_map_click = (left_click[0] - self.right_panel.width, left_click[1]) if left_click else None
             right_click = mouse_action.get(Event.right_click)
             level_up = action.get(Event.level_up)
             show_character_screen = action.get(Event.character_screen)
@@ -110,7 +108,7 @@ class Player(Entity):
 
             from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
-                ddright_panel_rect = Rect(0, 0, self.right_panel.width, self.right_panel.height)
+                right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
                 cx, cy = left_click
                 if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
                     casting_spell = None
@@ -129,8 +127,8 @@ class Player(Entity):
                 game_data.state = GameStates.CHARACTER_SCREEN
 
             if game_data.state == GameStates.TARGETING:
-                if left_map_click:
-                    targetx, targety = left_map_click
+                if left_click:
+                    targetx, targety = left_click.cx, left_click.cy
                     player_action = CastSpellAction(self, targeting_spell, targetpos=(Pos(targetx, targety)))
                     game_data.state = game_data.prev_state.pop()
                     print("CastSpellAction set")
