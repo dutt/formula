@@ -1,27 +1,58 @@
 #!/bin/bash
 set -e
 set -x
+
+#cleanup
+find . -name "*.pyc" -delete
+
+#windows, Passw0rd!
+vm_name="formulabuilderwin"
+ssh_name="win"
+VBoxManage controlvm $vm_name poweroff || true
+sleep 5
+VBoxManage snapshot $vm_name restore builder
+sleep 5
+VBoxManage startvm $vm_name --type headless
+sleep 45 # windows takes ages to boot up to ssh server reachability
+dirname="formula"
+ssh $ssh_name "mkdir $dirname"
+scp -r *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_objects $ssh_name:$dirname
+ssh $ssh_name bash << HERE
+    mkdir $dirname\build
+    set PATH=%PATH%;C:\Users\IEUser\AppData\Local\Programs\Python\Python36;C:\Users\IEUser\AppData\Local\Programs\Python\Python36\Scripts
+    cd $dirname\build
+    python -m PyInstaller --clean ..\pyinstaller.spec
+HERE
+scp $ssh_name:$dirname/build/dist/formula build/formula.windows
+
+exit 0
+
+# local, ubuntu 18
 source venv/bin/activate
 mkdir -p build
 rm -rf build/*
 cd build
-pyinstaller ../pyinstaller.spec
-cp dist/spellmaker spellmaker.linux
+pyinstaller --clean ../pyinstaller.spec
+cp dist/formula formula.linux
 
-#windows
-# VM psw "Passw0rd!"
-
-#TODO reset vbox16 VM
-dirname="spellmaker"
-ssh vbox16 "mkdir -p $dirname"
-scp -r *.py pyinstaller.spec dependencies.txt components data loader_functions map_objects vbox16:$dirname
-ssh vbox16 << HERE
-    mkdir $dirname/build
+# ubuntu 16 needs a VM because GLIBC
+vm_name="formulabuilder16"
+ssh_name="vbox16"
+VBoxManage controlvm $vm_name poweroff || true
+sleep 5
+VBoxManage snapshot $vm_name restore builder
+sleep 5
+VBoxManage startvm $vm_name --type headless
+sleep 10
+dirname="formula"
+ssh $ssh_name "mkdir $dirname"
+scp -r *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_objects $ssh_name:$dirname
+ssh $ssh_name << HERE
+    mkdir -p $dirname/build
     python3.6 -m virtualenv ~/venv
     source ~/venv/bin/activate
     pip install -r $dirname/dependencies.txt
     cd $dirname/build
-    pyinstaller ../pyinstaller.spec
+    pyinstaller --clean ../pyinstaller.spec
 HERE
-scp vbox16:$dirname/build/dist/spellmaker build/spellmaker.linux16
-ssh vbox16 "rm -rf spellmaker venv"
+scp $ssh_name:$dirname/build/dist/formula build/formula.linux16
