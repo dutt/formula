@@ -82,7 +82,6 @@ class Player(Entity):
                 for e in game_data.entities:
                     if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
                         player_action = DescendStairsAction(self)
-                        tcod.console_clear(self.con)
                         # TODO clear cooldowns?
                         break
                 else:
@@ -104,8 +103,8 @@ class Player(Entity):
                 desty = self.pos.y + dy
                 if not game_data.map.is_blocked(destx, desty):
                     target = get_blocking_entites_at_location(game_data.entities, destx, desty)
-                    if target:
-                        player_action = AttackAction(self, target=target) if target.fighter else WaitAction(self)
+                    if target and target.fighter:
+                        player_action = AttackAction(self, target=target)
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
 

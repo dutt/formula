@@ -85,7 +85,8 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
                                    y * CELL_HEIGHT))
 
     def draw_entities():
-        for e in game_data.entities:
+        rendering_sorted = sorted(game_data.entities, key=lambda e: e.render_order.value)
+        for e in rendering_sorted:
             if e.drawable:
                 main.blit(e.drawable.asset[0],
                           (panel_width + e.pos.x * CELL_WIDTH,

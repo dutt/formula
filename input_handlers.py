@@ -107,7 +107,7 @@ def handle_mouse(events, constants):
         })
         if e.button == 1:
             return {Event.left_click: data}
-        elif e.button == 2:
+        elif e.button == 3:
             return {Event.right_click: data}
     return {}
 
