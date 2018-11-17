@@ -27,11 +27,17 @@ class Fighter:
         return self.base_power + bonus
 
     def take_damage(self, amount):
+        assert amount > 0
         results = []
         self.hp = max(0, self.hp - amount)
         if self.hp <= 0:
             results.append({"dead": self.owner, "xp": self.xp})
         return results
+
+    def heal(self, amount):
+        assert amount > 0
+        self.hp = min(self.max_hp, self.hp + amount)
+        return []
 
     def attack(self, target):
         results = []
@@ -44,8 +50,3 @@ class Fighter:
             text = "{} attacks {} but is too weak to hurt".format(self.owner.name, target.name)
             results.append({"message": Message(text, tcod.white)})
         return results
-
-    def heal(self, amount):
-        self.hp += amount
-        if self.hp > self.max_hp:
-            self.hp = self.max_hp

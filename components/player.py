@@ -21,7 +21,7 @@ from util import Pos
 class Player(Entity):
     def __init__(self, assets):
         caster_component = Caster(num_slots=3, num_spells=3)
-        fighter_component = Fighter(hp=10, defense=1, power=3)
+        fighter_component = Fighter(hp=10, defense=0, power=3)
         level_component = Level()
         drawable_component = Drawable(assets.player)
         super(Player, self).__init__(0, 0, "Player", speed=100, blocks=True,

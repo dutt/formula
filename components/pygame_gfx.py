@@ -80,7 +80,7 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
                     else:
                         main.blit(assets.light_floor[0],
                                   (panel_width + x * CELL_WIDTH,
-                                  y * CELL_HEIGHT))
+                                   y * CELL_HEIGHT))
                     game_data.map.tiles[x][y].explored = True
                 elif game_data.map.tiles[x][y].explored:
                     if wall:
@@ -90,7 +90,7 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
                     else:
                         main.blit(assets.dark_floor[0],
                                   (panel_width + x * CELL_WIDTH,
-                                  y * CELL_HEIGHT))
+                                   y * CELL_HEIGHT))
 
     def draw_entities():
         rendering_sorted = sorted(game_data.entities, key=lambda e: e.render_order.value)
@@ -159,7 +159,7 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, red_part)
             pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
             pygame.draw.rect(targeting_surface, (100, 100, 100), rect)
-        elif targeting_spell.area == 1: #no aoe
+        elif targeting_spell.area == 1:  # no aoe
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
             pygame.draw.rect(targeting_surface, (255, 0, 0), rect)
         else:
@@ -197,11 +197,11 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
 
 def spellmaker_menu(gfx_data, spellbuilder):
     surface = pygame.Surface((800, 600))
-    y = 50
+    linediff = 10
+    y = 5 * linediff
     display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
-    linediff = 10
-    y += 20
+    y += 2 * linediff
     display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
     y += linediff
     for idx, spell in enumerate(spellbuilder.current_slots):
@@ -211,14 +211,17 @@ def spellmaker_menu(gfx_data, spellbuilder):
         display_text(surface, text, gfx_data.assets.font_message, (50, y))
         y += linediff
 
-    y += 30
+    y += 3 * linediff
     display_text(surface, "Spell {}".format(spellbuilder.currspell + 1), gfx_data.assets.font_message, (50, y))
     spells = SpellEngine.evaluate(spellbuilder)
     y += linediff
     display_text(surface,
                  "Spell stats {}".format(spells[spellbuilder.currspell].text_stats), gfx_data.assets.font_message,
-                                         (50, y))
+                 (50, y))
 
+    y += 3 * linediff
+    display_text(surface, "Press Tab for help".format(spellbuilder.currspell + 1), gfx_data.assets.font_message,
+                 (50, y))
     gfx_data.main.blit(surface, (200, 200))
 
 
@@ -254,7 +257,7 @@ def help_menu(gfx_data):
 def spellmaker_help_menu(gfx_data):
     lines = [
         "Building spells:",
-        "Q,W,E,R,A,S,D: Set current slot to ingredient",
+        "Q,W,E,R,S: Set current slot to ingredient",
         "Up/down arrow: Switch to next/previous slot",
         "Right/left arrow: Switch to next/previous spell",
         "Cooldown is increased for every used slot",
