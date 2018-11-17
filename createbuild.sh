@@ -1,9 +1,20 @@
 #!/bin/bash
 set -e
-set -x
+
+pwd=`pwd`
 
 #cleanup
 find . -name "*.pyc" -delete
+
+# local, ubuntu 18
+source venv/bin/activate
+mkdir -p build
+rm -rf build/*
+cd build
+pyinstaller --clean ../pyinstaller.spec
+cp dist/formula formula.linux18
+
+cd $pwd
 
 #windows, Passw0rd!
 vm_name="formulabuilderwin"
@@ -23,15 +34,9 @@ ssh $ssh_name bash << HERE
     cd $dirname\build
     python -m PyInstaller --clean ..\pyinstaller.spec
 HERE
-scp $ssh_name:$dirname/build/dist/formula build/formula.windows
+scp $ssh_name:$dirname/build/dist/formula.exe build/formula.windows
 
-# local, ubuntu 18
-source venv/bin/activate
-mkdir -p build
-rm -rf build/*
-cd build
-pyinstaller --clean ../pyinstaller.spec
-cp dist/formula formula.linux
+cd $pwd
 
 # ubuntu 16 needs a VM because GLIBC <censored>
 vm_name="formulabuilder16"
