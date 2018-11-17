@@ -128,6 +128,7 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
     def draw_targeting():
         max_dist = targeting_spell.distance * CELL_WIDTH
         pos = pygame.mouse.get_pos()
+        targeting_surface = pygame.Surface(game_data.constants.window_size.tuple())
 
         # find targeted tile
         map_pos = global_pos_to_map_pos(pos[0], pos[1])
@@ -146,12 +147,25 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
             normalized = (vec[0] / length, vec[1] / length)
             partial_dist = (max_dist / dist) * dist
             red_part = (orig[0] + normalized[0] * partial_dist, orig[1] + normalized[1] * partial_dist)
-            pygame.draw.line(main, (255, 0, 0), orig, red_part)
-            pygame.draw.line(main, (100, 100, 100), red_part, rect_center)
-            pygame.draw.rect(main, (100, 100, 100), rect)
+            pygame.draw.line(targeting_surface, (255, 0, 0), orig, red_part)
+            pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
+            pygame.draw.rect(targeting_surface, (100, 100, 100), rect)
+        elif targeting_spell.area == 1: #no aoe
+            pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
+            pygame.draw.rect(targeting_surface, (255, 0, 0), rect)
         else:
             pygame.draw.line(main, (255, 0, 0), orig, rect_center)
-            pygame.draw.rect(main, (255, 0, 0), rect)
+
+            for x in range(math.ceil(tile[0] - targeting_spell.distance),
+                           math.ceil(tile[0] + targeting_spell.distance)):
+                for y in range(math.ceil(tile[1] - targeting_spell.distance),
+                               math.ceil(tile[1] + targeting_spell.distance)):
+                    dist = (math.sqrt((x - tile[0]) ** 2 + (y - tile[1]) ** 2))
+                    if dist < targeting_spell.area:
+                        tile_rect = get_tile_rect(x, y)
+                        pygame.draw.rect(targeting_surface, (255, 0, 0), tile_rect)
+        targeting_surface.set_alpha(100)
+        gfx_data.main.blit(targeting_surface, (0, 0))
 
     draw_terrain()
     draw_entities()
@@ -207,6 +221,8 @@ def welcome_menu(gfx_data):
         "Next you'll be shown the formula screen, press Tab to show help",
         "",
         "Escape to cancel actions or quit the current menu, or the game",
+        "",
+        "Press Escape to continue and choose your formulas"
     ]
     display_menu(gfx_data, lines, (800, 600))
 
