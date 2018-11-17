@@ -2,20 +2,20 @@ from attrdict import AttrDict as attribdict
 
 from game_states import GameStates
 from util import Size
-
+from graphics.constants import CELL_HEIGHT, CELL_WIDTH
 
 def get_constants():
     window_title = "Formula"
 
-    window_size = Size(1200, 1000)
     screen_size = Size(80, 50)
     map_size = Size(70, 43)
 
     bar_width = 20
-    bottom_panel_height = 7
+    bottom_panel_height = 7 * CELL_HEIGHT
     bottom_panel_y = screen_size.height - bottom_panel_height
 
-    right_panel_size = Size(150, screen_size.height - bottom_panel_height)
+    right_panel_size = Size(150, screen_size.height- bottom_panel_height)
+    window_size = Size(right_panel_size.width + map_size.width * CELL_WIDTH, 1000)
 
     message_x = bar_width + 2
     message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)

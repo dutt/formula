@@ -14,6 +14,7 @@ from util import Pos
 
 def initialize(constants):
     pygame.display.init()
+    pygame.display.set_caption("Formulas")
     pygame.font.init()
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
     assets = Assets()
@@ -253,6 +254,7 @@ def welcome_menu(gfx_data):
         "Welcome to Formula",
         "",
         "A game of dungeon crawling, potion brewing and vial slinging",
+        "",
         "Next you'll be shown the formula screen, press Tab to show help",
         "Escape to cancel actions or quit the current menu, or the game",
         "",
