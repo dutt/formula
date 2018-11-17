@@ -35,7 +35,10 @@ class Player(Entity):
 
     def set_initial_state(self, state, game_data):
         game_data.state = state
-        game_data.prev_state = []
+        if state == GameStates.WELCOME_SCREEN:
+            game_data.prev_state = [GameStates.PLAY, GameStates.SPELLMAKER_SCREEN]
+        else:
+            game_data.prev_state = []
 
     def take_turn(self, game_data):
         if self.action_points < 100:
@@ -83,7 +86,7 @@ class Player(Entity):
                         # TODO clear cooldowns?
                         break
                 else:
-                    player_action = WaitAction()
+                    player_action = WaitAction(self)
                 if game_data.state == GameStates.SPELLMAKER_SCREEN:
                     # we descended
                     continue
@@ -102,14 +105,14 @@ class Player(Entity):
                 if not game_data.map.is_blocked(destx, desty):
                     target = get_blocking_entites_at_location(game_data.entities, destx, desty)
                     if target:
-                        player_action = AttackAction(self, target=target)
+                        player_action = AttackAction(self, target=target) if target.fighter else WaitAction(self)
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
 
             from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
                 right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
-                cx, cy = left_click
+                cx, cy = left_click.cx, left_click.cys
                 if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
                     casting_spell = None
                     spell_idx = None
@@ -180,12 +183,11 @@ class Player(Entity):
                     game_data.state = game_data.prev_state.pop()
                 elif game_data.state in [GameStates.CHARACTER_SCREEN,
                                          GameStates.SPELLMAKER_HELP_SCEEN,
-                                         GameStates.GENERAL_HELP_SCREEN]:
+                                         GameStates.GENERAL_HELP_SCREEN,
+                                         GameStates.WELCOME_SCREEN]:
                     game_data.state = game_data.prev_state.pop()
                 elif game_data.state == GameStates.TARGETING:
                     turn_results.append({"targeting_cancelled": True})
-                elif game_data.state == GameStates.WELCOME_SCREEN:
-                    game_data.state = GameStates.SPELLMAKER_SCREEN
                 else:
                     player_action = ExitAction()
 
@@ -220,7 +222,6 @@ class Player(Entity):
                         game_data.state = GameStates.LEVEL_UP
 
         # end of no action
-        print("END")
         assert player_action
         if type(player_action) == MoveToPositionAction:
             game_data.fov_recompute = True

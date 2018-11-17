@@ -1,5 +1,3 @@
-import time
-
 import pygame
 from attrdict import AttrDict
 

@@ -26,8 +26,8 @@ class ExitAction(Action):
 class WaitAction(Action):
     COST = 100
 
-    def __init__(self):
-        super(WaitAction, self).__init__(actor=None, cost=WaitAction.COST)
+    def __init__(self, actor):
+        super(WaitAction, self).__init__(actor=actor, cost=WaitAction.COST)
 
     def execute(self, _):
         return self.package()
