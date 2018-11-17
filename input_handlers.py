@@ -87,12 +87,12 @@ def handle_general_keys(key):
 
 
 def handle_level_up_keys(key):
-    if key == pygame.K_a:
-        return {Event.level_up: "hp"}
-    elif key == pygame.K_b:
-        return {Event.level_up: "str"}
-    elif key == pygame.K_c:
-        return {Event.level_up: "def"}
+    if key == pygame.K_RETURN:
+        return {Event.level_up: True}
+    elif key == pygame.K_UP:
+        return { "choice" : -1 }
+    elif key == pygame.K_DOWN:
+        return { "choice" : 1 }
     return handle_general_keys(key)
 
 

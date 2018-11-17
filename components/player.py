@@ -1,5 +1,6 @@
 import pygame
 import tcod
+from attrdict import AttrDict
 
 from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction, \
     DescendStairsAction
@@ -52,6 +53,10 @@ class Player(Entity):
         self.caster.tick_cooldowns()
         spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
 
+        menu_data = AttrDict({
+            "currchoice": 0
+        })
+
         while not player_action:
 
             turn_results = []
@@ -60,7 +65,7 @@ class Player(Entity):
                 recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
                               game_data.constants.fov_radius, game_data.constants.fov_light_walls,
                               game_data.constants.fov_algorithm)
-            render_all(self.gfx_data, game_data, targeting_spell, spellbuilder)
+            render_all(self.gfx_data, game_data, targeting_spell, spellbuilder, menu_data)
 
             events = pygame.event.get()
             key_events = [e for e in events if e.type == pygame.KEYDOWN]
@@ -130,6 +135,11 @@ class Player(Entity):
                 game_data.prev_state.append(game_data.state)
                 game_data.state = GameStates.CHARACTER_SCREEN
 
+            if game_data.state == GameStates.LEVEL_UP:
+                choice = action.get("choice")
+                if choice:
+                    menu_data.currchoice += choice
+
             if game_data.state == GameStates.TARGETING:
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
@@ -139,13 +149,12 @@ class Player(Entity):
                     turn_results.append({"targeting_cancelled": True})
 
             if level_up:
-                if level_up == "hp":
-                    self.fighter.base_max_hp += 20
-                    self.fighter.hp += 20
-                elif level_up == "str":
-                    self.fighter.base_power += 1
-                elif level_up == "def":
-                    self.fighter.base_defense += 1
+                if menu_data.currchoice == 0:
+                    self.caster.num_slots += 1
+                    spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
+                elif menu_data.currchoice == 1:
+                    self.caster.num_spells += 1
+                    spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
                 game_data.state = game_data.prev_state.pop()
 
             if start_casting_spell is not None:
@@ -210,16 +219,7 @@ class Player(Entity):
                     game_data.state = game_data.prev_state.pop()
                     game_data.log.add_message(Message("Targeting cancelled"))
 
-                xp = res.get("xp")
-                if xp:
-                    leveled_up = self.level.add_xp(xp)
-                    game_data.log.add_message(Message("You gain {} xp".format(xp)))
-                    if leveled_up:
-                        game_data.log.add_message(
-                                Message("You grow stronger, reached level {}".format(self.level.current_level),
-                                        tcod.yellow))
-                        game_data.prev_state.append(game_data.state)
-                        game_data.state = GameStates.LEVEL_UP
+
 
         # end of no action
         assert player_action

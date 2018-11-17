@@ -1,4 +1,5 @@
 import contextlib
+
 with contextlib.redirect_stdout(None):
     import pygame
 
@@ -6,6 +7,8 @@ from components.pygame_gfx import initialize
 from death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, get_game_variables
 
+from messages import Message
+from game_states import GameStates
 
 def play_game(game_data, assets):
     while True:
@@ -31,6 +34,17 @@ def play_game(game_data, assets):
             quit = res.get("quit")
             if quit:
                 return
+
+            xp = res.get("xp")
+            if xp:
+                leveled_up = game_data.player.level.add_xp(xp)
+                game_data.log.add_message(Message("You gain {} xp".format(xp)))
+                if leveled_up:
+                    game_data.log.add_message(
+                            Message("You grow stronger, reached level {}".format(game_data.player.level.current_level),
+                                    (0, 255, 0)))
+                    game_data.prev_state.append(game_data.state)
+                    game_data.state = GameStates.LEVEL_UP
 
 
 def main():

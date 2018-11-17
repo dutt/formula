@@ -38,9 +38,8 @@ def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=
     surface.blit(text_surface, rect)
 
 
-def display_lines(surface, font, lines):
-    x = 50
-    y = 50
+def display_lines(surface, font, lines, x=50, starty=50):
+    y = starty
     for line in lines:
         display_text(surface, line, font, (x, y))
         y += 20
@@ -60,7 +59,7 @@ def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, hei
     display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
 
 
-def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
+def render_all(gfx_data, game_data, targeting_spell, spellbuilder, menu_data):
     gfx_data.main.fill(game_data.constants.colors.dark_wall)
     assets = gfx_data.assets
     panel_width = game_data.constants.right_panel_size.width
@@ -191,6 +190,8 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
         spellmaker_menu(gfx_data, spellbuilder)
     elif game_data.state == GameStates.SPELLMAKER_HELP_SCEEN:
         spellmaker_help_menu(gfx_data)
+    elif game_data.state == GameStates.LEVEL_UP:
+        levelup_menu(gfx_data, spellbuilder, menu_data)
 
     pygame.display.flip()
 
@@ -224,6 +225,28 @@ def spellmaker_menu(gfx_data, spellbuilder):
                  (50, y))
     gfx_data.main.blit(surface, (200, 200))
 
+def levelup_menu(gfx_data, spellbuilder, menu_data):
+    surface = pygame.Surface((800, 600))
+    header = [
+        "You have expanded your skills and equipment, please choose:",
+        ""
+    ]
+    linediff = 15
+    y = 3*linediff
+    display_lines(surface, gfx_data.assets.font_message, header, starty=y)
+
+    y += 2*linediff
+    choices = [
+        "Bigger vials (+1 slot per vial)",
+        "More vials (+1 prepared formula)"
+    ]
+    for idx, choice in enumerate(choices):
+        text = choice
+        if idx == menu_data.currchoice:
+            text += "<--"
+        display_text(surface, text, gfx_data.assets.font_message, (50, y))
+        y += linediff
+    gfx_data.main.blit(surface, (200, 200))
 
 def welcome_menu(gfx_data):
     lines = [
@@ -231,7 +254,6 @@ def welcome_menu(gfx_data):
         "",
         "A game of dungeon crawling, potion brewing and vial slinging",
         "Next you'll be shown the formula screen, press Tab to show help",
-        "",
         "Escape to cancel actions or quit the current menu, or the game",
         "",
         "Press Escape to continue and choose your formulas"

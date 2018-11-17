@@ -1,7 +1,8 @@
 from attrdict import AttrDict as attrdict
 
-from game_states import GameStates
 from fov import initialize_fov
+from game_states import GameStates
+
 
 class Action:
     def __init__(self, actor, cost):
@@ -32,6 +33,7 @@ class WaitAction(Action):
     def execute(self, _):
         return self.package()
 
+
 class DescendStairsAction(Action):
     COST = 100
 
@@ -46,8 +48,9 @@ class DescendStairsAction(Action):
         game_data.state = GameStates.SPELLMAKER_SCREEN
         game_data.fov_map = initialize_fov(game_data.map)
         game_data.fov_recompute = True
-        result = [{"descended" : True}]
+        result = [{"descended": True}]
         return self.package(result)
+
 
 class MoveToPositionAction(Action):
     COST = 100
