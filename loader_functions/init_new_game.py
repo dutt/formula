@@ -1,4 +1,3 @@
-import tcod
 from attrdict import AttrDict as attribdict
 
 from game_states import GameStates
@@ -6,7 +5,7 @@ from util import Size
 
 
 def get_constants():
-    window_title = "spellmaker"
+    window_title = "Formula"
 
     window_size = Size(1200, 1000)
     screen_size = Size(80, 50)
@@ -23,7 +22,7 @@ def get_constants():
 
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 2
+    max_rooms = 10
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -82,7 +81,7 @@ def get_game_variables(constants, gfx_data):
     gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameStates.WELCOME_SCREEN
-    #state = GameStates.PLAY
+    # state = GameStates.PLAY
     fov_map = initialize_fov(gmap)
 
     game_data = StateData(

@@ -74,7 +74,6 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
                 # visible = True
                 if visible:
                     if wall:
-                        # main.blit(assets.undead_sheet.get_image(x, y)[0],
                         main.blit(assets.light_wall[0],
                                   (panel_width + x * CELL_WIDTH,
                                    y * CELL_HEIGHT))
@@ -104,7 +103,7 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
         draw_message_log()
 
     def draw_right_panel():
-        display_text(main, "Spells", assets.font_title, (10, 20))
+        display_text(main, "Formulas", assets.font_title, (10, 20))
         player = game_data.player
         y = 50
         for idx, spell in enumerate(player.caster.spells):
@@ -141,7 +140,6 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
         dist = util.distance(orig[0], orig[1], rect_center[0], rect_center[1])
-        # print("distance from {} to {} is {}".format(orig, rect_center, dist))
         if dist > max_dist:
             vec = (pos[0] - orig[0], pos[1] - orig[1])
             length = math.sqrt(vec[0] ** 2 + vec[1] ** 2)
@@ -170,8 +168,6 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
         spellmaker_menu(gfx_data, spellbuilder)
     elif game_data.state == GameStates.SPELLMAKER_HELP_SCEEN:
         spellmaker_help_menu(gfx_data)
-
-    # pygame.draw.rect(gfx_data.main, (0, 128, 255), pygame.Rect(30, 30, 60, 60))
 
     pygame.display.flip()
 
@@ -231,7 +227,6 @@ def help_menu(gfx_data):
 
 
 def spellmaker_help_menu(gfx_data):
-    l
     lines = [
         "Building spells:",
         "Q,W,E,R,A,S,D: Set current slot to ingredient",

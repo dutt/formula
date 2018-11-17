@@ -25,8 +25,6 @@ ssh $ssh_name bash << HERE
 HERE
 scp $ssh_name:$dirname/build/dist/formula build/formula.windows
 
-exit 0
-
 # local, ubuntu 18
 source venv/bin/activate
 mkdir -p build
