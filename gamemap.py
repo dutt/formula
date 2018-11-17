@@ -48,14 +48,14 @@ class GameMap:
                 monster_choice = random_choice_from_dict(monster_chances)
 
                 if monster_choice == "ghost":
-                    fighter_component = Fighter(hp=20, defense=0, power=10, xp=0)
+                    fighter_component = Fighter(hp=20, defense=0, power=3, xp=0)
                     ai = BasicMonster()
                     drawable_component = Drawable(self.assets.ghost)
                     monster = Entity(x, y, "Ghost", speed=100,
                                      blocks=True, render_order=gfx.RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
                 else:
-                    fighter_component = Fighter(hp=30, defense=2, power=15, xp=0)
+                    fighter_component = Fighter(hp=30, defense=2, power=5, xp=0)
                     ai = BasicMonster()
                     drawable_component = Drawable(self.assets.demon)
                     monster = Entity(x, y, "Demon", speed=100,

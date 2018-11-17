@@ -81,7 +81,7 @@ def get_game_variables(constants, gfx_data):
     gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameStates.WELCOME_SCREEN
-    # state = GameStates.PLAY
+    state = GameStates.PLAY
     fov_map = initialize_fov(gmap)
 
     game_data = StateData(

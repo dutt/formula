@@ -12,6 +12,7 @@ class Assets:
         self.wall_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Wall.png"))
         self.undead_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Undead0.png"))
         self.decor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Decor0.png"))
+        self.floor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Floor.png"))
 
         self.player = self.reptile_sheet.get_image(1, 1, 16, 16)
 
@@ -19,6 +20,9 @@ class Assets:
 
         self.light_wall = self.wall_sheet.get_image(3, 15)
         self.dark_wall = self.wall_sheet.get_image(3, 21)
+
+        self.light_floor = self.floor_sheet.get_image(2, 10)
+        self.dark_floor = self.floor_sheet.get_image(2, 14)
 
         self.ghost = self.undead_sheet.get_image(2, 2)
         self.demon = self.undead_sheet.get_image(7, 2)

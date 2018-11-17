@@ -1,5 +1,5 @@
-import tcod
 import pygame
+import tcod
 
 from components.action import MoveToPositionAction, AttackAction, ExitAction, CastSpellAction, WaitAction, \
     DescendStairsAction
@@ -9,26 +9,26 @@ from components.fighter import Fighter
 from components.level import Level
 from components.pygame_gfx import render_all
 from entity import Entity, get_blocking_entites_at_location
-from util import Pos
 from fov import recompute_fov
 from game_states import GameStates
 from gfx import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
 from spell_engine import SpellBuilder, SpellEngine
+from util import Pos
 
 
 class Player(Entity):
     def __init__(self, assets):
         caster_component = Caster(num_slots=3, num_spells=3)
-        fighter_component = Fighter(hp=100, defense=1, power=3)
+        fighter_component = Fighter(hp=10, defense=1, power=3)
         level_component = Level()
         drawable_component = Drawable(assets.player)
         super(Player, self).__init__(0, 0, "Player", speed=100, blocks=True,
                                      render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
-
+        self.gfx_data = None
 
     def set_gui(self, gfx_data):
         self.gfx_data = gfx_data
@@ -41,6 +41,8 @@ class Player(Entity):
             game_data.prev_state = []
 
     def take_turn(self, game_data):
+        assert self.gfx_data
+
         if self.action_points < 100:
             return None
 
@@ -133,7 +135,6 @@ class Player(Entity):
                     targetx, targety = left_click.cx, left_click.cy
                     player_action = CastSpellAction(self, targeting_spell, targetpos=(Pos(targetx, targety)))
                     game_data.state = game_data.prev_state.pop()
-                    print("CastSpellAction set")
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
 

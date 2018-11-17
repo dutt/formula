@@ -77,16 +77,25 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder):
                         main.blit(assets.light_wall[0],
                                   (panel_width + x * CELL_WIDTH,
                                    y * CELL_HEIGHT))
-                else:
+                    else:
+                        main.blit(assets.light_floor[0],
+                                  (panel_width + x * CELL_WIDTH,
+                                  y * CELL_HEIGHT))
+                    game_data.map.tiles[x][y].explored = True
+                elif game_data.map.tiles[x][y].explored:
                     if wall:
                         main.blit(assets.dark_wall[0],
                                   (panel_width + x * CELL_WIDTH,
                                    y * CELL_HEIGHT))
+                    else:
+                        main.blit(assets.dark_floor[0],
+                                  (panel_width + x * CELL_WIDTH,
+                                  y * CELL_HEIGHT))
 
     def draw_entities():
         rendering_sorted = sorted(game_data.entities, key=lambda e: e.render_order.value)
         for e in rendering_sorted:
-            if e.drawable:
+            if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
                 main.blit(e.drawable.asset[0],
                           (panel_width + e.pos.x * CELL_WIDTH,
                            e.pos.y * CELL_HEIGHT))
