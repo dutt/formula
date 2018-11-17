@@ -2,3 +2,4 @@ wheel
 attrdict
 tcod
 pyinstaller
+pygame
