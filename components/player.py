@@ -29,6 +29,7 @@ class Player(Entity):
                                      render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
+        self.spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
         self.gfx_data = None
 
     def set_gui(self, gfx_data):
@@ -48,10 +49,8 @@ class Player(Entity):
             return None
 
         player_action = None
-        right_panel = game_data.constants.right_panel_size
         targeting_spell = None
         self.caster.tick_cooldowns()
-        spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
 
         menu_data = AttrDict({
             "currchoice": 0
@@ -65,7 +64,7 @@ class Player(Entity):
                 recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
                               game_data.constants.fov_radius, game_data.constants.fov_light_walls,
                               game_data.constants.fov_algorithm)
-            render_all(self.gfx_data, game_data, targeting_spell, spellbuilder, menu_data)
+            render_all(self.gfx_data, game_data, targeting_spell, self.spellbuilder, menu_data)
 
             events = pygame.event.get()
             key_events = [e for e in events if e.type == pygame.KEYDOWN]
@@ -151,11 +150,9 @@ class Player(Entity):
 
             if level_up:
                 if menu_data.currchoice == 0:
-                    self.caster.num_slots += 1
-                    spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
+                    self.spellbuilder.add_slot()
                 elif menu_data.currchoice == 1:
-                    self.caster.num_spells += 1
-                    spellbuilder = SpellBuilder(self.caster.num_slots, self.caster.num_spells)
+                    self.spellbuilder.add_formula()
                 game_data.state = game_data.prev_state.pop()
 
             if start_casting_spell is not None:
@@ -173,23 +170,23 @@ class Player(Entity):
             if game_data.state == GameStates.SPELLMAKER_SCREEN:
                 slot = action.get("slot")
                 if slot is not None:
-                    spellbuilder.currslot = slot
+                    self.spellbuilder.currslot = slot
 
                 ingredient = action.get("ingredient")
                 if ingredient:
-                    spellbuilder.set_slot(spellbuilder.currslot, ingredient)
+                    self.spellbuilder.set_slot(self.spellbuilder.currslot, ingredient)
 
                 next_spell = action.get("next_spell")
                 if next_spell:
-                    spellbuilder.currspell = (spellbuilder.currspell + next_spell) % spellbuilder.num_spells
+                    self.spellbuilder.currspell = (self.spellbuilder.currspell + next_spell) % self.spellbuilder.num_spells
 
                 next_slot = action.get("next_slot")
                 if next_slot:
-                    spellbuilder.currslot = (spellbuilder.currslot + next_slot) % spellbuilder.num_slots
+                    self.spellbuilder.currslot = (self.spellbuilder.currslot + next_slot) % self.spellbuilder.num_slots
 
             if do_exit:
                 if game_data.state == GameStates.SPELLMAKER_SCREEN:
-                    self.caster.set_spells(SpellEngine.evaluate(spellbuilder))
+                    self.caster.set_spells(SpellEngine.evaluate(self.spellbuilder))
                     game_data.state = game_data.prev_state.pop()
                 elif game_data.state in [GameStates.CHARACTER_SCREEN,
                                          GameStates.SPELLMAKER_HELP_SCEEN,

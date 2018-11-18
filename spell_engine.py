@@ -4,7 +4,7 @@ from components.effects import Effect, EffectTag
 
 
 class SpellBuilder:
-    def __init__(self, num_slots, num_spells):
+    def __init__(self, num_slots, num_spells, slots=None):
         self.currslot = 0
         self.currspell = 0
         self.num_slots = num_slots
@@ -13,6 +13,15 @@ class SpellBuilder:
 
     def set_slot(self, slot, ingredient):
         self.slots[self.currspell][slot] = ingredient
+
+    def add_slot(self):
+        self.num_slots += 1
+        for s in range(self.num_spells):
+            self.slots[s].append(Ingredient.EMPTY)
+
+    def add_formula(self):
+        self.num_spells += 1
+        self.slots.append([Ingredient.EMPTY for i in range(self.num_slots)])
 
     @property
     def current_slots(self):
