@@ -3,7 +3,7 @@ import math
 import tcod
 
 import util
-from gfx import RenderOrder
+from graphics.render_order import RenderOrder
 
 
 class Entity:

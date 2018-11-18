@@ -7,9 +7,6 @@ from graphics.spritesheet import Spritesheet
 
 class Assets:
     def __init__(self):
-        self.load_assets()
-
-    def load_assets(self):
         graphics_file_tile_size = util.Size(16, 16)
 
         self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Reptile0.png"))

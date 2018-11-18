@@ -1,13 +1,13 @@
 import tcod
 
-import gfx
 from game_states import GameStates
+from graphics.render_order import RenderOrder
 from messages import Message
 
 
 def kill_player(game_state, assets):
     game_state.player.drawable.asset = assets.monster_corpse
-    game_state.player.render_order = gfx.RenderOrder.CORPSE
+    game_state.player.render_order = RenderOrder.CORPSE
     game_state.player.name = "Your corpse"
     game_state.state = GameStates.PLAYER_DEAD
     return Message("You died", tcod.red), game_state
@@ -21,7 +21,7 @@ def kill_monster(monster, game_state, assets):
     monster.blocks = False
     monster.fighter = None
     monster.ai = None
-    monster.render_order = gfx.RenderOrder.CORPSE
+    monster.render_order = RenderOrder.CORPSE
     monster.name = "Remains of {}".format(monster.name)
     monster.active = False
     game_state.timesystem.release(monster)

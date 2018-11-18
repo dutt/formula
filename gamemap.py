@@ -2,7 +2,6 @@ from random import randint
 
 import tcod
 
-import gfx
 from components.ai import BasicMonster
 from components.drawable import Drawable
 from components.fighter import Fighter
@@ -13,7 +12,7 @@ from map_objects.tile import Tile
 from messages import Message
 from random_utils import random_choice_from_dict, from_dungeon_level
 from util import Pos
-
+from graphics.render_order import RenderOrder
 
 class GameMap:
     def __init__(self, size, assets, dungeon_level=1):
@@ -52,14 +51,14 @@ class GameMap:
                     ai = BasicMonster()
                     drawable_component = Drawable(self.assets.ghost)
                     monster = Entity(x, y, "Ghost", speed=100,
-                                     blocks=True, render_order=gfx.RenderOrder.ACTOR,
+                                     blocks=True, render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
                 else:
                     fighter_component = Fighter(hp=30, defense=2, power=5, xp=100)
                     ai = BasicMonster()
                     drawable_component = Drawable(self.assets.demon)
                     monster = Entity(x, y, "Demon", speed=100,
-                                     blocks=True, render_order=gfx.RenderOrder.ACTOR,
+                                     blocks=True, render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
                 entities.append(monster)
                 timesystem.register(monster)
@@ -101,7 +100,7 @@ class GameMap:
         stairs_component = Stairs(self.dungeon_level + 1)
         drawable_component = Drawable(self.assets.stairs)
         down_stairs = Entity(center_of_last_room_x, center_of_last_room_y, "Stairs",
-                             render_order=gfx.RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component)
+                             render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component)
         entities.append(down_stairs)
 
     def next_floor(self, player, log, constants, entities, timesystem):

@@ -8,7 +8,6 @@ import util
 from game_states import GameStates
 from graphics.assets import Assets
 from graphics.constants import CELL_HEIGHT, CELL_WIDTH, colors
-from spell_engine import SpellEngine
 from util import Pos
 
 
@@ -60,7 +59,7 @@ def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, hei
     display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
 
 
-def render_all(gfx_data, game_data, targeting_spell, spellbuilder, menu_data):
+def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data):
     gfx_data.main.fill(game_data.constants.colors.dark_wall)
     assets = gfx_data.assets
     panel_width = game_data.constants.right_panel_size.width
@@ -115,13 +114,13 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder, menu_data):
         display_text(main, "Formulas", assets.font_title, (10, 20))
         player = game_data.player
         y = 50
-        for idx, spell in enumerate(player.caster.spells):
+        for idx, formula in enumerate(player.caster.formulas):
             if player.caster.is_on_cooldown(idx):
-                render_bar(main, assets, Pos(20, y + idx * 20), 80, player.caster.get_cooldown(idx), spell.cooldown,
+                render_bar(main, assets, Pos(20, y + idx * 20), 80, player.caster.get_cooldown(idx), formula.cooldown,
                            (0, 127, 255), colors.BLACK)
 
             else:
-                msg = "{}: {}".format(idx + 1, spell.text_repr)
+                msg = "{}: {}".format(idx + 1, formula.text_repr)
                 display_text(main, msg, assets.font_message, (10, y + idx * 20))
             y += 40
 
@@ -135,7 +134,7 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder, menu_data):
         return panel_width + x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
 
     def draw_targeting():
-        max_dist = targeting_spell.distance * CELL_WIDTH
+        max_dist = targeting_formula.distance * CELL_WIDTH
         pos = pygame.mouse.get_pos()
         targeting_surface = pygame.Surface(game_data.constants.window_size.tuple())
 
@@ -159,18 +158,18 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder, menu_data):
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, red_part)
             pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
             pygame.draw.rect(targeting_surface, (100, 100, 100), rect)
-        elif targeting_spell.area == 1:  # no aoe
+        elif targeting_formula.area == 1:  # no aoe
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
             pygame.draw.rect(targeting_surface, (255, 0, 0), rect)
         else:
             pygame.draw.line(main, (255, 0, 0), orig, rect_center)
 
-            for x in range(math.ceil(tile[0] - targeting_spell.distance),
-                           math.ceil(tile[0] + targeting_spell.distance)):
-                for y in range(math.ceil(tile[1] - targeting_spell.distance),
-                               math.ceil(tile[1] + targeting_spell.distance)):
+            for x in range(math.ceil(tile[0] - targeting_formula.distance),
+                           math.ceil(tile[0] + targeting_formula.distance)):
+                for y in range(math.ceil(tile[1] - targeting_formula.distance),
+                               math.ceil(tile[1] + targeting_formula.distance)):
                     dist = (math.sqrt((x - tile[0]) ** 2 + (y - tile[1]) ** 2))
-                    if dist < targeting_spell.area:
+                    if dist < targeting_formula.area:
                         tile_rect = get_tile_rect(x, y)
                         pygame.draw.rect(targeting_surface, (255, 0, 0), tile_rect)
         targeting_surface.set_alpha(100)
@@ -187,17 +186,17 @@ def render_all(gfx_data, game_data, targeting_spell, spellbuilder, menu_data):
         welcome_menu(gfx_data)
     elif game_data.state == GameStates.GENERAL_HELP_SCREEN:
         help_menu(gfx_data)
-    elif game_data.state == GameStates.SPELLMAKER_SCREEN:
-        spellmaker_menu(gfx_data, spellbuilder)
-    elif game_data.state == GameStates.SPELLMAKER_HELP_SCEEN:
-        spellmaker_help_menu(gfx_data)
+    elif game_data.state == GameStates.FORMULA_SCREEN:
+        formula_menu(gfx_data, formulabuilder)
+    elif game_data.state == GameStates.FORMULA_HELP_SCEEN:
+        formula_help_menu(gfx_data)
     elif game_data.state == GameStates.LEVEL_UP:
-        levelup_menu(gfx_data, spellbuilder, menu_data)
+        levelup_menu(gfx_data, menu_data)
 
     pygame.display.flip()
 
 
-def spellmaker_menu(gfx_data, spellbuilder):
+def formula_menu(gfx_data, formulabuilder):
     surface = pygame.Surface((800, 600))
     linediff = 10
     y = 5 * linediff
@@ -206,37 +205,39 @@ def spellmaker_menu(gfx_data, spellbuilder):
     y += 2 * linediff
     display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
     y += linediff
-    for idx, spell in enumerate(spellbuilder.current_slots):
-        text = "Slot {}: {}".format(idx, spell.name)
-        if idx == spellbuilder.currslot:
+    for idx, formula in enumerate(formulabuilder.current_slots):
+        text = "Slot {}: {}".format(idx, formula.name)
+        if idx == formulabuilder.currslot:
             text += "<-- "
         display_text(surface, text, gfx_data.assets.font_message, (50, y))
         y += linediff
 
     y += 3 * linediff
-    display_text(surface, "Spell {}".format(spellbuilder.currspell + 1), gfx_data.assets.font_message, (50, y))
-    spells = SpellEngine.evaluate(spellbuilder)
+    display_text(surface, "Formula {}".format(formulabuilder.currformula + 1), gfx_data.assets.font_message, (50, y))
+    formulas = formulabuilder.evaluate()
     y += linediff
     display_text(surface,
-                 "Spell stats {}".format(spells[spellbuilder.currspell].text_stats), gfx_data.assets.font_message,
+                 "Formula stats {}".format(formulas[formulabuilder.currformula].text_stats),
+                 gfx_data.assets.font_message,
                  (50, y))
 
     y += 3 * linediff
-    display_text(surface, "Press Tab for help".format(spellbuilder.currspell + 1), gfx_data.assets.font_message,
+    display_text(surface, "Press Tab for help".format(formulabuilder.currformula + 1), gfx_data.assets.font_message,
                  (50, y))
     gfx_data.main.blit(surface, (200, 200))
 
-def levelup_menu(gfx_data, spellbuilder, menu_data):
+
+def levelup_menu(gfx_data, menu_data):
     surface = pygame.Surface((800, 600))
     header = [
         "You have expanded your skills and equipment, please choose:",
         ""
     ]
     linediff = 15
-    y = 3*linediff
+    y = 3 * linediff
     display_lines(surface, gfx_data.assets.font_message, header, starty=y)
 
-    y += 2*linediff
+    y += 2 * linediff
     choices = [
         "Bigger vials (+1 slot per vial)",
         "More vials (+1 prepared formula)"
@@ -248,6 +249,7 @@ def levelup_menu(gfx_data, spellbuilder, menu_data):
         display_text(surface, text, gfx_data.assets.font_message, (50, y))
         y += linediff
     gfx_data.main.blit(surface, (200, 200))
+
 
 def welcome_menu(gfx_data):
     lines = [
@@ -278,17 +280,17 @@ def help_menu(gfx_data):
     display_menu(gfx_data, lines, (800, 600))
 
 
-def spellmaker_help_menu(gfx_data):
+def formula_help_menu(gfx_data):
     lines = [
-        "Building spells:",
+        "Building formulas:",
         "Q,W,E,R,S: Set current slot to ingredient",
         "Up/down arrow: Switch to next/previous slot",
-        "Right/left arrow: Switch to next/previous spell",
+        "Right/left arrow: Switch to next/previous formula",
         "Cooldown is increased for every used slot",
         "",
-        "Adding fire to a spell increases damage",
-        "Adding life to a spell increases healing",
-        "Adding range to a spell makes it reach further",
-        "Adding area to a spell gives it wider area of effect"
+        "Adding fire to a formula increases damage",
+        "Adding life to a formula increases healing",
+        "Adding range to a formula makes it reach further",
+        "Adding area to a formula gives it wider area of effect"
     ]
     display_menu(gfx_data, lines, (800, 600))

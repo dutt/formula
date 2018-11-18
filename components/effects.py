@@ -1,6 +1,7 @@
 class EffectTag:
     HP_DIFF = "hp_diff"
 
+
 class Effect:
     def __init__(self, rounds, tag, effect_func):
         self.rounds = rounds

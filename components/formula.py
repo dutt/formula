@@ -4,12 +4,12 @@ from components.effects import EffectTag
 from messages import Message
 
 
-class Spell:
-    EMPTY = None  # set in spell_engine.py
+class Formula:
+    EMPTY = None  # set in formula_builder.py
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
-        self.spellidx = kwargs["spellidx"]
+        self.formula_idx = kwargs["formula_idx"]
         self.slots = kwargs["slots"]
         self.cooldown = kwargs["cooldown"]
         self.distance = float(kwargs["distance"]) + 0.5  # for diagonal
@@ -26,9 +26,9 @@ class Spell:
     @property
     def targeting_message(self):
         if self.hp_total_diff < 0:
-            msg = "Targeting spell, healing={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
+            msg = "Targeting, healing={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
         else:
-            msg = "Targeting spell, damage={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
+            msg = "Targeting, damage={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
         return Message(msg)
 
     @property
@@ -45,9 +45,10 @@ class Spell:
     def apply(self, **kwargs):
         def get_msg(e):
             if self.hp_total_diff < 0:
-                return "Spell cast, the {} is healed {} points".format(e.name, -self.hp_total_diff)
+                return "The {} is healed {} points".format(e.name, -self.hp_total_diff)
             else:
-                return "Spell cast, the {} takes {} fire damage".format(e.name, self.hp_total_diff)
+                return "The {} takes {} fire damage".format(e.name, self.hp_total_diff)
+
         caster = kwargs.get("caster")
         target_x = kwargs.get("target_x")
         target_y = kwargs.get("target_y")
@@ -56,24 +57,25 @@ class Spell:
         results = []
 
         if caster.distance(target_x, target_y) > self.distance:
-            results.append({"cast": False, "message": Message("Target out of range, spell not cast", tcod.yellow)})
+            results.append({"cast": False, "message": Message("Target out of range", tcod.yellow)})
             return results
         elif self.area < 1.5:  # no aoe
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue
                 if e.pos.x == target_x and e.pos.y == target_y:
-                    results.append({"cast": True, "message": Message(get_msg(e)), "targets": [e], "spell": self})
+                    results.append({"cast": True, "message": Message(get_msg(e)), "targets": [e], "formula": self})
                     if self.hp_total_diff < 0:
                         results.extend(e.fighter.heal(-self.hp_total_diff))
                     else:
                         results.extend(e.fighter.take_damage(self.hp_total_diff))
                     break
             else:
-                results.append({"cast": False, "message": Message("No target"), "targets": [], "spell": self})
-        else:  # aoe spell
+                results.append({"cast": False, "message": Message("No target"), "targets": [], "formula": self})
+        else:  # aoe formula
             targets = []
-            results.append({"cast": True, "targets": targets, "spell": self, "message": Message("AOE spell cast")})
+            results.append(
+                    {"cast": True, "targets": targets, "formula": self, "message": Message("Splash vial thrown")})
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue

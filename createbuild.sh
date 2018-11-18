@@ -34,7 +34,7 @@ ssh $ssh_name bash << HERE
     cd $dirname\build
     python -m PyInstaller --clean ..\pyinstaller.spec
 HERE
-scp $ssh_name:$dirname/build/dist/formula.exe build/formula.windows
+scp $ssh_name:$dirname/build/dist/formula.exe build/formula.windows.exe
 
 cd $pwd
 

@@ -1,8 +1,9 @@
 from attrdict import AttrDict as attribdict
 
 from game_states import GameStates
-from util import Size
 from graphics.constants import CELL_HEIGHT, CELL_WIDTH
+from util import Size
+
 
 def get_constants():
     window_title = "Formula"
@@ -14,15 +15,16 @@ def get_constants():
     bottom_panel_height = 7 * CELL_HEIGHT
     bottom_panel_y = screen_size.height - bottom_panel_height
 
-    right_panel_size = Size(150, screen_size.height- bottom_panel_height)
-    window_size = Size(right_panel_size.width + map_size.width * CELL_WIDTH, 1000)
+    right_panel_size = Size(150, screen_size.height - bottom_panel_height)
+    window_size = Size(right_panel_size.width + map_size.width * CELL_WIDTH,
+                       bottom_panel_height + map_size.height * CELL_HEIGHT)
 
     message_x = bar_width + 2
     message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)
 
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 10
+    max_rooms = 2
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -81,7 +83,7 @@ def get_game_variables(constants, gfx_data):
     gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameStates.WELCOME_SCREEN
-    #state = GameStates.PLAY
+    # state = GameStates.PLAY
     fov_map = initialize_fov(gmap)
 
     game_data = StateData(

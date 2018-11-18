@@ -45,7 +45,7 @@ class DescendStairsAction(Action):
                                                       game_data.constants,
                                                       game_data.entities, game_data.timesystem)
         game_data.prev_state = [GameStates.PLAY]
-        game_data.state = GameStates.SPELLMAKER_SCREEN
+        game_data.state = GameStates.FORMULA_SCREEN
         game_data.fov_map = initialize_fov(game_data.map)
         game_data.fov_recompute = True
         result = [{"descended": True}]
@@ -90,16 +90,16 @@ class AttackAction(Action):
         return self.package(result)
 
 
-class CastSpellAction(Action):
+class ThrowVialAction(Action):
     COST = 100
 
-    def __init__(self, actor, spell, targetpos):
-        super(CastSpellAction, self).__init__(actor, CastSpellAction.COST)
-        self.spell = spell
+    def __init__(self, actor, formula, targetpos):
+        super(ThrowVialAction, self).__init__(actor, ThrowVialAction.COST)
+        self.formula = formula
         self.targetpos = targetpos
 
     def execute(self, game_data):
-        result = self.spell.apply(entities=game_data.entities,
-                                  fov_map=game_data.fov_map, caster=self.actor,
-                                  target_x=self.targetpos.x, target_y=self.targetpos.y)
+        result = self.formula.apply(entities=game_data.entities,
+                                    fov_map=game_data.fov_map, caster=self.actor,
+                                    target_x=self.targetpos.x, target_y=self.targetpos.y)
         return self.package(result)

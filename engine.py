@@ -10,6 +10,7 @@ from loader_functions.init_new_game import get_constants, get_game_variables
 from messages import Message
 from game_states import GameStates
 
+
 def play_game(game_data, assets):
     while True:
         for res in game_data.timesystem.tick(game_data=game_data):
@@ -28,9 +29,9 @@ def play_game(game_data, assets):
             cast = res.get("cast")
             if cast is not None:
                 if cast:
-                    spell = res.get("spell")
-                    game_data.player.caster.add_cooldown(spell.spellidx,
-                                                         spell.cooldown + 1)
+                    formula = res.get("formula")
+                    game_data.player.caster.add_cooldown(formula.formula_idx,
+                                                         formula.cooldown + 1)
             quit = res.get("quit")
             if quit:
                 return
