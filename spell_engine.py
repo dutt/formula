@@ -29,7 +29,7 @@ class SpellEngine:
     @staticmethod
     def evaluate(spellbuilder):
         retr = []
-        fire_per_step = 500
+        fire_per_step = 10
         distance_per_step = 3
         area_per_step = 0.5
         cooldown_per_slot = 3
@@ -37,8 +37,8 @@ class SpellEngine:
         heal_per_step = 3
         for idx, spell in enumerate(range(spellbuilder.num_spells)):
             slots = spellbuilder.slots_for_spell(spell)
-            fire = 50
-            distance = 2
+            fire = 5
+            distance = 1
             area = 0.5
             cooldown = len(slots) * cooldown_per_slot
             healing = 0

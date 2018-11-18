@@ -115,10 +115,10 @@ class Player(Entity):
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
 
-            from map_objects.rect import Rect
+            """from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
                 right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
-                cx, cy = left_click.cx, left_click.cys
+                cx, cy = left_click.cx, left_click.cy
                 if right_panel_rect.contains(cx, cy):  # right panel, cast spell?
                     casting_spell = None
                     spell_idx = None
@@ -130,6 +130,7 @@ class Player(Entity):
                     if casting_spell:
                         start_cast_spell_results = {"targeting_spell": casting_spell, "spell_idx": spell_idx}
                         turn_results.append(start_cast_spell_results)
+            """
 
             if show_character_screen:
                 game_data.prev_state.append(game_data.state)
