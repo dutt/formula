@@ -7,6 +7,7 @@ from attrdict import AttrDict
 import util
 from game_states import GameStates
 from graphics.assets import Assets
+from graphics.camera import Camera
 from graphics.constants import CELL_HEIGHT, CELL_WIDTH, colors
 from util import Pos
 
@@ -17,9 +18,12 @@ def initialize(constants):
     pygame.mixer.quit()
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
     assets = Assets()
+    camera = Camera(constants.camera_size.width, constants.camera_size.height, constants.map_size)
     return AttrDict({
         "main": main,
-        "assets": assets
+        "assets": assets,
+        "camera": camera,
+        "fullscreen": False
     })
 
 
@@ -66,38 +70,40 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     main = gfx_data.main
 
     def draw_terrain():
-        for x in range(game_data.map.width):
-            for y in range(game_data.map.height):
+        for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
+            for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
                 wall = game_data.map.tiles[x][y].block_sight
                 visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
+                sx, sy = gfx_data.camera.map_to_screen(x, y)
                 # visible = True
                 if visible:
                     if wall:
                         main.blit(assets.light_wall[0],
-                                  (panel_width + x * CELL_WIDTH,
-                                   y * CELL_HEIGHT))
+                                  (panel_width + sx * CELL_WIDTH,
+                                   sy * CELL_HEIGHT))
                     else:
                         main.blit(assets.light_floor[0],
-                                  (panel_width + x * CELL_WIDTH,
-                                   y * CELL_HEIGHT))
+                                  (panel_width + sx * CELL_WIDTH,
+                                   sy * CELL_HEIGHT))
                     game_data.map.tiles[x][y].explored = True
                 elif game_data.map.tiles[x][y].explored:
                     if wall:
                         main.blit(assets.dark_wall[0],
-                                  (panel_width + x * CELL_WIDTH,
-                                   y * CELL_HEIGHT))
+                                  (panel_width + sx * CELL_WIDTH,
+                                   sy * CELL_HEIGHT))
                     else:
                         main.blit(assets.dark_floor[0],
-                                  (panel_width + x * CELL_WIDTH,
-                                   y * CELL_HEIGHT))
+                                  (panel_width + sx * CELL_WIDTH,
+                                   sy * CELL_HEIGHT))
 
     def draw_entities():
         rendering_sorted = sorted(game_data.entities, key=lambda e: e.render_order.value)
         for e in rendering_sorted:
             if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                 main.blit(e.drawable.asset[0],
-                          (panel_width + e.pos.x * CELL_WIDTH,
-                           e.pos.y * CELL_HEIGHT))
+                          (panel_width + sx * CELL_WIDTH,
+                           sy * CELL_HEIGHT))
 
     def draw_message_log():
         y = 800
@@ -124,14 +130,17 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                 display_text(main, msg, assets.font_message, (10, y + idx * 20))
             y += 40
 
-    def global_pos_to_map_pos(x, y):
+    def global_screen_pos_to_map_screen_pos(x, y):
         return x - panel_width, y
 
-    def map_pos_to_tile(x, y):
-        return x // CELL_WIDTH, y // CELL_HEIGHT
+    def map_screen_pos_to_tile(x, y):
+        rx, ry = x // CELL_WIDTH, y // CELL_HEIGHT
+        sx, sy = gfx_data.camera.screen_to_map(rx, ry)
+        return sx, sy
 
     def get_tile_rect(x, y):
-        return panel_width + x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
+        tx, ty = gfx_data.camera.screen_to_map(x, y)
+        return panel_width + tx * CELL_WIDTH, ty * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
 
     def draw_targeting():
         max_dist = targeting_formula.distance * CELL_WIDTH
@@ -139,16 +148,19 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         targeting_surface = pygame.Surface(game_data.constants.window_size.tuple())
 
         # find targeted tile
-        map_pos = global_pos_to_map_pos(pos[0], pos[1])
-        tile = map_pos_to_tile(map_pos[0], map_pos[1])
+        map_pos = global_screen_pos_to_map_screen_pos(pos[0], pos[1])
+        tile = map_screen_pos_to_tile(map_pos[0], map_pos[1])
+
         rect = get_tile_rect(tile[0], tile[1])
         rect_center = rect[0] + CELL_WIDTH / 2, rect[1] + CELL_HEIGHT / 2
 
         # find player position
-        orig = (panel_width + game_data.player.pos.x * CELL_WIDTH, game_data.player.pos.y * CELL_HEIGHT)
+        s_player_x, s_player_y = gfx_data.camera.screen_to_map(game_data.player.pos.x, game_data.player.pos.y)
+        orig = (panel_width + s_player_x * CELL_WIDTH, s_player_y * CELL_HEIGHT)
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
         dist = util.distance(orig[0], orig[1], rect_center[0], rect_center[1])
+
         if dist > max_dist:
             vec = (pos[0] - orig[0], pos[1] - orig[1])
             length = math.sqrt(vec[0] ** 2 + vec[1] ** 2)

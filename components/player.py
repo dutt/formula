@@ -70,7 +70,7 @@ class Player(Entity):
             key_events = [e for e in events if e.type == pygame.KEYDOWN]
             mouse_events = [e for e in events if e.type == pygame.MOUSEBUTTONDOWN]
             action = handle_keys(key_events, game_data.state)
-            mouse_action = handle_mouse(mouse_events, game_data.constants)
+            mouse_action = handle_mouse(mouse_events, game_data.constants, self.gfx_data.camera)
 
             fullscreen = action.get(Event.fullscreen)
             move = action.get(Event.move)
@@ -113,6 +113,9 @@ class Player(Entity):
                         player_action = AttackAction(self, target=target)
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
+                        self.gfx_data.camera.center_on(destx, desty)
+                        print("camera at {},{} - {},{}".format(self.gfx_data.camera.x1, self.gfx_data.camera.y1,
+                                                               self.gfx_data.camera.x2, self.gfx_data.camera.y2))
 
             """from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
@@ -179,12 +182,12 @@ class Player(Entity):
                 next_formula = action.get("next_formula")
                 if next_formula:
                     self.formula_builder.currformula = (
-                                                                   self.formula_builder.currformula + next_formula) % self.formula_builder.num_formula
+                                                               self.formula_builder.currformula + next_formula) % self.formula_builder.num_formula
 
                 next_slot = action.get("next_slot")
                 if next_slot:
                     self.formula_builder.currslot = (
-                                                                self.formula_builder.currslot + next_slot) % self.formula_builder.num_slots
+                                                            self.formula_builder.currslot + next_slot) % self.formula_builder.num_slots
 
             if do_exit:
                 if game_data.state == GameStates.FORMULA_SCREEN:
@@ -199,6 +202,20 @@ class Player(Entity):
                     turn_results.append({"targeting_cancelled": True})
                 else:
                     player_action = ExitAction()
+
+            if fullscreen:
+                display = (game_data.constants.window_size.width, game_data.constants.window_size.height)
+                if pygame.display.get_driver() == 'x11':
+                    pygame.display.toggle_fullscreen()
+                else:
+                    display_copy = self.gfx_data.main.copy()
+                    if fullscreen:
+                        self.gfx_data.main = pygame.display.set_mode(display)
+                    else:
+                        self.gfx_data.main = pygame.display.set_mode(display, pygame.FULLSCREEN)
+                        self.gfx_data.fullscreen = not self.gfx_data.fullscreen
+                        self.gfx_data.main.blit(display_copy, (0, 0))
+                        pygame.display.update()
 
             action = mouse_action = None  # clear them for next round
 

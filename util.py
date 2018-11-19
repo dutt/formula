@@ -17,6 +17,7 @@ class Size:
     def tuple(self):
         return (self.width, self.height)
 
+
 class Pos:
     def __init__(self, x, y):
         self.x = x
@@ -28,14 +29,15 @@ class Pos:
     def __ne__(self, other):
         return (self == other) == False
 
-    def str(self):
+    def __str__(self):
         return "<Pos x={} y={}>".format(self.x, self.y)
 
-    def repr(self):
+    def __repr__(self):
         return str(self)
 
     def tuple(self):
-        return (self.x, self.y)
+        return self.x, self.y
+
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """

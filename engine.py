@@ -52,6 +52,7 @@ def main():
     constants = get_constants()
     gfx_data = initialize(constants)
     game_data, state = get_game_variables(constants, gfx_data)
+    gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
 
     game_data.player.set_gui(gfx_data)
     game_data.player.set_initial_state(state, game_data)

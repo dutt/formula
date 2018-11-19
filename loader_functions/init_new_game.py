@@ -9,22 +9,24 @@ def get_constants():
     window_title = "Formula"
 
     screen_size = Size(80, 50)
-    map_size = Size(70, 43)
+    map_size = Size(60, 50)
+    camera_size = Size(30, 30)
 
     bar_width = 20
     bottom_panel_height = 7 * CELL_HEIGHT
     bottom_panel_y = screen_size.height - bottom_panel_height
 
     right_panel_size = Size(150, screen_size.height - bottom_panel_height)
-    window_size = Size(right_panel_size.width + map_size.width * CELL_WIDTH,
-                       bottom_panel_height + map_size.height * CELL_HEIGHT)
+    #window_size = Size(right_panel_size.width + camera_size.width * CELL_WIDTH,
+    #                   bottom_panel_height + camera_size.height * CELL_HEIGHT)
+    window_size = Size(1200, 1000)
 
     message_x = bar_width + 2
     message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)
 
-    room_max_size = 10
+    room_max_size = 15
     room_min_size = 6
-    max_rooms = 2
+    max_rooms = 10
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -41,6 +43,7 @@ def get_constants():
         "window_title": window_title,
         "window_size": window_size,
         "screen_size": screen_size,
+        "camera_size": camera_size,
         "map_size": map_size,
 
         "bar_width": bar_width,

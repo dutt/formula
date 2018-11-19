@@ -7,12 +7,13 @@ from components.drawable import Drawable
 from components.fighter import Fighter
 from components.stairs import Stairs
 from entity import Entity
+from graphics.render_order import RenderOrder
 from map_objects.rect import Rect
 from map_objects.tile import Tile
 from messages import Message
 from random_utils import random_choice_from_dict, from_dungeon_level
 from util import Pos
-from graphics.render_order import RenderOrder
+
 
 class GameMap:
     def __init__(self, size, assets, dungeon_level=1):
@@ -54,7 +55,7 @@ class GameMap:
                                      blocks=True, render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
                 else:
-                    fighter_component = Fighter(hp=30, defense=2, power=5, xp=100)
+                    fighter_component = Fighter(hp=50, defense=5, power=5, xp=100)
                     ai = BasicMonster()
                     drawable_component = Drawable(self.assets.demon)
                     monster = Entity(x, y, "Demon", speed=100,
