@@ -114,9 +114,7 @@ class Player(Entity):
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
                         self.gfx_data.camera.center_on(destx, desty)
-                        print("camera at {},{} - {},{}".format(self.gfx_data.camera.x1, self.gfx_data.camera.y1,
-                                                               self.gfx_data.camera.x2, self.gfx_data.camera.y2))
-
+                        
             """from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
                 right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
