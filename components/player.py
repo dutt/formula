@@ -31,6 +31,7 @@ class Player(Entity):
                                      drawable=drawable_component)
         self.formula_builder = FormulaBuilder(self.caster.num_slots, self.caster.num_formulas)
         self.gfx_data = None
+        self.clock = pygame.time.Clock()
 
     def set_gui(self, gfx_data):
         self.gfx_data = gfx_data
@@ -231,6 +232,8 @@ class Player(Entity):
                 if targeting_cancelled:
                     game_data.state = game_data.prev_state.pop()
                     game_data.log.add_message(Message("Targeting cancelled"))
+
+            self.clock.tick(30)
 
         # end of no action
         assert player_action
