@@ -63,6 +63,9 @@ def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, hei
     display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
 
 
+last_tile = None
+
+
 def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data):
     gfx_data.main.fill(game_data.constants.colors.dark_wall)
     assets = gfx_data.assets
@@ -108,27 +111,36 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     def draw_message_log():
         y = 800
         messages = game_data.log.messages
-        for idx, msg in enumerate(messages[-7:]):
-            display_text(main, msg.text, assets.font_message, (200, y + idx * 20), msg.color)
+        for idx, msg in enumerate(messages[-9:]):
+            display_text(main, msg.text, assets.font_message, (180, y + idx * 20), msg.color)
 
     def draw_bottom_panel():
-        render_bar(main, assets, Pos(20, 940), 100, game_data.player.fighter.hp, game_data.player.fighter.max_hp,
-                   (160, 0, 0), (100, 0, 0))
         draw_message_log()
 
     def draw_right_panel():
-        display_text(main, "Formulas", assets.font_title, (10, 20))
+        surface = pygame.Surface((game_data.constants.right_panel_size.width, game_data.constants.window_size.height))
+        surface.fill(game_data.constants.colors.dark_wall)
+
+        y = 20
+        render_bar(surface, assets, Pos(10, 20), 100, game_data.player.fighter.hp, game_data.player.fighter.max_hp,
+                   (160, 0, 0), (100, 0, 0))
+
+        y += 50
+        display_text(surface, "Formulas", assets.font_title, (10, y))
         player = game_data.player
-        y = 50
+        y += 30
         for idx, formula in enumerate(player.caster.formulas):
             if player.caster.is_on_cooldown(idx):
-                render_bar(main, assets, Pos(20, y + idx * 20), 80, player.caster.get_cooldown(idx), formula.cooldown,
+                render_bar(surface, assets, Pos(20, y + idx * 20), 80, player.caster.get_cooldown(idx),
+                           formula.cooldown,
                            (0, 127, 255), colors.BLACK)
 
             else:
                 msg = "{}: {}".format(idx + 1, formula.text_repr)
-                display_text(main, msg, assets.font_message, (10, y + idx * 20))
+                display_text(surface, msg, assets.font_message, (10, y + idx * 20))
             y += 40
+
+        main.blit(surface, (0, 0))
 
     def global_screen_pos_to_map_screen_pos(x, y):
         return x - panel_width, y
@@ -139,27 +151,37 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         return sx, sy
 
     def get_tile_rect(x, y):
-        tx, ty = gfx_data.camera.screen_to_map(x, y)
+        tx, ty = gfx_data.camera.map_to_screen(x, y)
         return panel_width + tx * CELL_WIDTH, ty * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
 
     def draw_targeting():
         max_dist = targeting_formula.distance * CELL_WIDTH
         pos = pygame.mouse.get_pos()
-        targeting_surface = pygame.Surface(game_data.constants.window_size.tuple())
+        targeting_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
 
         # find targeted tile
-        map_pos = global_screen_pos_to_map_screen_pos(pos[0], pos[1])
-        tile = map_screen_pos_to_tile(map_pos[0], map_pos[1])
+        map_screen_pos = global_screen_pos_to_map_screen_pos(pos[0], pos[1])
+        tile = map_screen_pos_to_tile(map_screen_pos[0], map_screen_pos[1])
 
         rect = get_tile_rect(tile[0], tile[1])
         rect_center = rect[0] + CELL_WIDTH / 2, rect[1] + CELL_HEIGHT / 2
 
         # find player position
-        s_player_x, s_player_y = gfx_data.camera.screen_to_map(game_data.player.pos.x, game_data.player.pos.y)
+        s_player_x, s_player_y = gfx_data.camera.map_to_screen(game_data.player.pos.x, game_data.player.pos.y)
         orig = (panel_width + s_player_x * CELL_WIDTH, s_player_y * CELL_HEIGHT)
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
         dist = util.distance(orig[0], orig[1], rect_center[0], rect_center[1])
+
+        # global last_tile
+        # if not last_tile or tile != last_tile:
+        #    print("pos: {}, map_screen_pos {}".format(pos, map_screen_pos))
+        #    print("tile {}, player {}".format(tile, game_data.player.pos))
+        #    rx, ry = map_screen_pos[0] // CELL_WIDTH, map_screen_pos[1] // CELL_HEIGHT
+        #    print("rx {}, ry {}".format(rx, ry))
+        #    sx, sy = gfx_data.camera.screen_to_map(rx, ry)
+        #    print("sx {}, sy {}".format(sx, sy))
+        #    last_tile = tile
 
         if dist > max_dist:
             vec = (pos[0] - orig[0], pos[1] - orig[1])
@@ -168,8 +190,8 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
             partial_dist = (max_dist / dist) * dist
             red_part = (orig[0] + normalized[0] * partial_dist, orig[1] + normalized[1] * partial_dist)
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, red_part)
-            pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
-            pygame.draw.rect(targeting_surface, (100, 100, 100), rect)
+            pygame.draw.line(targeting_surface, (150, 100, 100), red_part, rect_center)
+            pygame.draw.rect(targeting_surface, (150, 100, 100), rect)
         elif targeting_formula.area == 1:  # no aoe
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
             pygame.draw.rect(targeting_surface, (255, 0, 0), rect)
@@ -184,7 +206,7 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                     if dist < targeting_formula.area:
                         tile_rect = get_tile_rect(x, y)
                         pygame.draw.rect(targeting_surface, (255, 0, 0), tile_rect)
-        targeting_surface.set_alpha(100)
+        targeting_surface.set_alpha(150)
         gfx_data.main.blit(targeting_surface, (0, 0))
 
     draw_terrain()

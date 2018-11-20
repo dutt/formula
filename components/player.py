@@ -92,9 +92,6 @@ class Player(Entity):
                         break
                 else:
                     player_action = WaitAction(self)
-                if game_data.state == GameStates.FORMULA_SCREEN:
-                    # we descended
-                    continue
 
             if show_help:
                 game_data.prev_state.append(game_data.state)
@@ -114,7 +111,7 @@ class Player(Entity):
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
                         self.gfx_data.camera.center_on(destx, desty)
-                        
+
             """from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
                 right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
@@ -190,6 +187,7 @@ class Player(Entity):
             if do_exit:
                 if game_data.state == GameStates.FORMULA_SCREEN:
                     self.caster.set_formulas(self.formula_builder.evaluate())
+                    self.gfx_data.camera.center_on(self.pos.x, self.pos.y)
                     game_data.state = game_data.prev_state.pop()
                 elif game_data.state in [GameStates.CHARACTER_SCREEN,
                                          GameStates.FORMULA_HELP_SCEEN,

@@ -28,7 +28,7 @@ class MessageLog:
         self.last_id += 1
         lines = textwrap.wrap(msg.text, self.size.width)
 
-        for l in lines:
+        for line in lines:
             if len(self.messages) == self.size.height:
                 del self.messages[0]
-            self.messages.append(msg)
+            self.messages.append(Message(line, msg.color))

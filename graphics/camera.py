@@ -35,6 +35,6 @@ class Camera:
         return sx, sy
 
     def screen_to_map(self, x, y):
-        sx = self.x2 - x
-        sy = self.y2 - y
+        sx = self.x1 + x
+        sy = self.y1 + y
         return sx, sy

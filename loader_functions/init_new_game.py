@@ -1,7 +1,7 @@
-from attrdict import AttrDict as attribdict
+from attrdict import AttrDict
 
 from game_states import GameStates
-from graphics.constants import CELL_HEIGHT, CELL_WIDTH
+from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from util import Size
 
 
@@ -9,7 +9,7 @@ def get_constants():
     window_title = "Formula"
 
     screen_size = Size(80, 50)
-    map_size = Size(60, 50)
+    map_size = Size(80, 50)
     camera_size = Size(30, 30)
 
     bar_width = 20
@@ -17,8 +17,6 @@ def get_constants():
     bottom_panel_y = screen_size.height - bottom_panel_height
 
     right_panel_size = Size(150, screen_size.height - bottom_panel_height)
-    #window_size = Size(right_panel_size.width + camera_size.width * CELL_WIDTH,
-    #                   bottom_panel_height + camera_size.height * CELL_HEIGHT)
     window_size = Size(1200, 1000)
 
     message_x = bar_width + 2
@@ -39,7 +37,7 @@ def get_constants():
         "light_ground": (140, 140, 140)
     }
 
-    retr = attribdict({
+    retr = AttrDict({
         "window_title": window_title,
         "window_size": window_size,
         "screen_size": screen_size,
