@@ -60,8 +60,8 @@ def handle_formula_screen_keys(key, modifiers):
         return {"ingredient": Ingredient.RANGE}
     elif key == pygame.K_r:
         return {"ingredient": Ingredient.AREA}
-    #    elif key == pygame.K_a:
-    #        return {'ingredient' : Ingredient.COLD}
+    elif key == pygame.K_a:
+        return {'ingredient' : Ingredient.COLD}
     elif key == pygame.K_s:
         return {'ingredient': Ingredient.LIFE}
     # elif key == pygame.K_d:
@@ -152,8 +152,6 @@ def handle_player_turn_keys(key, modifiers):
         return {Event.start_throwing_vial: 7}
     elif key == pygame.K_9:
         return {Event.start_throwing_vial: 8}
-    # elif key == pygame.K_c:
-    #    return {Event.character_screen: True}
     elif key == pygame.K_TAB:
         return {Event.show_help: True}
 

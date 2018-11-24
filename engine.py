@@ -1,5 +1,6 @@
-import contextlib
+import traceback
 
+import contextlib
 with contextlib.redirect_stdout(None):
     import pygame
 
@@ -14,38 +15,42 @@ from game_states import GameStates
 def play_game(game_data, assets):
     while True:
         for res in game_data.timesystem.tick(game_data=game_data):
-            msg = res.get("message")
-            if msg:
-                game_data.log.add_message(msg)
+            try:
+                msg = res.get("message")
+                if msg:
+                    game_data.log.add_message(msg)
 
-            dead_entity = res.get("dead")
-            if dead_entity:
-                if dead_entity == game_data.player:
-                    msg, game_data = kill_player(game_data, assets)
-                else:
-                    msg, game_data = kill_monster(dead_entity, game_data, assets)
-                game_data.log.add_message(msg)
+                dead_entity = res.get("dead")
+                if dead_entity:
+                    if dead_entity == game_data.player:
+                        msg, game_data = kill_player(game_data, assets)
+                    else:
+                        msg, game_data = kill_monster(dead_entity, game_data, assets)
+                    game_data.log.add_message(msg)
 
-            cast = res.get("cast")
-            if cast is not None:
-                if cast:
-                    formula = res.get("formula")
-                    game_data.player.caster.add_cooldown(formula.formula_idx,
-                                                         formula.cooldown + 1)
-            quit = res.get("quit")
-            if quit:
-                return
+                cast = res.get("cast")
+                if cast is not None:
+                    if cast:
+                        formula = res.get("formula")
+                        game_data.player.caster.add_cooldown(formula.formula_idx,
+                                                             formula.cooldown + 1)
+                quit = res.get("quit")
+                if quit:
+                    return
 
-            xp = res.get("xp")
-            if xp:
-                leveled_up = game_data.player.level.add_xp(xp)
-                game_data.log.add_message(Message("You gain {} xp".format(xp)))
-                if leveled_up:
-                    game_data.log.add_message(
-                            Message("You grow stronger, reached level {}".format(game_data.player.level.current_level),
-                                    (0, 255, 0)))
-                    game_data.prev_state.append(game_data.state)
-                    game_data.state = GameStates.LEVEL_UP
+                xp = res.get("xp")
+                if xp:
+                    leveled_up = game_data.player.level.add_xp(xp)
+                    game_data.log.add_message(Message("You gain {} xp".format(xp)))
+                    if leveled_up:
+                        game_data.log.add_message(
+                                Message("You grow stronger, reached level {}".format(game_data.player.level.current_level),
+                                        (0, 255, 0)))
+                        game_data.prev_state.append(game_data.state)
+                        game_data.state = GameStates.LEVEL_UP
+            except AttributeError:
+                print("Failed to handle res={}".format(res))
+                traceback.print_exc()
 
 
 def main():
@@ -69,8 +74,6 @@ if __name__ == '__main__':
     try:
         main()
     except:
-        import traceback
-
         tb = traceback.format_exc()
         print(tb)
         try:

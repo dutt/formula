@@ -1,8 +1,9 @@
 import tcod
 
-from components.effects import EffectTag
+from components.effects import EffectType
 from messages import Message
 
+from components.damage_type import DamageType
 
 class Formula:
     EMPTY = None  # set in formula_builder.py
@@ -15,21 +16,42 @@ class Formula:
         self.distance = float(kwargs["distance"]) + 0.5  # for diagonal
         self.area = float(kwargs["area"]) + 0.5
         self.effects = kwargs["effects"]
-        self.hp_total_diff = 0
+
+        self.targeting_message_text = self.text_stats_text = self.applied_text = None
         self.parse()
 
     def parse(self):
+        text_msg = ""
+        applied_msg = ""
         for e in self.effects:
-            if e.tag == EffectTag.HP_DIFF:
-                self.hp_total_diff += e.apply()
+            stats = e.stats
+            if stats.type == EffectType.DAMAGE:
+                name = stats.dmg_type.name.lower()
+                text = "{} {} damage, ".format(stats.amount, name)
+                text_msg += text
+                applied_msg += "takes {} {} damage, ".format(stats.amount, name)
+            elif stats.type == EffectType.HEALING:
+                text = "{} healing, ".format(stats.amount)
+                text_msg += text
+                applied_msg += "healed for {}, ".format(stats.amount)
+            elif stats.type == EffectType.SLOW:
+                text = "slow for {} rounds, ".format(stats.rounds)
+                text_msg += text
+                applied_msg += "slowed for {} rounds, ".format(stats.rounds)
+        postfix = "range={}, area={}".format(self.distance, self.area)
+        if text_msg:
+            self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
+            self.text_stats_text = "{}, {}".format(text_msg[:-2], postfix)
+            self.applied_text = "The {} is " + applied_msg[:-2]
+        else:
+            self.targeting_message_text = ""
+            self.text_stats_text = ""
+            self.applied_text = ""
+
 
     @property
     def targeting_message(self):
-        if self.hp_total_diff < 0:
-            msg = "Targeting, healing={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
-        else:
-            msg = "Targeting, damage={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
-        return Message(msg)
+        return Message(self.targeting_message_text)
 
     @property
     def text_repr(self):
@@ -37,17 +59,11 @@ class Formula:
 
     @property
     def text_stats(self):
-        if self.hp_total_diff < 0:
-            return "healing={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
-        else:
-            return "damage={}, range={}, area={}".format(self.hp_total_diff, self.distance, self.area)
+        return self.text_stats_text
 
     def apply(self, **kwargs):
         def get_msg(e):
-            if self.hp_total_diff < 0:
-                return "The {} is healed {} points".format(e.name, -self.hp_total_diff)
-            else:
-                return "The {} takes {} fire damage".format(e.name, self.hp_total_diff)
+            return  self.applied_text.format(e.name)
 
         caster = kwargs.get("caster")
         target_x = kwargs.get("target_x")
@@ -65,10 +81,10 @@ class Formula:
                     continue
                 if e.pos.x == target_x and e.pos.y == target_y:
                     results.append({"cast": True, "message": Message(get_msg(e)), "targets": [e], "formula": self})
-                    if self.hp_total_diff < 0:
-                        results.extend(e.fighter.heal(-self.hp_total_diff))
-                    else:
-                        results.extend(e.fighter.take_damage(self.hp_total_diff))
+                    for effect in self.effects:
+                        results.extend(effect.apply(e))
+                        if effect.stats.rounds > 1:
+                            e.add_effect(effect, effect.stats.rounds)
                     break
             else:
                 results.append({"cast": False, "message": Message("No target"), "targets": [], "formula": self})
@@ -81,9 +97,9 @@ class Formula:
                     continue
                 if e.distance(target_x, target_y) < self.area:
                     results.append({"message": Message(get_msg(e))})
-                    if self.hp_total_diff < 0:
-                        results.extend(e.fighter.heal(-self.hp_total_diff))
-                    else:
-                        results.extend(e.fighter.take_damage(self.hp_total_diff))
+                    for effect in self.effects:
+                        results.extend(effect.apply(e))
+                        if effect.stats.rounds > 1:
+                            e.add_effect(effect, effect.stats.rounds)
                     targets.append(e)
         return results

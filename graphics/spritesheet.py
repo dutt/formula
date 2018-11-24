@@ -14,6 +14,7 @@ class Spritesheet():
         if scale:
             new_w, new_h = scale
             image = pygame.transform.scale(image, (new_w, new_h))
+        image.convert_alpha()
         return [image]
 
     def get_animation(self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, num_sprites=1,

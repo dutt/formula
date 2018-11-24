@@ -31,4 +31,4 @@ class MessageLog:
         for line in lines:
             if len(self.messages) == self.size.height:
                 del self.messages[0]
-            self.messages.append(Message(line, msg.color))
+            self.messages.append(Message("{}: {}".format(msg.id, line), msg.color))

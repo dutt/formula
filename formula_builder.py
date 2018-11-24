@@ -1,7 +1,7 @@
-from components.effects import Effect, EffectTag
+from components.effects import Effect, EffectType, EffectBuilder
 from components.ingredients import Ingredient
 from components.formula import Formula
-
+from components.damage_type import DamageType
 
 class FormulaBuilder:
     def __init__(self, num_slots, num_formula):
@@ -32,7 +32,8 @@ class FormulaBuilder:
 
     def evaluate(self):
         retr = []
-        dmg_per_step = 10
+        fire_dmg_per_step = 10
+        cold_dmg_per_step = 5
         distance_per_step = 3
         area_per_step = 0.5
         cooldown_per_slot = 3
@@ -40,7 +41,8 @@ class FormulaBuilder:
         heal_per_step = 3
         for idx, formula in enumerate(range(self.num_formula)):
             slots = self.slots_for_formula(formula)
-            dmg = 5
+            fire_dmg = 0
+            cold_dmg = 0
             distance = 1
             area = 0.5
             cooldown = len(slots) * cooldown_per_slot
@@ -50,27 +52,29 @@ class FormulaBuilder:
                 if slot == Ingredient.EMPTY:
                     cooldown -= cooldown_per_slot
                 elif slot == Ingredient.FIRE:
-                    dmg += dmg_per_step
+                    fire_dmg += fire_dmg_per_step
                 elif slot == Ingredient.RANGE:
                     distance += distance_per_step
                 elif slot == Ingredient.AREA:
                     area += area_per_step
-                #elif slot == Ingredient.COLD:
-                #    slow_rounds += slow_per_step
-                #    dmg += dmg_per_step // 2
+                elif slot == Ingredient.COLD:
+                    slow_rounds += slow_per_step
+                    cold_dmg += cold_dmg_per_step // 2
                 elif slot == Ingredient.LIFE:
                     healing += heal_per_step
             effects = []
-            if dmg > 0:
-                effects.append(Effect(1, EffectTag.HP_DIFF, lambda: dmg))
+            if fire_dmg > 0:
+                effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+            if cold_dmg > 0:
+                effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
             if slow_rounds > 0:
-                effects.append(Effect(slow_rounds, {"speed": lambda e: 0}))
+                effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
             if healing > 0:
-                effects.append(Effect(1, EffectTag.HP_DIFF, lambda: -healing))
+                effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
+
             retr.append(Formula(slots=slots, cooldown=cooldown, formula_idx=idx,
                                 distance=distance, area=area, effects=effects))
         return retr
-
 
 builder = FormulaBuilder(num_slots=3, num_formula=3)
 # builder.slots = [[Ingredient.EMPTY for i in range(3)]]

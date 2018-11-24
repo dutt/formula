@@ -21,8 +21,10 @@ class Entity:
         self.blocks = blocks
         self.render_order = render_order
         self.action_points = 0
+        self.round_speed = 0
         self.speed = speed
         self.active = True
+        self.effects = []
 
         self.fighter = fighter
         if self.fighter:
@@ -63,6 +65,24 @@ class Entity:
             return self.ai.take_turn(game_data)
         else:
             return None
+
+    def round_init(self):
+        self.round_speed = self.speed
+
+    def add_effect(self, effect, rounds):
+        effect.rounds_left = rounds
+        self.effects.append(effect)
+        effect.colorize_visual(self)
+
+    def apply_effects(self):
+        results = []
+        for idx, e in enumerate(self.effects):
+            results.extend(e.apply(self))
+            e.rounds_left -= 1
+            if e.rounds_left == 0:
+                del self.effects[idx]
+                e.restore_visual(self)
+        return results
 
     def move_towards(self, dest_x, dest_y, entities, game_map):
         dx = dest_x - self.pos.x

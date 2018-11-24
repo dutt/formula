@@ -15,7 +15,9 @@ class TimeSystem():
         if len(self.travellers) > 0:
             actor = self.travellers[0]
             self.travellers.rotate()
-            actor.action_points = min(actor.action_points + actor.speed, actor.speed * 1.5)
+            actor.round_init()
+            results.extend(actor.apply_effects())
+            actor.action_points = min(actor.action_points + actor.round_speed, actor.round_speed * 1.5)
             turn_data = actor.take_turn(game_data)
             while turn_data:
                 results.extend(turn_data.result)

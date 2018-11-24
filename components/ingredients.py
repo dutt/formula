@@ -6,7 +6,7 @@ class Ingredient(Enum):
     FIRE = auto()
     RANGE = auto()
     AREA = auto()
-    # COLD = auto()
+    COLD = auto()
     LIFE = auto()
     # SHIELD = auto()
 
