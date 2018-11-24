@@ -1,3 +1,5 @@
+import pygame
+
 from components.drawable import Drawable
 from util import Vec
 
@@ -14,18 +16,37 @@ class VisualEffectSystem():
     def remove(self, visual):
         self.effects.remove(visual)
 
-    def add(self, pos, endpos, lifespan, asset, color=None):
+    def add(self, pos, endpos, lifespan, asset, color=None, transform=None):
         fps_lifespan = lifespan * self.fps_per_second
         drawable = Drawable(asset)
-        effect = VisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self)
+        effect = TemporaryVisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self,
+                                       transform=transform(fps_lifespan) if transform else None)
         self.effects.append(effect)
 
     @property
     def done(self):
         return len(self.effects) == 0
 
-class VisualEffect():
-    def __init__(self, pos, endpos, lifespan, drawable, color, owner):
+
+def fader_transform(fps_lifespan):
+    def doer(drawable):
+        fade_per_tick = 255 / fps_lifespan
+        old_alpha = drawable.asset[0].get_alpha()
+        drawable.asset[0].set_alpha(old_alpha - fade_per_tick)
+        return drawable
+
+    return doer
+
+
+def rotation_transform(_=None):
+    def doer(drawable):
+        return Drawable([pygame.transform.rotate(drawable.asset[0], 90)])
+
+    return doer
+
+
+class TemporaryVisualEffect():
+    def __init__(self, pos, endpos, lifespan, drawable, color, owner, transform=None):
         self.pos = pos
         self.endpos = endpos
         self.lifespan = lifespan
@@ -41,11 +62,30 @@ class VisualEffect():
         self.drawable = drawable
         self.drawable.owner = self
         self.owner = owner
+        self.transform = transform
+
         if color:
             self.drawable.colorize(color)
 
     def update(self):
         self.pos += self.move_per_update
         self.age += 1
+        if self.transform:
+            self.drawable = self.transform(self.drawable)
         if self.age > self.lifespan:
             self.owner.remove(self)
+
+
+class AttachedVisualEffect():
+    def __init__(self, asset, color, owner, transform=None):
+        self.pos = owner.pos
+        self.drawable = Drawable(asset)
+        if color:
+            self.drawable.colorize(color)
+        self.owner = owner
+        self.transform = transform
+
+    def update(self):
+        self.pos = self.owner.pos
+        if self.transform:
+            self.drawable = self.transform(self.drawable)

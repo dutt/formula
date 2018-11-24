@@ -25,6 +25,7 @@ class Entity:
         self.speed = speed
         self.active = True
         self.effects = []
+        self.attached_effects = []
 
         self.fighter = fighter
         if self.fighter:
@@ -54,7 +55,7 @@ class Entity:
         return str(self)
 
     def __str__(self):
-        return "<id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
+        return "<entity id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
 
     def move(self, dx, dy):
         self.pos.x += dx
@@ -82,6 +83,8 @@ class Entity:
             if e.rounds_left == 0:
                 del self.effects[idx]
                 self.drawable.restore()
+        for e in self.attached_effects:
+            e.update()
         return results
 
     def move_towards(self, dest_x, dest_y, entities, game_map):

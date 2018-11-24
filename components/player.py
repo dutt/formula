@@ -17,6 +17,7 @@ from graphics.render_order import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
 from util import Pos
+from graphics.visual_effect import fader_transform
 
 
 class Player(Entity):
@@ -135,7 +136,7 @@ class Player(Entity):
                     targetx, targety = left_click.cx, left_click.cy
                     player_action = ThrowVialAction(self, targeting_formula, targetpos=(Pos(targetx, targety)))
                     gfx_data.visuals.add(self.pos, Pos(targetx, targety), lifespan=0.5,
-                                         asset=gfx_data.assets.throwing_bottle)
+                                         asset=gfx_data.assets.throwing_bottle, transform=fader_transform)
                     game_data.state = game_data.prev_state.pop()
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})

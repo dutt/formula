@@ -91,6 +91,12 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     main = gfx_data.main
 
     def draw_terrain():
+        # for x in range(30):
+        #    for y in range(15):
+        #        #main.blit(assets.effect0_sheet.get_image(x, 15+y)[0],
+        #        main.blit(assets.shield_effect[0],
+        #                  (x * CELL_WIDTH, y* CELL_HEIGHT))
+        # return
         for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
             for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
                 wall = game_data.map.tiles[x][y].block_sight
@@ -125,6 +131,10 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                 main.blit(e.drawable.asset[0],
                           (panel_width + sx * CELL_WIDTH,
                            sy * CELL_HEIGHT))
+                for ad in e.attached_effects:
+                    main.blit(ad.drawable.asset[0],
+                              (panel_width + sx * CELL_WIDTH,
+                               sy * CELL_HEIGHT))
 
     def draw_message_log():
         y = 800
