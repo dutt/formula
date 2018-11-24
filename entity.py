@@ -60,9 +60,9 @@ class Entity:
         self.pos.x += dx
         self.pos.y += dy
 
-    def take_turn(self, game_data):
+    def take_turn(self, game_data, gfx_data):
         if self.ai and self.action_points > 0:
-            return self.ai.take_turn(game_data)
+            return self.ai.take_turn(game_data, gfx_data)
         else:
             return None
 

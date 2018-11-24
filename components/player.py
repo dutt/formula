@@ -30,11 +30,7 @@ class Player(Entity):
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
         self.formula_builder = FormulaBuilder(self.caster.num_slots, self.caster.num_formulas)
-        self.gfx_data = None
-        self.clock = pygame.time.Clock()
 
-    def set_gui(self, gfx_data):
-        self.gfx_data = gfx_data
 
     def set_initial_state(self, state, game_data):
         game_data.state = state
@@ -43,8 +39,7 @@ class Player(Entity):
         else:
             game_data.prev_state = []
 
-    def take_turn(self, game_data):
-        assert self.gfx_data
+    def take_turn(self, game_data, gfx_data):
 
         if self.action_points < 100:
             return None
@@ -65,13 +60,13 @@ class Player(Entity):
                 recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
                               game_data.constants.fov_radius, game_data.constants.fov_light_walls,
                               game_data.constants.fov_algorithm)
-            render_all(self.gfx_data, game_data, targeting_formula, self.formula_builder, menu_data)
+            render_all(gfx_data, game_data, targeting_formula, self.formula_builder, menu_data)
 
             events = pygame.event.get()
             key_events = [e for e in events if e.type == pygame.KEYDOWN]
             mouse_events = [e for e in events if e.type == pygame.MOUSEBUTTONDOWN]
             action = handle_keys(key_events, game_data.state)
-            mouse_action = handle_mouse(mouse_events, game_data.constants, self.gfx_data.camera)
+            mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera)
 
             fullscreen = action.get(Event.fullscreen)
             move = action.get(Event.move)
@@ -105,13 +100,14 @@ class Player(Entity):
                 dx, dy = move
                 destx = self.pos.x + dx
                 desty = self.pos.y + dy
+
                 if not game_data.map.is_blocked(destx, desty):
                     target = get_blocking_entites_at_location(game_data.entities, destx, desty)
                     if target and target.fighter:
                         player_action = AttackAction(self, target=target)
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
-                        self.gfx_data.camera.center_on(destx, desty)
+                        gfx_data.camera.center_on(destx, desty)
 
             """from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
@@ -143,6 +139,8 @@ class Player(Entity):
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
                     player_action = ThrowVialAction(self, targeting_formula, targetpos=(Pos(targetx, targety)))
+                    gfx_data.visuals.add(self.pos, Pos(targetx, targety), lifespan=0.5,
+                                              asset=gfx_data.assets.throwing_bottle)
                     game_data.state = game_data.prev_state.pop()
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
@@ -177,18 +175,18 @@ class Player(Entity):
 
                 next_formula = action.get("next_formula")
                 if next_formula:
-                    self.formula_builder.currformula = (
-                                                               self.formula_builder.currformula + next_formula) % self.formula_builder.num_formula
+                    next_num = (self.formula_builder.currformula + next_formula) % self.formula_builder.num_formula
+                    self.formula_builder.currformula = next_num
 
                 next_slot = action.get("next_slot")
                 if next_slot:
-                    self.formula_builder.currslot = (
-                                                            self.formula_builder.currslot + next_slot) % self.formula_builder.num_slots
+                    next_num = (self.formula_builder.currslot + next_slot) % self.formula_builder.num_slots
+                    self.formula_builder.currslot = next_num
 
             if do_exit:
                 if game_data.state == GameStates.FORMULA_SCREEN:
                     self.caster.set_formulas(self.formula_builder.evaluate())
-                    self.gfx_data.camera.center_on(self.pos.x, self.pos.y)
+                    gfx_data.camera.center_on(self.pos.x, self.pos.y)
                     game_data.state = game_data.prev_state.pop()
                 elif game_data.state in [GameStates.CHARACTER_SCREEN,
                                          GameStates.FORMULA_HELP_SCEEN,
@@ -205,13 +203,13 @@ class Player(Entity):
                 if pygame.display.get_driver() == 'x11':
                     pygame.display.toggle_fullscreen()
                 else:
-                    display_copy = self.gfx_data.main.copy()
+                    display_copy = gfx_data.main.copy()
                     if fullscreen:
-                        self.gfx_data.main = pygame.display.set_mode(display)
+                        gfx_data.main = pygame.display.set_mode(display)
                     else:
-                        self.gfx_data.main = pygame.display.set_mode(display, pygame.FULLSCREEN)
-                        self.gfx_data.fullscreen = not self.gfx_data.fullscreen
-                        self.gfx_data.main.blit(display_copy, (0, 0))
+                        gfx_data.main = pygame.display.set_mode(display, pygame.FULLSCREEN)
+                        gfx_data.fullscreen = not gfx_data.fullscreen
+                        gfx_data.main.blit(display_copy, (0, 0))
                         pygame.display.update()
 
             action = mouse_action = None  # clear them for next round
@@ -233,10 +231,12 @@ class Player(Entity):
                     game_data.state = game_data.prev_state.pop()
                     game_data.log.add_message(Message("Targeting cancelled"))
 
-            self.clock.tick(30)
+            gfx_data.visuals.update()
+            gfx_data.clock.tick(gfx_data.fps_per_second)
 
         # end of no action
         assert player_action
         if type(player_action) == MoveToPositionAction:
             game_data.fov_recompute = True
+
         return player_action.execute(game_data)

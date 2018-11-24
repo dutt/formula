@@ -7,13 +7,15 @@ from messages import Message
 
 
 class BasicMonster:
-    def take_turn(self, game_data):
+    def take_turn(self, game_data, gfx_data):
         monster = self.owner
         if not tcod.map_is_in_fov(game_data.fov_map, monster.pos.x, monster.pos.y):
             return None
         if monster.distance_to(game_data.player) >= 2:
             return MoveToTargetAction(monster, target=game_data.player).execute(game_data)
         elif game_data.player.fighter.hp > 0:
+            gfx_data.visuals.add(monster.pos, game_data.player.pos, lifespan=0.25,
+                                 asset=gfx_data.assets.sword)
             return AttackAction(monster, target=game_data.player).execute(game_data)
         return None
 

@@ -15,7 +15,38 @@ class Size:
         return "<size w={}, h={}>".format(self.width, self.height)
 
     def tuple(self):
-        return (self.width, self.height)
+        return self.width, self.height
+
+
+class Vec:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def normalize(self):
+        length = self.length()
+        return Vec(self.x / length, self.y / length)
+
+    def length(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    def __mul__(self, other):
+        if type(other) == Vec:
+            return Vec(self.x * other.x, self.y * other.y)
+        else:
+            return Vec(self.x * other, self.y * other)
+
+    def __add__(self, other):
+        return Vec(self.x + other.x, self.y + other.y)
+
+    def to_pos(self):
+        return Pos(self.x, self.y)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return "<vec w={}, h={}>".format(self.x, self.y)
 
 
 class Pos:
@@ -29,11 +60,23 @@ class Pos:
     def __ne__(self, other):
         return (self == other) == False
 
-    def __str__(self):
-        return "<Pos x={} y={}>".format(self.x, self.y)
-
     def __repr__(self):
         return str(self)
+
+    def __str__(self):
+        return "<pos x={} y={}>".format(self.x, self.y)
+
+    def __sub__(self, other):
+        return Vec(self.x - other.x, self.y - other.y)
+
+    def __add__(self, other):
+        return Vec(self.x + other.x, self.y + other.y)
+
+    def distance_to(self, other):
+        return distance(self.x, self.y, other.x, other.y)
+
+    def to_vector(self):
+        return Vec(self.x, self.y)
 
     def tuple(self):
         return self.x, self.y

@@ -14,6 +14,8 @@ class Assets:
         self.undead_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Undead0.png"))
         self.decor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Decor0.png"))
         self.floor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Floor.png"))
+        self.potion_sheet = Spritesheet(util.resource_path("data/graphics/Items/Potion.png"))
+        self.medium_weapons_sheet = Spritesheet(util.resource_path("data/graphics/Items/MedWep.png"))
 
         if graphics_file_tile_size.width != CELL_WIDTH or graphics_file_tile_size.height != CELL_HEIGHT:
             scale = (CELL_WIDTH, CELL_HEIGHT)
@@ -44,6 +46,13 @@ class Assets:
         self.demon = self.undead_sheet.get_image(7, 2, graphics_file_tile_size.width, graphics_file_tile_size.height,
                                                  scale=scale)
         self.monster_corpse = self.decor_sheet.get_image(2, 12, graphics_file_tile_size.width,
+                                                         graphics_file_tile_size.height,
+                                                         scale=scale)
+
+        self.throwing_bottle = self.potion_sheet.get_image(1, 1, graphics_file_tile_size.width,
+                                                           graphics_file_tile_size.height,
+                                                           scale=scale)
+        self.sword = self.medium_weapons_sheet.get_image(0, 0, graphics_file_tile_size.width,
                                                          graphics_file_tile_size.height,
                                                          scale=scale)
 

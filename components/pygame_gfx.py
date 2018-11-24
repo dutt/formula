@@ -2,29 +2,46 @@ import math
 
 import pygame
 import tcod
-from attrdict import AttrDict
 
 import util
 from game_states import GameStates
 from graphics.assets import Assets
 from graphics.camera import Camera
 from graphics.constants import CELL_HEIGHT, CELL_WIDTH, colors
+from graphics.visual_effect import VisualEffectSystem
 from util import Pos
 
 
-def initialize(constants):
+class GfxState:
+    def __init__(self, main, assets, camera, fullscreen, visuals, fps_per_second, clock):
+        self.main = main
+        self.assets = assets
+        self.camera = camera
+        self.fullscreen = fullscreen
+        self.visuals = visuals
+        self.fps_per_second = fps_per_second
+        self.clock = clock
+
+
+def initialize_gfx(constants):
     pygame.init()
     pygame.display.set_caption("Formulas")
     pygame.mixer.quit()
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
     assets = Assets()
     camera = Camera(constants.camera_size.width, constants.camera_size.height, constants.map_size)
-    return AttrDict({
-        "main": main,
-        "assets": assets,
-        "camera": camera,
-        "fullscreen": False
-    })
+    fps_per_second=30
+    visuals = VisualEffectSystem(fps_per_second)
+    clock = pygame.time.Clock()
+    return GfxState(
+            main=main,
+            assets=assets,
+            camera=camera,
+            fullscreen=False,
+            visuals=visuals,
+            fps_per_second=fps_per_second,
+            clock=clock
+    )
 
 
 def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=None, center=False):
@@ -209,10 +226,20 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         targeting_surface.set_alpha(150)
         gfx_data.main.blit(targeting_surface, (0, 0))
 
-    draw_terrain()
-    draw_entities()
+    def draw_effects():
+        surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+        for effect in gfx_data.visuals.effects:
+            sx, sy = gfx_data.camera.map_to_screen(effect.pos.x, effect.pos.y)
+            surface.blit(effect.drawable.asset[0],
+                      (panel_width + sx * CELL_WIDTH,
+                       sy * CELL_HEIGHT))
+        gfx_data.main.blit(surface, (0, 0))
+
     draw_bottom_panel()
     draw_right_panel()
+    draw_terrain()
+    draw_entities()
+    draw_effects()
     if game_data.state == GameStates.TARGETING:
         draw_targeting()
 
