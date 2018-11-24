@@ -8,11 +8,11 @@ from components.caster import Caster
 from components.drawable import Drawable
 from components.fighter import Fighter
 from components.level import Level
-from components.pygame_gfx import render_all
 from entity import Entity, get_blocking_entites_at_location
 from formula_builder import FormulaBuilder
 from fov import recompute_fov
 from game_states import GameStates
+from graphics.pygame_gfx import render_all
 from graphics.render_order import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
@@ -30,14 +30,6 @@ class Player(Entity):
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
         self.formula_builder = FormulaBuilder(self.caster.num_slots, self.caster.num_formulas)
-
-
-    def set_initial_state(self, state, game_data):
-        game_data.state = state
-        if state == GameStates.WELCOME_SCREEN:
-            game_data.prev_state = [GameStates.PLAY, GameStates.FORMULA_SCREEN]
-        else:
-            game_data.prev_state = []
 
     def take_turn(self, game_data, gfx_data):
 
@@ -84,6 +76,7 @@ class Player(Entity):
                 for e in game_data.entities:
                     if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
                         player_action = DescendStairsAction(self)
+                        game_data.story.next_story()
                         # TODO clear cooldowns?
                         break
                 else:
@@ -93,6 +86,8 @@ class Player(Entity):
                 game_data.prev_state.append(game_data.state)
                 if game_data.state == GameStates.FORMULA_SCREEN:
                     game_data.state = GameStates.FORMULA_HELP_SCEEN
+                elif game_data.state == GameStates.STORY_SCREEN:
+                    game_data.state = GameStates.STORY_HELP_SCREEN
                 else:
                     game_data.state = GameStates.GENERAL_HELP_SCREEN
 
@@ -140,10 +135,18 @@ class Player(Entity):
                     targetx, targety = left_click.cx, left_click.cy
                     player_action = ThrowVialAction(self, targeting_formula, targetpos=(Pos(targetx, targety)))
                     gfx_data.visuals.add(self.pos, Pos(targetx, targety), lifespan=0.5,
-                                              asset=gfx_data.assets.throwing_bottle)
+                                         asset=gfx_data.assets.throwing_bottle)
                     game_data.state = game_data.prev_state.pop()
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
+
+            if game_data.state == GameStates.STORY_SCREEN:
+                next = action.get("next")
+                if next:
+                    if game_data.story.is_last_page:
+                        game_data.state = game_data.prev_state.pop()
+                    else:
+                        game_data.story.next_page()
 
             if level_up:
                 if menu_data.currchoice == 0:
@@ -191,7 +194,9 @@ class Player(Entity):
                 elif game_data.state in [GameStates.CHARACTER_SCREEN,
                                          GameStates.FORMULA_HELP_SCEEN,
                                          GameStates.GENERAL_HELP_SCREEN,
-                                         GameStates.WELCOME_SCREEN]:
+                                         GameStates.WELCOME_SCREEN,
+                                         GameStates.STORY_SCREEN,
+                                         GameStates.STORY_HELP_SCREEN]:
                     game_data.state = game_data.prev_state.pop()
                 elif game_data.state == GameStates.TARGETING:
                     turn_results.append({"targeting_cancelled": True})
@@ -238,5 +243,4 @@ class Player(Entity):
         assert player_action
         if type(player_action) == MoveToPositionAction:
             game_data.fov_recompute = True
-
         return player_action.execute(game_data)

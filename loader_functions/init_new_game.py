@@ -1,7 +1,7 @@
 from attrdict import AttrDict
 
 from game_states import GameStates
-from graphics.constants import CELL_WIDTH, CELL_HEIGHT
+from graphics.constants import CELL_HEIGHT
 from util import Size
 
 
@@ -73,6 +73,7 @@ from gamemap import GameMap
 from messages import MessageLog
 from components.player import Player
 from fov import initialize_fov
+from story import StoryLoader, StoryData
 
 
 def get_game_variables(constants, gfx_data):
@@ -84,9 +85,10 @@ def get_game_variables(constants, gfx_data):
     gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameStates.WELCOME_SCREEN
-    # state = GameStates.PLAY
+    #state = GameStates.PLAY
     fov_map = initialize_fov(gmap)
-
+    story_loader = StoryLoader()
+    story_data = StoryData(story_loader)
     game_data = StateData(
             player,
             entities,
@@ -95,6 +97,7 @@ def get_game_variables(constants, gfx_data):
             constants,
             timesystem,
             fov_map,
-            fov_recompute=True
+            fov_recompute=True,
+            story_data=story_data
     )
     return game_data, state

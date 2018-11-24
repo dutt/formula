@@ -44,8 +44,9 @@ class DescendStairsAction(Action):
         game_data.entities = game_data.map.next_floor(game_data.player, game_data.log,
                                                       game_data.constants,
                                                       game_data.entities, game_data.timesystem)
-        game_data.prev_state = [GameStates.PLAY]
-        game_data.state = GameStates.FORMULA_SCREEN
+        game_data.prev_state.append(game_data.state)
+        game_data.prev_state.append(GameStates.FORMULA_SCREEN)
+        game_data.state = GameStates.STORY_SCREEN
         game_data.fov_map = initialize_fov(game_data.map)
         game_data.fov_recompute = True
         result = [{"descended": True}]

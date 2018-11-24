@@ -2,6 +2,8 @@ from enum import Enum, auto
 
 
 class GameStates(Enum):
+    WELCOME_SCREEN = auto()
+    GENERAL_HELP_SCREEN = auto()
     PLAY = auto()
     PLAYER_DEAD = auto()
     TARGETING = auto()
@@ -9,5 +11,5 @@ class GameStates(Enum):
     CHARACTER_SCREEN = auto()
     FORMULA_SCREEN = auto()
     FORMULA_HELP_SCEEN = auto()
-    GENERAL_HELP_SCREEN = auto()
-    WELCOME_SCREEN = auto()
+    STORY_SCREEN = auto()
+    STORY_HELP_SCREEN = auto()

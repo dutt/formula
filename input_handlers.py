@@ -34,11 +34,22 @@ def handle_keys(events, state):
                        GameStates.WELCOME_SCREEN,
                        GameStates.TARGETING,
                        GameStates.GENERAL_HELP_SCREEN,
-                       GameStates.FORMULA_HELP_SCEEN]:
+                       GameStates.FORMULA_HELP_SCEEN,
+                       GameStates.STORY_HELP_SCREEN]:
             return handle_general_keys(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
             return handle_formula_screen_keys(e.key, modifiers)
+        elif state == GameStates.STORY_SCREEN:
+            return handle_story_screen(e.key, modifiers)
     return {}
+
+
+def handle_story_screen(key, modifiers):
+    if key == pygame.K_SPACE:
+        return {"next": True}
+    elif key == pygame.K_TAB:
+        return {Event.show_help: True}
+    return handle_general_keys(key, modifiers)
 
 
 def handle_formula_screen_keys(key, modifiers):

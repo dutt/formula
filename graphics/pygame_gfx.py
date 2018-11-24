@@ -1,4 +1,5 @@
 import math
+import textwrap
 
 import pygame
 import tcod
@@ -30,7 +31,7 @@ def initialize_gfx(constants):
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
     assets = Assets()
     camera = Camera(constants.camera_size.width, constants.camera_size.height, constants.map_size)
-    fps_per_second=30
+    fps_per_second = 30
     visuals = VisualEffectSystem(fps_per_second)
     clock = pygame.time.Clock()
     return GfxState(
@@ -231,8 +232,8 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         for effect in gfx_data.visuals.effects:
             sx, sy = gfx_data.camera.map_to_screen(effect.pos.x, effect.pos.y)
             surface.blit(effect.drawable.asset[0],
-                      (panel_width + sx * CELL_WIDTH,
-                       sy * CELL_HEIGHT))
+                         (panel_width + sx * CELL_WIDTH,
+                          sy * CELL_HEIGHT))
         gfx_data.main.blit(surface, (0, 0))
 
     draw_bottom_panel()
@@ -253,8 +254,32 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         formula_help_menu(gfx_data)
     elif game_data.state == GameStates.LEVEL_UP:
         levelup_menu(gfx_data, menu_data)
-
+    elif game_data.state == GameStates.STORY_SCREEN:
+        story_screen(gfx_data, game_data.story)
+    elif game_data.state == GameStates.STORY_HELP_SCREEN:
+        story_screen_help(gfx_data)
     pygame.display.flip()
+
+
+def story_screen(gfx_data, story_data):
+    page_lines = story_data.current_page.split("\n")
+    lines = []
+    for pl in page_lines:
+        if pl == "":
+            lines.append("")
+        else:
+            lines.extend(textwrap.wrap(pl, 60))
+    display_menu(gfx_data, lines, (800, 600))
+
+
+def story_screen_help(gfx_data):
+    lines = [
+        "This is the next page of the story",
+        "",
+        "Press Space for the next page",
+        "Press Escape or Tab to go back",
+    ]
+    display_menu(gfx_data, lines, (800, 600))
 
 
 def formula_menu(gfx_data, formulabuilder):
@@ -321,7 +346,7 @@ def welcome_menu(gfx_data):
         "Next you'll be shown the formula screen, press Tab to show help",
         "Escape to cancel actions or quit the current menu, or the game",
         "",
-        "Press Escape to continue and choose your formulas"
+        "Press Escape to continue"
     ]
     display_menu(gfx_data, lines, (800, 600))
 

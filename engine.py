@@ -4,7 +4,7 @@ import traceback
 with contextlib.redirect_stdout(None):
     import pygame
 
-from components.pygame_gfx import initialize_gfx
+from graphics.pygame_gfx import initialize_gfx
 from death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, get_game_variables
 from messages import Message
@@ -57,9 +57,24 @@ def main():
     constants = get_constants()
     gfx_data = initialize_gfx(constants)
     game_data, state = get_game_variables(constants, gfx_data)
+
+    game_data.state = state
+    game_data.prev_state = []
+    if state == GameStates.PLAY:
+        return
+
+    game_data.prev_state.append(GameStates.PLAY)
+
+    if state == GameStates.FORMULA_SCREEN:
+        return
+    game_data.prev_state.append(GameStates.FORMULA_SCREEN)
+
+    if state == GameStates.STORY_SCREEN:
+        return
+    game_data.prev_state.append(GameStates.STORY_SCREEN)
+
     gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
 
-    game_data.player.set_initial_state(state, game_data)
     play_game(game_data, gfx_data)
 
     pygame.quit()

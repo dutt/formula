@@ -1,6 +1,6 @@
 from collections import deque
 
-from components.pygame_gfx import render_all
+from graphics.pygame_gfx import render_all
 
 
 class TimeSystem():
