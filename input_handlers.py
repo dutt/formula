@@ -75,8 +75,8 @@ def handle_formula_screen_keys(key, modifiers):
         return {'ingredient' : Ingredient.COLD}
     elif key == pygame.K_s:
         return {'ingredient': Ingredient.LIFE}
-    # elif key == pygame.K_d:
-    #    return {'ingredient' : Ingredient.SHIELD}
+    elif key == pygame.K_d:
+        return {'ingredient' : Ingredient.SHIELD}
     elif key == pygame.K_LEFT:
         return {"next_formula": -1}
     elif key == pygame.K_RIGHT:

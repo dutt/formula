@@ -39,6 +39,7 @@ class FormulaBuilder:
         cooldown_per_slot = 3
         slow_per_step = 2
         heal_per_step = 3
+        shield_per_step = 4
         for idx, formula in enumerate(range(self.num_formula)):
             slots = self.slots_for_formula(formula)
             fire_dmg = 0
@@ -48,6 +49,7 @@ class FormulaBuilder:
             cooldown = len(slots) * cooldown_per_slot
             healing = 0
             slow_rounds = 0
+            shield = 0
             for slot in slots:
                 if slot == Ingredient.EMPTY:
                     cooldown -= cooldown_per_slot
@@ -62,15 +64,27 @@ class FormulaBuilder:
                     cold_dmg += cold_dmg_per_step // 2
                 elif slot == Ingredient.LIFE:
                     healing += heal_per_step
+                elif slot == Ingredient.SHIELD:
+                    shield += shield_per_step
             effects = []
-            if fire_dmg > 0:
-                effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
-            if cold_dmg > 0:
-                effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
-            if slow_rounds > 0:
-                effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
-            if healing > 0:
-                effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
+            if shield:
+                strikebacks = []
+                if fire_dmg > 0:
+                    strikebacks.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+                if cold_dmg > 0:
+                    strikebacks.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                if slow_rounds > 0:
+                    strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
+                effects.append(EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks))
+            else:
+                if fire_dmg > 0:
+                    effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+                if cold_dmg > 0:
+                    effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                if slow_rounds > 0:
+                    effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
+                if healing > 0:
+                    effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
 
             retr.append(Formula(slots=slots, cooldown=cooldown, formula_idx=idx,
                                 distance=distance, area=area, effects=effects))
@@ -79,6 +93,6 @@ class FormulaBuilder:
 builder = FormulaBuilder(num_slots=3, num_formula=3)
 # builder.slots = [[Ingredient.EMPTY for i in range(3)]]
 builder.slots = [[Ingredient.FIRE for i in range(3)] for i in range(3)]
-# builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.AREA]]
+builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE] for i in range(3)]
 Formula.EMPTY = builder.evaluate()[0]
 Formula.DEFAULT = builder.evaluate()

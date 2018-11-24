@@ -81,7 +81,7 @@ class Entity:
             e.rounds_left -= 1
             if e.rounds_left == 0:
                 del self.effects[idx]
-                e.restore_visual(self)
+                self.drawable.restore()
         return results
 
     def move_towards(self, dest_x, dest_y, entities, game_map):

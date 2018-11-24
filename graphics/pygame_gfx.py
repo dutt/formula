@@ -140,8 +140,14 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         surface.fill(game_data.constants.colors.dark_wall)
 
         y = 20
-        render_bar(surface, assets, Pos(10, 20), 100, game_data.player.fighter.hp, game_data.player.fighter.max_hp,
+        render_bar(surface, assets, Pos(10, y), 100, game_data.player.fighter.hp, game_data.player.fighter.max_hp,
                    (160, 0, 0), (100, 0, 0))
+
+        if game_data.player.fighter.shield:
+            y += 30
+            render_bar(surface, assets, Pos(10, y), 100, game_data.player.fighter.shield.level,
+                       game_data.player.fighter.shield.max_level,
+                       (0, 160, 0), (0, 100, 0))
 
         y += 50
         display_text(surface, "Formulas", assets.font_title, (10, y))

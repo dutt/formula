@@ -3,7 +3,6 @@ import tcod
 from components.effects import EffectType
 from messages import Message
 
-from components.damage_type import DamageType
 
 class Formula:
     EMPTY = None  # set in formula_builder.py
@@ -48,7 +47,6 @@ class Formula:
             self.text_stats_text = ""
             self.applied_text = ""
 
-
     @property
     def targeting_message(self):
         return Message(self.targeting_message_text)
@@ -63,7 +61,7 @@ class Formula:
 
     def apply(self, **kwargs):
         def get_msg(e):
-            return  self.applied_text.format(e.name)
+            return self.applied_text.format(e.name)
 
         caster = kwargs.get("caster")
         target_x = kwargs.get("target_x")

@@ -8,7 +8,7 @@ class Ingredient(Enum):
     AREA = auto()
     COLD = auto()
     LIFE = auto()
-    # SHIELD = auto()
+    SHIELD = auto()
 
     @property
     def shortname(self):
