@@ -19,6 +19,14 @@ class StoryData:
         return self.section.pages[self.current_page_idx]
 
     @property
+    def page_count(self):
+        return len(self.section.pages)
+
+    @property
+    def page_num(self):
+        return self.current_page_idx+1
+
+    @property
     def is_last_page(self):
         return self.current_page_idx+1 >= len(self.section.pages)
 

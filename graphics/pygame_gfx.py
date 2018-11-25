@@ -67,10 +67,13 @@ def display_lines(surface, font, lines, x=50, starty=50, ydiff=20):
         y += ydiff
 
 
-def display_menu(gfx_data, lines, size):
-    surface = pygame.Surface(size)
+def display_menu(gfx_data, lines, size, surface=None):
+    has_surface=surface is not None
+    if not has_surface:
+        surface = pygame.Surface(size)
     display_lines(surface, gfx_data.assets.font_message, lines)
-    gfx_data.main.blit(surface, (200, 200))
+    if not has_surface:
+        gfx_data.main.blit(surface, (200, 200))
 
 
 def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, height=30, text=None):
@@ -280,6 +283,7 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
 
 
 def story_screen(gfx_data, story_data):
+    surface = pygame.Surface((800, 600))
     page_lines = story_data.current_page.split("\n")
     lines = []
     for pl in page_lines:
@@ -287,7 +291,10 @@ def story_screen(gfx_data, story_data):
             lines.append("")
         else:
             lines.extend(textwrap.wrap(pl, 60))
-    display_menu(gfx_data, lines, (800, 600))
+    display_menu(gfx_data, lines, (800, 600), surface=surface)
+    display_text(surface, "{}/{}".format(story_data.page_num, story_data.page_count),
+                 gfx_data.assets.font_message, (40, 400))
+    gfx_data.main.blit(surface, (200, 200))
 
 
 def story_screen_help(gfx_data):
