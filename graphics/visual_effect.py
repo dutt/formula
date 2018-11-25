@@ -5,27 +5,50 @@ from util import Vec
 
 
 class VisualEffectSystem():
+    _instance = None
+
     def __init__(self, fps_per_second):
+        assert not VisualEffectSystem._instance
+        VisualEffectSystem._instance = self
         self.fps_per_second = fps_per_second
-        self.effects = []
+        self.temporary_effects = []
+        self.attached_effects = []
+
+    @staticmethod
+    def get():
+        return VisualEffectSystem._instance
+
+    @property
+    def effects(self):
+        return self.temporary_effects + self.attached_effects
 
     def update(self):
-        for e in self.effects:
+        for e in self.temporary_effects:
+            e.update()
+        for e in self.attached_effects:
             e.update()
 
     def remove(self, visual):
-        self.effects.remove(visual)
+        if visual in self.temporary_effects:
+            self.temporary_effects.remove(visual)
+        elif visual in self.attached_effects:
+            self.attached_effects.remove(visual)
 
-    def add(self, pos, endpos, lifespan, asset, color=None, transform=None):
+    def add_temporary(self, pos, endpos, lifespan, asset, color=None, transform=None):
         fps_lifespan = lifespan * self.fps_per_second
         drawable = Drawable(asset)
         effect = TemporaryVisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self,
                                        transform=transform(fps_lifespan) if transform else None)
-        self.effects.append(effect)
+        self.temporary_effects.append(effect)
+
+    def add_attached(self, owner, asset, color=None, transform=None):
+        drawable = Drawable(asset)
+        effect = AttachedVisualEffect(owner, drawable, color, transform)
+        self.attached_effects.append(effect)
 
     @property
     def done(self):
-        return len(self.effects) == 0
+        return len(self.temporary_effects) == 0
 
 
 def fader_transform(fps_lifespan):
@@ -77,12 +100,12 @@ class TemporaryVisualEffect():
 
 
 class AttachedVisualEffect():
-    def __init__(self, asset, color, owner, transform=None):
+    def __init__(self, owner, drawable, color, transform):
         self.pos = owner.pos
-        self.drawable = Drawable(asset)
+        self.owner = owner
+        self.drawable = drawable
         if color:
             self.drawable.colorize(color)
-        self.owner = owner
         self.transform = transform
 
     def update(self):

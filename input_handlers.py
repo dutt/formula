@@ -4,7 +4,7 @@ from attrdict import AttrDict
 from components.ingredients import Ingredient
 from game_states import GameStates
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
-from graphics.camera import Camera
+
 
 class Event:
     move = "move"
@@ -73,11 +73,11 @@ def handle_formula_screen_keys(key, modifiers):
     elif key == pygame.K_r:
         return {"ingredient": Ingredient.AREA}
     elif key == pygame.K_a:
-        return {'ingredient' : Ingredient.COLD}
+        return {'ingredient': Ingredient.COLD}
     elif key == pygame.K_s:
         return {'ingredient': Ingredient.LIFE}
     elif key == pygame.K_d:
-        return {'ingredient' : Ingredient.SHIELD}
+        return {'ingredient': Ingredient.SHIELD}
     elif key == pygame.K_LEFT:
         return {"next_formula": -1}
     elif key == pygame.K_RIGHT:

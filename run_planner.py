@@ -37,7 +37,8 @@ class RunPlanner:
     def activate_next_level(self):
         if self.current_level_index is not None:
             for e in self.current_map.entities:
-                self.timesystem.release(e)
+                if e.active:
+                    self.timesystem.release(e)
             self.current_level_index += 1
         else:
             self.current_level_index = 0

@@ -14,7 +14,7 @@ class BasicMonster:
         if monster.distance_to(game_data.player) >= 2:
             return MoveToTargetAction(monster, target=game_data.player).execute(game_data)
         elif game_data.player.fighter.hp > 0:
-            gfx_data.visuals.add(monster.pos, game_data.player.pos, lifespan=0.25,
+            gfx_data.visuals.add_temporary(monster.pos, game_data.player.pos, lifespan=0.25,
                                  asset=gfx_data.assets.sword)
             return AttackAction(monster, target=game_data.player).execute(game_data)
         return None

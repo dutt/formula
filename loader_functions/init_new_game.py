@@ -80,8 +80,8 @@ def get_game_variables(constants, gfx_data):
     player = Player(gfx_data.assets)
     timesystem = TimeSystem()
     log = MessageLog(constants.message_x, constants.message_size)
-    #state = GameStates.WELCOME_SCREEN
-    state = GameStates.PLAY
+    state = GameStates.WELCOME_SCREEN
+    #state = GameStates.PLAY
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)
     planner = RunPlanner(3, player, gfx_data.assets, constants, timesystem)

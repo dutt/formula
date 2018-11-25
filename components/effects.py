@@ -5,7 +5,7 @@ from attrdict import AttrDict
 from components.damage_type import DamageType
 from components.shield import Shield
 from graphics.assets import Assets
-from graphics.visual_effect import AttachedVisualEffect, rotation_transform
+from graphics.visual_effect import VisualEffectSystem, rotation_transform
 
 
 class EffectType(Enum):
@@ -116,10 +116,9 @@ class EffectBuilder:
 
             def apply(target):
                 target.fighter.shield = Shield(level, strikebacks, target)
-                target.fighter.shield.effect = AttachedVisualEffect(Assets.get().shield_effect,
-                                                                    target.fighter.shield.color, target,
-                                                                    transform=rotation_transform())
-                target.attached_effects.append(target.fighter.shield.effect)
+                VisualEffectSystem.get().add_attached(target, Assets.get().shield_effect,
+                                                      target.fighter.shield.color,
+                                                      transform=rotation_transform())
                 return []
 
             def stats_func():

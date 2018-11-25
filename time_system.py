@@ -8,7 +8,7 @@ class TimeSystem():
         self.travellers = deque()
 
     def register(self, actor):
-        self.travellers.append((actor))
+        self.travellers.append(actor)
 
     def release(self, actor):
         self.travellers.remove(actor)
