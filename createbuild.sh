@@ -3,8 +3,13 @@ set -e
 
 pwd=`pwd`
 
+build_win=1
+build_u18=1
+build_u16=1
 #cleanup
 find . -name "*.pyc" -delete
+
+if [[ $build_u18 == 1 ]]; then
 
 # local, ubuntu 18
 source venv/bin/activate
@@ -16,6 +21,10 @@ cp dist/formula formula.linux18
 
 cd $pwd
 
+fi #u18
+
+if [[ $build_win == 1 ]]; then
+
 #windows, Passw0rd!
 vm_name="formulabuilderwin"
 ssh_name="win"
@@ -24,7 +33,7 @@ sleep 5
 VBoxManage snapshot $vm_name restore builder
 sleep 5
 VBoxManage startvm $vm_name --type headless
-sleep 45 # windows takes ages to boot up to ssh server reachability
+sleep 60 # windows takes ages to boot up to ssh server reachability
 dirname="formula"
 ssh $ssh_name "mkdir $dirname"
 scp -rq *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_objects $ssh_name:$dirname
@@ -37,6 +46,10 @@ HERE
 scp $ssh_name:$dirname/build/dist/formula.exe build/formula.windows.exe
 
 cd $pwd
+
+fi #win
+
+if [[ $build_u16 == 1 ]]; then
 
 # ubuntu 16 needs a VM because GLIBC <censored>
 vm_name="formulabuilder16"
@@ -59,3 +72,4 @@ ssh $ssh_name << HERE
     pyinstaller --clean ../pyinstaller.spec
 HERE
 scp $ssh_name:$dirname/build/dist/formula build/formula.linux16
+fi #u16
