@@ -49,8 +49,8 @@ class RunPlanner:
         return self.current_map
 
     def make_easy_map(self, current_level):
-        monster_chances = { "ghost" : 90,
-                            "demon" : 10}
+        monster_chances = { "ghost" : 60,
+                            "chucker" : 40}
         map = GameMap(self.size, self.assets, current_level, self.constants, monster_chances)
         return map
 

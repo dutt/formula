@@ -7,7 +7,7 @@ class Spritesheet():
     def __init__(self, path):
         self.sheet = pygame.image.load(path).convert()
 
-    def get_image(self, row, col, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None):
+    def get_image(self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None):
         image = pygame.Surface((width, height))
         image.blit(self.sheet, (0, 0), (col * width, row * height, width, height))
         image.set_colorkey(constants.colors.BLACK)

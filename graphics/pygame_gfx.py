@@ -398,7 +398,7 @@ def help_menu(gfx_data):
 def formula_help_menu(gfx_data):
     lines = [
         "Building formulas:",
-        "Q,W,E,R,S: Set current slot to ingredient",
+        "Q,W,E,R,A,S, D: Set current slot to ingredient",
         "Up/down arrow: Switch to next/previous slot",
         "Right/left arrow: Switch to next/previous formula",
         "Cooldown is increased for every used slot",

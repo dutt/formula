@@ -124,7 +124,7 @@ class Entity:
 
         # Allocate a A* path
         # The 1.41 is the normal diagonal cost of moving, it can be set as 0.0 if diagonal moves are prohibited
-        my_path = tcod.path_new_using_map(fov, 1.41)
+        my_path = tcod.path_new_using_map(fov, 0.0)
 
         # Compute the path between self's coordinates and the target's coordinates
         tcod.path_compute(my_path, self.pos.x, self.pos.y, target.pos.x, target.pos.y)
@@ -154,3 +154,5 @@ def get_blocking_entites_at_location(entities, destx, desty):
         if e.blocks and e.pos.x == destx and e.pos.y == desty:
             return e
     return None
+
+
