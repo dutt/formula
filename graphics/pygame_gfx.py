@@ -60,11 +60,11 @@ def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=
     surface.blit(text_surface, rect)
 
 
-def display_lines(surface, font, lines, x=50, starty=50):
+def display_lines(surface, font, lines, x=50, starty=50, ydiff=20):
     y = starty
     for line in lines:
         display_text(surface, line, font, (x, y))
-        y += 20
+        y += ydiff
 
 
 def display_menu(gfx_data, lines, size):
@@ -278,6 +278,7 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         story_screen(gfx_data, game_data.story)
     pygame.display.flip()
 
+
 def story_screen(gfx_data, story_data):
     page_lines = story_data.current_page.split("\n")
     lines = []
@@ -301,7 +302,7 @@ def story_screen_help(gfx_data):
 
 def formula_menu(gfx_data, formulabuilder):
     surface = pygame.Surface((800, 600))
-    linediff = 10
+    linediff = 12
     y = 5 * linediff
     display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
@@ -320,11 +321,15 @@ def formula_menu(gfx_data, formulabuilder):
     formulas = formulabuilder.evaluate()
     y += linediff
     display_text(surface,
-                 "Formula stats {}".format(formulas[formulabuilder.currformula].text_stats),
+                 "Formula stats:",
                  gfx_data.assets.font_message,
                  (50, y))
+    y += linediff
+    lines = textwrap.wrap(formulas[formulabuilder.currformula].text_stats, 60)
+    display_lines(surface, gfx_data.assets.font_message, lines, 50, y, ydiff=10)
+    y += len(lines) * linediff
 
-    y += 3 * linediff
+    y += 6 * linediff
     display_text(surface, "Press Tab for help".format(formulabuilder.currformula + 1), gfx_data.assets.font_message,
                  (50, y))
     gfx_data.main.blit(surface, (200, 200))

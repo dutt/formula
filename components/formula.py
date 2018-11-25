@@ -23,20 +23,9 @@ class Formula:
         text_msg = ""
         applied_msg = ""
         for e in self.effects:
-            stats = e.stats
-            if stats.type == EffectType.DAMAGE:
-                name = stats.dmg_type.name.lower()
-                text = "{} {} damage, ".format(stats.amount, name)
-                text_msg += text
-                applied_msg += "takes {} {} damage, ".format(stats.amount, name)
-            elif stats.type == EffectType.HEALING:
-                text = "{} healing, ".format(stats.amount)
-                text_msg += text
-                applied_msg += "healed for {}, ".format(stats.amount)
-            elif stats.type == EffectType.SLOW:
-                text = "slow for {} rounds, ".format(stats.rounds)
-                text_msg += text
-                applied_msg += "slowed for {} rounds, ".format(stats.rounds)
+            e_text_message, e_applied_msg = self.parse_effect(e)
+            text_msg += e_text_message
+            applied_msg += applied_msg
         postfix = "range={}, area={}".format(self.distance, self.area)
         if text_msg:
             self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
@@ -46,6 +35,35 @@ class Formula:
             self.targeting_message_text = ""
             self.text_stats_text = ""
             self.applied_text = ""
+
+    def parse_effect(self, effect):
+        text_msg = ""
+        applied_msg = ""
+        stats = effect.stats
+        if stats.type == EffectType.DAMAGE:
+            name = stats.dmg_type.name.lower()
+            text_msg = "{} {} damage, ".format(stats.amount, name)
+            applied_msg = "takes {} {} damage, ".format(stats.amount, name)
+        elif stats.type == EffectType.HEALING:
+            text_msg = "{} healing, ".format(stats.amount)
+            applied_msg = "healed for {}, ".format(stats.amount)
+        elif stats.type == EffectType.SLOW:
+            text_msg = "slow for {} rounds, ".format(stats.rounds)
+            applied_msg = "slowed for {} rounds, ".format(stats.rounds)
+        elif stats.type == EffectType.DEFENSE:
+            text_msg = "shield resisting {} damage".format(stats.level)
+            applied_msg = "shielded for {} damage".format(stats.level)
+            if stats.strikebacks:
+                text_msg += " and dealing "
+                applied_msg += ", shield dealing "
+                for sb in stats.strikebacks:
+                    sb_txt, sb_applied = self.parse_effect(sb)
+                    text_msg += sb_txt
+                    applied_msg += applied_msg
+            else:
+                text_msg += ", "
+                applied_msg += ", "
+        return text_msg, applied_msg
 
     @property
     def targeting_message(self):

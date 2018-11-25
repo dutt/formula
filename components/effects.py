@@ -124,7 +124,9 @@ class EffectBuilder:
             def stats_func():
                 return AttrDict({
                     "type": EffectType.DEFENSE,
-                    "rounds": 1
+                    "rounds": 1,
+                    "level": level,
+                    "strikebacks" : strikebacks
                 })
 
             def colorize_visual(target):
