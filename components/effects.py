@@ -76,7 +76,7 @@ class EffectBuilder:
 
             def apply(target):
                 heal_amount = amount
-                if DamageType.LIFE in target.fighter.immunitites:
+                if DamageType.LIFE in target.fighter.immunities:
                     return
                 if DamageType.LIFE in target.fighter.resistances:
                     heal_amount = amount // 2
