@@ -40,11 +40,13 @@ class VisualEffectSystem():
         effect = TemporaryVisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self,
                                        transform=transform(fps_lifespan) if transform else None)
         self.temporary_effects.append(effect)
+        return effect
 
     def add_attached(self, owner, asset, color=None, transform=None):
         drawable = Drawable(asset)
         effect = AttachedVisualEffect(owner, drawable, color, transform)
         self.attached_effects.append(effect)
+        return effect
 
     @property
     def done(self):

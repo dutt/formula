@@ -15,7 +15,6 @@ from messages import Message
 from random_utils import random_choice_from_dict, from_dungeon_level
 from util import Pos
 
-
 class GameMap:
     def __init__(self, size, assets, dungeon_level, constants, monster_chances):
         self.width = size.width
@@ -37,6 +36,59 @@ class GameMap:
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
 
+    def get_monster(self, x, y, room, monster_choice):
+        monsters = []
+        if monster_choice == "ghost":
+            fighter_component = Fighter(hp=20, defense=0, power=3, xp=35)
+            ai = MeleeMonsterAI()
+            drawable_component = Drawable(self.assets.ghost)
+            monster = Monster(x, y, "Ghost", speed=100,
+                              fighter=fighter_component, ai=ai, drawable=drawable_component)
+            monsters.append(monster)
+        elif monster_choice == "chucker":
+            fighter_component = Fighter(hp=10, defense=0, power=1, xp=35)
+            ai = RangedMonsterAI()
+            drawable_component = Drawable(self.assets.chucker)
+            monster = Monster(x, y, "Chucker", speed=100,
+                              fighter=fighter_component, ai=ai, drawable=drawable_component,
+                              range=5)
+            monsters.append(monster)
+        elif monster_choice == "wolfpack":
+            packsize = randint(1, 3)
+            diffs = [(-1, -1), (-1, 0), (-1, 1),
+                     (0, -1),           (0, 1 ),
+                     (1, -1),  (1, 0),  (1, 1 )]
+            clean_diffs = []
+            for d in diffs:
+                occupied = False
+                for e in self.entities:
+                    if e.pos == Pos(x + d[0], y + d[1]):
+                        occupied = True
+                if not occupied:
+                    clean_diffs.append(d)
+            for w in range(packsize):
+                diff_idx = randint(0, len(clean_diffs)-1)
+                diff = clean_diffs[diff_idx]
+                wx, wy = x + diff[0], y + diff[1]
+                clean_diffs.remove(diff)
+                fighter_component = Fighter(hp=5, defense=0, power=1, xp=35)
+                ai = MeleeMonsterAI()
+                drawable_component = Drawable(self.assets.wolf)
+                monster = Monster(wx, wy, "Wolf", speed=150,
+                                  fighter=fighter_component, ai=ai, drawable=drawable_component)
+                monsters.append(monster)
+        elif monster_choice == "demon":
+            fighter_component = Fighter(hp=50, defense=5, power=5, xp=100)
+            ai = MeleeMonsterAI()
+            drawable_component = Drawable(self.assets.demon)
+            monster = Monster(x, y, "Demon", speed=100,
+                              fighter=fighter_component, ai=ai, drawable=drawable_component)
+            monsters.append(monster)
+        else:
+            raise ValueError("Unknown choice: '{}'".format(monster_choice))
+        assert monster
+        return monsters
+
     def place_entities(self, room, entities):
         max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], self.dungeon_level + 1)
 
@@ -48,27 +100,7 @@ class GameMap:
 
             if not any([entity for entity in entities if entity.pos.x == x and entity.pos.y == y]):
                 monster_choice = random_choice_from_dict(self.monster_chances)
-
-                if monster_choice == "ghost":
-                    fighter_component = Fighter(hp=20, defense=0, power=3, xp=35)
-                    ai = MeleeMonsterAI()
-                    drawable_component = Drawable(self.assets.ghost)
-                    monster = Monster(x, y, "Ghost", speed=100,
-                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
-                elif monster_choice == "chucker":
-                    fighter_component = Fighter(hp=10, defense=0, power=1, xp=35)
-                    ai = RangedMonsterAI()
-                    drawable_component = Drawable(self.assets.chucker)
-                    monster = Monster(x, y, "Chucker", speed=100,
-                                      fighter=fighter_component, ai=ai, drawable=drawable_component,
-                                      range=5)
-                else:
-                    fighter_component = Fighter(hp=50, defense=5, power=5, xp=100)
-                    ai = MeleeMonsterAI()
-                    drawable_component = Drawable(self.assets.demon)
-                    monster = Monster(x, y, "Demon", speed=100,
-                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
-                entities.append(monster)
+                entities.extend(self.get_monster(x, y, room, monster_choice))
 
     def make_map(self, constants):
         rooms = []

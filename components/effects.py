@@ -58,6 +58,15 @@ class EffectBuilder:
                     return
                 if dmg_type in target.fighter.resistances:
                     dmg_amount = amount // 2
+                color = None
+                if dmg_type == DamageType.FIRE:
+                    color = (255, 0, 0)
+                elif dmg_type == DamageType.COLD:
+                    color = (0, 0, 255)
+                elif dmg_type == DamageType.POISON:
+                    color = (0, 255, 0)
+                VisualEffectSystem.get().add_temporary(target.pos, target.pos, lifespan=0.1,
+                                                       asset=Assets.get().spark_effect, color=color)
                 return target.fighter.take_damage(source=None, dmg=dmg_amount, dmg_type=dmg_type)
 
             def stats_func():
@@ -116,9 +125,9 @@ class EffectBuilder:
 
             def apply(target):
                 target.fighter.shield = Shield(level, strikebacks, target)
-                VisualEffectSystem.get().add_attached(target, Assets.get().shield_effect,
-                                                      target.fighter.shield.color,
-                                                      transform=rotation_transform())
+                target.fighter.shield.effect = VisualEffectSystem.get().add_attached(target, Assets.get().shield_effect,
+                                                                                     target.fighter.shield.color,
+                                                                                     transform=rotation_transform())
                 return []
 
             def stats_func():
@@ -126,7 +135,7 @@ class EffectBuilder:
                     "type": EffectType.DEFENSE,
                     "rounds": 1,
                     "level": level,
-                    "strikebacks" : strikebacks
+                    "strikebacks": strikebacks
                 })
 
             def colorize_visual(target):
