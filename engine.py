@@ -53,25 +53,30 @@ def play_game(game_data, gfx_data):
                 traceback.print_exc()
 
 
+def setup_prevstate(state):
+    retr = []
+
+    if state == GameStates.PLAY:
+        return retr
+    retr.append(GameStates.PLAY)
+
+    if state == GameStates.FORMULA_SCREEN:
+        return retr
+    retr.append(GameStates.FORMULA_SCREEN)
+
+    if state == GameStates.STORY_SCREEN:
+        return retr
+    retr.append(GameStates.STORY_SCREEN)
+
+    return retr
+
 def main():
     constants = get_constants()
     gfx_data = initialize_gfx(constants)
     game_data, state = get_game_variables(constants, gfx_data)
 
     game_data.state = state
-    game_data.prev_state = []
-    if state == GameStates.PLAY:
-        return
-
-    game_data.prev_state.append(GameStates.PLAY)
-
-    if state == GameStates.FORMULA_SCREEN:
-        return
-    game_data.prev_state.append(GameStates.FORMULA_SCREEN)
-
-    if state == GameStates.STORY_SCREEN:
-        return
-    game_data.prev_state.append(GameStates.STORY_SCREEN)
+    game_data.prev_state = setup_prevstate(state)
 
     gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
 

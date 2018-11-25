@@ -35,7 +35,8 @@ def handle_keys(events, state):
                        GameStates.TARGETING,
                        GameStates.GENERAL_HELP_SCREEN,
                        GameStates.FORMULA_HELP_SCEEN,
-                       GameStates.STORY_HELP_SCREEN]:
+                       GameStates.STORY_HELP_SCREEN,
+                       GameStates.VICTORY]:
             return handle_general_keys(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
             return handle_formula_screen_keys(e.key, modifiers)

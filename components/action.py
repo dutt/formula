@@ -41,15 +41,18 @@ class DescendStairsAction(Action):
         super(DescendStairsAction, self).__init__(actor=actor, cost=DescendStairsAction.COST)
 
     def execute(self, game_data):
-        game_data.entities = game_data.map.next_floor(game_data.player, game_data.log,
-                                                      game_data.constants,
-                                                      game_data.entities, game_data.timesystem)
-        game_data.prev_state.append(game_data.state)
-        game_data.prev_state.append(GameStates.FORMULA_SCREEN)
-        game_data.state = GameStates.STORY_SCREEN
-        game_data.fov_map = initialize_fov(game_data.map)
-        game_data.fov_recompute = True
-        result = [{"descended": True}]
+        if game_data.run_planner.has_next:
+            game_data.prev_state.append(game_data.state)
+            game_data.prev_state.append(GameStates.FORMULA_SCREEN)
+            game_data.state = GameStates.STORY_SCREEN
+            game_data.map = game_data.run_planner.activate_next_level()
+            game_data.entities = game_data.map.entities
+            game_data.fov_map = initialize_fov(game_data.map)
+            game_data.fov_recompute = True
+            result = [{"descended": True}]
+        else:
+            game_data.state = GameStates.VICTORY
+            result = [{"victory": True}]
         return self.package(result)
 
 

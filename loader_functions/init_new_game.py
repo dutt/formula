@@ -24,7 +24,7 @@ def get_constants():
 
     room_max_size = 15
     room_min_size = 6
-    max_rooms = 10
+    max_rooms = 1
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -74,30 +74,28 @@ from messages import MessageLog
 from components.player import Player
 from fov import initialize_fov
 from story import StoryLoader, StoryData
-
+from run_planner import RunPlanner
 
 def get_game_variables(constants, gfx_data):
     player = Player(gfx_data.assets)
-    entities = [player]
     timesystem = TimeSystem()
-    timesystem.register(player)
-    gmap = GameMap(constants.map_size, gfx_data.assets)
-    gmap.make_map(constants, player, entities, timesystem)
     log = MessageLog(constants.message_x, constants.message_size)
-    state = GameStates.WELCOME_SCREEN
-    #state = GameStates.PLAY
-    fov_map = initialize_fov(gmap)
+    #state = GameStates.WELCOME_SCREEN
+    state = GameStates.PLAY
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)
+    planner = RunPlanner(3, player, gfx_data.assets, constants, timesystem)
+    player.pos = planner.current_map.player_pos
+    fov_map = initialize_fov(planner.current_map)
     game_data = StateData(
             player,
-            entities,
-            gmap,
+            planner.current_map.entities,
             log,
             constants,
             timesystem,
             fov_map,
             fov_recompute=True,
-            story_data=story_data
+            story_data=story_data,
+            run_planner=planner
     )
     return game_data, state

@@ -16,12 +16,15 @@ from util import Pos
 
 
 class GameMap:
-    def __init__(self, size, assets, dungeon_level=1):
+    def __init__(self, size, assets, dungeon_level, constants, monster_chances):
         self.width = size.width
         self.height = size.height
         self.tiles = self.initialize_tiles()
         self.dungeon_level = dungeon_level
         self.assets = assets
+        self.entities = []
+        self.monster_chances = monster_chances
+        self.make_map(constants)
 
     def initialize_tiles(self):
         tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
@@ -33,19 +36,17 @@ class GameMap:
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
 
-    def place_entities(self, room, entities, timesystem):
-        max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], self.dungeon_level)
+    def place_entities(self, room, entities):
+        max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], self.dungeon_level+1)
 
-        num_monsters = randint(max_monsters_per_room, max_monsters_per_room)
-        monster_chances = {"ghost": 80,
-                           "demon": from_dungeon_level([[15, 3], [30, 5], [60, 7]], self.dungeon_level)}
+        num_monsters = randint(0, max_monsters_per_room)
 
         for i in range(num_monsters):
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
 
             if not any([entity for entity in entities if entity.pos.x == x and entity.pos.y == y]):
-                monster_choice = random_choice_from_dict(monster_chances)
+                monster_choice = random_choice_from_dict(self.monster_chances)
 
                 if monster_choice == "ghost":
                     fighter_component = Fighter(hp=20, defense=0, power=3, xp=35)
@@ -62,9 +63,8 @@ class GameMap:
                                      blocks=True, render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, ai=ai, drawable=drawable_component)
                 entities.append(monster)
-                timesystem.register(monster)
 
-    def make_map(self, constants, player, entities, timesystem):
+    def make_map(self, constants):
         rooms = []
         center_of_last_room_x = None
         center_of_last_room_y = None
@@ -85,7 +85,7 @@ class GameMap:
                 center_of_last_room_x = new_x
                 center_of_last_room_y = new_y
                 if len(rooms) == 0:
-                    player.pos = Pos(new_x, new_y)
+                    self.player_pos = Pos(new_x, new_y)
                 else:
                     (prev_x, prev_y) = rooms[-1].center()
 
@@ -96,13 +96,13 @@ class GameMap:
                         self.create_v_tunnel(prev_y, new_y, new_x)
                         self.create_h_tunnel(prev_x, new_x, prev_y)
                 rooms.append(new_room)
-                self.place_entities(new_room, entities, timesystem)
+                self.place_entities(new_room, self.entities)
 
         stairs_component = Stairs(self.dungeon_level + 1)
         drawable_component = Drawable(self.assets.stairs)
         down_stairs = Entity(center_of_last_room_x, center_of_last_room_y, "Stairs",
                              render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component)
-        entities.append(down_stairs)
+        self.entities.append(down_stairs)
 
     def next_floor(self, player, log, constants, entities, timesystem):
         # remove all on the current floor

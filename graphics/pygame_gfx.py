@@ -274,8 +274,9 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         story_screen(gfx_data, game_data.story)
     elif game_data.state == GameStates.STORY_HELP_SCREEN:
         story_screen_help(gfx_data)
+    elif game_data.state == GameStates.VICTORY:
+        story_screen(gfx_data, game_data.story)
     pygame.display.flip()
-
 
 def story_screen(gfx_data, story_data):
     page_lines = story_data.current_page.split("\n")

@@ -13,3 +13,4 @@ class GameStates(Enum):
     FORMULA_HELP_SCEEN = auto()
     STORY_SCREEN = auto()
     STORY_HELP_SCREEN = auto()
+    VICTORY = auto()

@@ -39,22 +39,22 @@ class Assets:
                                    scale=scale)
         self.player = get_img(self.reptile_sheet, 1, 1)
 
-        self.stairs = get_img(self.decor_sheet, 2, 9)
+        self.stairs = get_img(self.decor_sheet, 9, 2)
 
-        self.light_wall = get_img(self.wall_sheet, 3, 15)
-        self.dark_wall = get_img(self.wall_sheet, 3, 21)
+        self.light_wall = get_img(self.wall_sheet, 15, 3)
+        self.dark_wall = get_img(self.wall_sheet, 21, 3)
 
-        self.light_floor = get_img(self.floor_sheet, 2, 10)
-        self.dark_floor = get_img(self.floor_sheet, 2, 14)
+        self.light_floor = get_img(self.floor_sheet, 10, 2)
+        self.dark_floor = get_img(self.floor_sheet, 14, 2)
 
         self.ghost = get_img(self.undead_sheet, 2, 2)
-        self.demon = get_img(self.undead_sheet, 7, 2)
-        self.monster_corpse = get_img(self.decor_sheet, 2, 12)
+        self.demon = get_img(self.undead_sheet, 2, 7)
+        self.monster_corpse = get_img(self.decor_sheet, 12, 2)
 
         self.throwing_bottle = get_img(self.potion_sheet, 0, 0)
         self.sword = get_img(self.medium_weapons_sheet, 0, 0)
 
-        self.shield_effect = get_img(self.effect0_sheet, 4, 23)
+        self.shield_effect = get_img(self.effect0_sheet, 23, 4)
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 16)
         self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 12)
