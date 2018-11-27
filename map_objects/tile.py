@@ -7,3 +7,4 @@ class Tile:
 		self.block_sight = block_sight
 		self.explored = False
 		self.wall_info = 0
+		self.floor_info = 0

@@ -84,7 +84,7 @@ def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, hei
     display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
 
 
-last_tile = None
+from components.drawable import Drawable
 
 
 def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data):
@@ -94,6 +94,8 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     main = gfx_data.main
 
     def draw_terrain():
+        surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+
         # for x in range(30):
         #    for y in range(15):
         #        #main.blit(assets.effect0_sheet.get_image(x, 15+y)[0],
@@ -106,28 +108,37 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                     continue
                 wall = game_data.map.tiles[x][y].block_sight
                 wall_type = game_data.map.tiles[x][y].wall_info
+                floor_type = game_data.map.tiles[x][y].floor_info
                 visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
                 sx, sy = gfx_data.camera.map_to_screen(x, y)
                 #visible = True
                 if visible:
-                    if wall:
-                        main.blit(assets.light_wall[wall_type][0],
-                                  (panel_width + sx * CELL_WIDTH,
-                                   sy * CELL_HEIGHT))
+                    distance = game_data.player.pos - Pos(x, y)
+                    if distance.length() > 5:
+                        darken = (distance.length()-3) * 10
                     else:
-                        main.blit(assets.light_floor[0],
-                                  (panel_width + sx * CELL_WIDTH,
-                                   sy * CELL_HEIGHT))
+                        darken = 0
+                    if wall:
+                        asset = assets.light_wall[wall_type]
+                    else:
+                        asset = assets.light_floor[floor_type]
+                    drawable = Drawable(asset)
+                    drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
+                    surface.blit(drawable.asset[0],
+                              (panel_width + sx * CELL_WIDTH,
+                               sy * CELL_HEIGHT))
                     game_data.map.tiles[x][y].explored = True
                 elif game_data.map.tiles[x][y].explored:
                     if wall:
-                        main.blit(assets.dark_wall[wall_type][0],
+                        surface.blit(assets.dark_wall[wall_type][0],
                                   (panel_width + sx * CELL_WIDTH,
                                    sy * CELL_HEIGHT))
                     else:
-                        main.blit(assets.dark_floor[0],
+                        surface.blit(assets.dark_floor[floor_type][0],
                                   (panel_width + sx * CELL_WIDTH,
                                    sy * CELL_HEIGHT))
+        surface.set_alpha(150)
+        gfx_data.main.blit(surface, (0, 0))
 
     def draw_entities():
         rendering_sorted = sorted(game_data.entities, key=lambda e: e.render_order.value)
@@ -212,16 +223,6 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
         dist = util.distance(orig[0], orig[1], rect_center[0], rect_center[1])
-
-        # global last_tile
-        # if not last_tile or tile != last_tile:
-        #    print("pos: {}, map_screen_pos {}".format(pos, map_screen_pos))
-        #    print("tile {}, player {}".format(tile, game_data.player.pos))
-        #    rx, ry = map_screen_pos[0] // CELL_WIDTH, map_screen_pos[1] // CELL_HEIGHT
-        #    print("rx {}, ry {}".format(rx, ry))
-        #    sx, sy = gfx_data.camera.screen_to_map(rx, ry)
-        #    print("sx {}, sy {}".format(sx, sy))
-        #    last_tile = tile
 
         if dist > max_dist:
             vec = (pos[0] - orig[0], pos[1] - orig[1])

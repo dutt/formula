@@ -16,3 +16,9 @@ class Rect:
 
     def contains(self, x, y):
         return x >= self.x1 and x <= self.x2 and y >= self.y1 and y <= self.y2
+
+    def __str__(self):
+        return "<rect x1={} x2={} y1={} y2={}".format(self.x1, self.x2, self.y1, self.y2)
+
+    def __repr__(self):
+        return str(self)

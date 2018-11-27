@@ -41,7 +41,7 @@ class Assets:
             return sheet.get_image(col, row, graphics_file_tile_size.width, graphics_file_tile_size.height,
                                    scale=scale, rotate=rotate)
 
-        def get_wall(sheet, col, row):  # row, col for the coord of the top left sprite
+        def get_wall(sheet, col, row):  # col, row are coords of the top left sprite
             retr = []
             retr.append(get_img(sheet, col + 3, row + 0, rotate=  0))  # 0, solo wall
             retr.append(get_img(sheet, col + 1, row + 1, rotate=  0))  # 1, wall to the north
@@ -61,6 +61,26 @@ class Assets:
             retr.append(get_img(sheet, col + 4, row + 1, rotate=  0))  # 15, wall to everywhere
             return retr
 
+        def get_floor(sheet, col, row): # col, row are coords for the top left sprite
+            retr = []
+            retr.append(get_img(sheet, col + 3, row + 0, rotate=  0))  # 0, solo floor
+            retr.append(get_img(sheet, col + 2, row + 3, rotate=  0))  # 1, floor to the north
+            retr.append(get_img(sheet, col + 4, row + 1, rotate=  0))  # 2, floor to the east
+            retr.append(get_img(sheet, col + 0, row + 2, rotate=  0))  # 3, floor to the north, east
+            retr.append(get_img(sheet, col + 1, row + 1, rotate=180))  # 4, floor to the south
+            retr.append(get_img(sheet, col + 3, row + 1, rotate=  0))  # 5, floor to the north, south
+            retr.append(get_img(sheet, col + 0, row + 0, rotate=  0))  # 6, floor to the east, south
+            retr.append(get_img(sheet, col + 0, row + 1, rotate=  0))  # 7, floor to the north, south, east
+            retr.append(get_img(sheet, col + 6, row + 1, rotate=  0))  # 8, floor to the west
+            retr.append(get_img(sheet, col + 2, row + 2, rotate=  0))  # 9, floor to the north, west
+            retr.append(get_img(sheet, col + 5, row + 1, rotate=  0))  # 10, floor to the east, west
+            retr.append(get_img(sheet, col + 1, row + 2, rotate=  0))  # 11, floor to the north, east, west
+            retr.append(get_img(sheet, col + 2, row + 0, rotate=  0))  # 12, floor to the south, west
+            retr.append(get_img(sheet, col + 2, row + 1, rotate=  0))  # 13, floor to the north, south, west
+            retr.append(get_img(sheet, col + 1, row + 0, rotate=  0))  # 14. floor to the east, south, west
+            retr.append(get_img(sheet, col + 1, row + 1, rotate=  0))  # 15, floor all around
+            return retr
+
         self.player = get_img(self.reptile_sheet, 1, 1)
 
         self.stairs = get_img(self.decor_sheet, 2, 9)
@@ -68,8 +88,8 @@ class Assets:
         self.light_wall = get_wall(self.wall_sheet, 0, 3)
         self.dark_wall = get_wall(self.wall_sheet, 0, 6)
 
-        self.light_floor = get_img(self.floor_sheet, 2, 10)
-        self.dark_floor = get_img(self.floor_sheet, 2, 14)
+        self.light_floor = get_floor(self.floor_sheet, 0, 6)
+        self.dark_floor = get_floor(self.floor_sheet, 0, 9)
 
         self.ghost = get_img(self.undead_sheet, 2, 2)
         self.demon = get_img(self.undead_sheet, 7, 2)

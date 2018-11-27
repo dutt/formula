@@ -6,10 +6,10 @@ class Drawable():
         self.asset = asset
         self.orig = asset
 
-    def colorize(self, colour):
+    def colorize(self, colour, mode=pygame.BLEND_RGBA_ADD):
         img = self.orig[0].copy()
         #img.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
-        img.fill(colour[0:3] + (0,), None, pygame.BLEND_RGBA_ADD)
+        img.fill(colour[0:3] + (0,), None, mode)
         img.set_colorkey(colour)
         self.asset = [img]
 

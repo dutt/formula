@@ -36,7 +36,11 @@ class VisualEffectSystem():
 
     def add_temporary(self, pos, endpos, lifespan, asset, color=None, wait=None, transform=None):
         fps_lifespan = lifespan * self.fps_per_second
-        fps_wait = wait * self.fps_per_second if wait else 0
+        if wait:
+            fps_wait = wait * self.fps_per_second
+            fps_lifespan += wait * self.fps_per_second
+        else:
+            fps_wait = 0
         drawable = Drawable(asset)
         effect = TemporaryVisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self, wait=fps_wait,
                                        transform=transform(fps_lifespan) if transform else None)

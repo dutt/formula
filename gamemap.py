@@ -27,10 +27,10 @@ class GameMap:
         self.monster_chances = monster_chances
         self.make_map(constants)
         #self.load_map(resource_path("data/maps/test.map"))
-        self.tiles = self.set_walls(self.tiles)
+        self.tiles = self.set_tile_info(self.tiles)
         #for y in range(self.height):
         #    for x in range(self.width):
-        #        print(self.tiles[x][y].wall_info, end=",")
+        #        print("{:2d}".format(self.tiles[x][y].floor_info), end=",")
         #    print("")
 
     def initialize_tiles(self):
@@ -62,21 +62,31 @@ class GameMap:
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
 
-    def set_walls(self, tiles):
+    def set_tile_info(self, tiles):
         for x in range(self.width):
             for y in range(self.height):
-                if not tiles[x][y].blocked:
-                    continue
-                val = 0
-                if y > 0 and tiles[x][y - 1].blocked:  # north
-                    val += 1
-                if x < self.width - 1 and tiles[x + 1][y].blocked:  # east
-                    val += 2
-                if y < self.height - 1 and tiles[x][y + 1].blocked:  # south
-                    val += 4
-                if x > 0 and tiles[x - 1][y].blocked:  # west
-                    val += 8
-                tiles[x][y].wall_info = val
+                if tiles[x][y].blocked:
+                    val = 0
+                    if y > 0 and tiles[x][y - 1].blocked:  # north
+                        val += 1
+                    if x < self.width - 1 and tiles[x + 1][y].blocked:  # east
+                        val += 2
+                    if y < self.height - 1 and tiles[x][y + 1].blocked:  # south
+                        val += 4
+                    if x > 0 and tiles[x - 1][y].blocked:  # west
+                        val += 8
+                    tiles[x][y].wall_info = val
+                else:
+                    val = 0
+                    if y > 0 and not tiles[x][y - 1].blocked:  # north
+                        val += 1
+                    if x < self.width - 1 and not tiles[x + 1][y].blocked:  # east
+                        val += 2
+                    if y < self.height - 1 and not tiles[x][y + 1].blocked:  # south
+                        val += 4
+                    if x > 0 and not tiles[x - 1][y].blocked:  # west
+                        val += 8
+                    tiles[x][y].floor_info = val
         return tiles
 
     def get_monster(self, x, y, room, monster_choice):
