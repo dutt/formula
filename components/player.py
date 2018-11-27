@@ -133,9 +133,10 @@ class Player(Entity):
             if game_data.state == GameStates.TARGETING:
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
-                    distance = (self.pos - Vec(targetx, targety)).length()
+                    #distance = (self.pos - Vec(targetx, targety)).length()
                     player_action = ThrowVialAction(self, targeting_formula, targetpos=(Pos(targetx, targety)))
-                    gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.25,
+                    #gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
+                    gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=0.2,
                                                    asset=gfx_data.assets.throwing_bottle)
                     game_data.state = game_data.prev_state.pop()
                 elif right_click:
@@ -176,11 +177,16 @@ class Player(Entity):
                 ingredient = action.get("ingredient")
                 if ingredient:
                     self.formula_builder.set_slot(self.formula_builder.currslot, ingredient)
+                    #go to next slot
+                    next_num = (self.formula_builder.currslot + 1) % self.formula_builder.num_slots
+                    self.formula_builder.currslot = next_num
 
                 next_formula = action.get("next_formula")
                 if next_formula:
                     next_num = (self.formula_builder.currformula + next_formula) % self.formula_builder.num_formula
                     self.formula_builder.currformula = next_num
+                    #go to first slot
+                    self.formula_builder.currslot = 0
 
                 next_slot = action.get("next_slot")
                 if next_slot:

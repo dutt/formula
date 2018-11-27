@@ -1,18 +1,10 @@
-from enum import Enum, auto
-
 from attrdict import AttrDict
 
 from components.damage_type import DamageType
+from components.effect_type import EffectType
 from components.shield import Shield
 from graphics.assets import Assets
 from graphics.visual_effect import VisualEffectSystem, rotation_transform
-
-
-class EffectType(Enum):
-    DAMAGE = auto()
-    HEALING = auto()
-    SLOW = auto()
-    DEFENSE = auto()
 
 
 class Effect:
@@ -59,16 +51,15 @@ class EffectBuilder:
                 if dmg_type in target.fighter.resistances:
                     dmg_amount = amount // 2
                 color = None
+                base = 100
+                main = 200
                 if dmg_type == DamageType.FIRE:
-                    color = (255, 0, 0)
+                    color = (main, base, base)
                 elif dmg_type == DamageType.COLD:
-                    color = (0, 0, 255)
-                elif dmg_type == DamageType.POISON:
-                    color = (0, 255, 0)
-                VisualEffectSystem.get().add_temporary(target.pos, target.pos, lifespan=0.1,
-                                                       asset=Assets.get().spark_effect, color=color)
+                    color = (base, base, main)
+                VisualEffectSystem.get().add_temporary(target.pos, target.pos, lifespan=0.2,
+                                                       asset=Assets.get().spark_effect, color=color, wait=0.2)
                 return target.fighter.take_damage(source=None, dmg=dmg_amount, dmg_type=dmg_type)
-
             def stats_func():
                 return AttrDict({
                     "type": EffectType.DAMAGE,
@@ -122,9 +113,10 @@ class EffectBuilder:
         def create_defense(**kwargs):
             level = kwargs["level"]
             strikebacks = kwargs["strikebacks"]
+            distance = kwargs["distance"]
 
             def apply(target):
-                target.fighter.shield = Shield(level, strikebacks, target)
+                target.fighter.shield = Shield(level, strikebacks, target, distance)
                 target.fighter.shield.effect = VisualEffectSystem.get().add_attached(target, Assets.get().shield_effect,
                                                                                      target.fighter.shield.color,
                                                                                      transform=rotation_transform())

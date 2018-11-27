@@ -102,13 +102,16 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         # return
         for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
             for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
+                if x >= game_data.map.width or y >= game_data.map.height:
+                    continue
                 wall = game_data.map.tiles[x][y].block_sight
+                wall_type = game_data.map.tiles[x][y].wall_info
                 visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
                 sx, sy = gfx_data.camera.map_to_screen(x, y)
-                # visible = True
+                #visible = True
                 if visible:
                     if wall:
-                        main.blit(assets.light_wall[0],
+                        main.blit(assets.light_wall[wall_type][0],
                                   (panel_width + sx * CELL_WIDTH,
                                    sy * CELL_HEIGHT))
                     else:
@@ -118,7 +121,7 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                     game_data.map.tiles[x][y].explored = True
                 elif game_data.map.tiles[x][y].explored:
                     if wall:
-                        main.blit(assets.dark_wall[0],
+                        main.blit(assets.dark_wall[wall_type][0],
                                   (panel_width + sx * CELL_WIDTH,
                                    sy * CELL_HEIGHT))
                     else:
@@ -249,6 +252,8 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     def draw_effects():
         surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
         for effect in gfx_data.visuals.effects:
+            if not effect.visible:
+                continue
             sx, sy = gfx_data.camera.map_to_screen(effect.pos.x, effect.pos.y)
             surface.blit(effect.drawable.asset[0],
                          (panel_width + sx * CELL_WIDTH,

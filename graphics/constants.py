@@ -1,5 +1,5 @@
-CELL_WIDTH = 24
-CELL_HEIGHT = 24
+CELL_WIDTH = 32
+CELL_HEIGHT = 32
 
 class colors:
     BLACK = (0, 0, 0)

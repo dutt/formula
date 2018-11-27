@@ -8,7 +8,7 @@ class MeleeMonsterAI:
         if can_move_towards_player(monster, game_data):
             return MoveToTargetAction(monster, target=game_data.player).execute(game_data)
         elif can_attack_player(monster, game_data):
-            gfx_data.visuals.add_temporary(monster.pos, game_data.player.pos, lifespan=0.25,
+            gfx_data.visuals.add_temporary(monster.pos, game_data.player.pos, lifespan=0.2,
                                            asset=gfx_data.assets.sword)
             return AttackAction(monster, target=game_data.player).execute(game_data)
         else:
@@ -19,7 +19,7 @@ class RangedMonsterAI:
     def take_turn(self, game_data, gfx_data):
         monster = self.owner
         if can_attack_player(monster, game_data, max_dist=monster.range):
-            gfx_data.visuals.add_temporary(monster.pos, game_data.player.pos, lifespan=0.25,
+            gfx_data.visuals.add_temporary(monster.pos, game_data.player.pos, lifespan=0.2,
                                            asset=gfx_data.assets.arrow)
             return AttackAction(monster, target=game_data.player).execute(game_data)
         elif can_move_towards_player(monster, game_data):

@@ -1,17 +1,19 @@
 from components.damage_type import DamageType
+from components.effect_type import EffectType
 from messages import Message
 
 
 class Shield:
-    def __init__(self, level, strikebacks, owner):
+    def __init__(self, level, strikebacks, owner, distance):
         self.level = level
         self.max_level = level
         self.strikebacks = strikebacks
         self.owner = owner
+        self.distance = distance
 
     def on_hit(self, source, dmg, dmg_type):
         results = []
-        if source:
+        if source and self.owner.distance_to(source) <= self.distance:
             for sb in self.strikebacks:
                 sb.apply(source)
                 text = "Shield hits {} for {} {} damage".format(source.name, sb.stats.amount,
@@ -35,10 +37,10 @@ class Shield:
             b = 100
             step = 30
             for sb in self.strikebacks:
+                if sb.stats.type != EffectType.DAMAGE:
+                    continue
                 if sb.stats.dmg_type == DamageType.FIRE:
                     r += step
                 elif sb.stats.dmg_type == DamageType.COLD:
                     b += step
-                elif sb.stats.dmg_type == DamageType.POISON:
-                    g += step
             return r, g, b, alpha

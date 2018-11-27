@@ -1,7 +1,8 @@
-from components.effects import Effect, EffectType, EffectBuilder
-from components.ingredients import Ingredient
-from components.formula import Formula
 from components.damage_type import DamageType
+from components.effects import EffectType, EffectBuilder
+from components.formula import Formula
+from components.ingredients import Ingredient
+
 
 class FormulaBuilder:
     def __init__(self, num_slots, num_formula):
@@ -70,17 +71,22 @@ class FormulaBuilder:
             if shield:
                 strikebacks = []
                 if fire_dmg > 0:
-                    strikebacks.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+                    strikebacks.append(
+                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
                 if cold_dmg > 0:
-                    strikebacks.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                    strikebacks.append(
+                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
                 if slow_rounds > 0:
                     strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
-                effects.append(EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks))
+                effects.append(
+                    EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks, distance=distance))
             else:
                 if fire_dmg > 0:
-                    effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+                    effects.append(
+                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
                 if cold_dmg > 0:
-                    effects.append(EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                    effects.append(
+                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
                 if slow_rounds > 0:
                     effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
                 if healing > 0:
@@ -89,6 +95,7 @@ class FormulaBuilder:
             retr.append(Formula(slots=slots, cooldown=cooldown, formula_idx=idx,
                                 distance=distance, area=area, effects=effects))
         return retr
+
 
 builder = FormulaBuilder(num_slots=3, num_formula=3)
 # builder.slots = [[Ingredient.EMPTY for i in range(3)]]

@@ -13,7 +13,8 @@ from map_objects.rect import Rect
 from map_objects.tile import Tile
 from messages import Message
 from random_utils import random_choice_from_dict, from_dungeon_level
-from util import Pos
+from util import Pos, resource_path
+
 
 class GameMap:
     def __init__(self, size, assets, dungeon_level, constants, monster_chances):
@@ -25,16 +26,58 @@ class GameMap:
         self.entities = []
         self.monster_chances = monster_chances
         self.make_map(constants)
+        #self.load_map(resource_path("data/maps/test.map"))
+        self.tiles = self.set_walls(self.tiles)
+        #for y in range(self.height):
+        #    for x in range(self.width):
+        #        print(self.tiles[x][y].wall_info, end=",")
+        #    print("")
 
     def initialize_tiles(self):
         tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
         return tiles
+
+    def load_map(self, path):
+        with open(path, 'r') as reader:
+            content = reader.read()
+        lines = content.split("\n")
+        lines = [line for line in lines if line != ""]
+        self.width = len(lines[0])
+        self.height = len(lines)
+        tiles = self.initialize_tiles()
+        for x in range(self.width):
+            for y in range(self.height):
+                if lines[y][x] == 'P':
+                    tiles[x][y].blocked = False
+                    tiles[x][y].block_sight = False
+                    self.player_pos = Pos(x, y)
+                elif lines[y][x] == ' ':
+                    tiles[x][y].blocked = False
+                    tiles[x][y].block_sight = False
+        self.tiles = tiles
 
     def create_room(self, room):
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
+
+    def set_walls(self, tiles):
+        for x in range(self.width):
+            for y in range(self.height):
+                if not tiles[x][y].blocked:
+                    continue
+                val = 0
+                if y > 0 and tiles[x][y - 1].blocked:  # north
+                    val += 1
+                if x < self.width - 1 and tiles[x + 1][y].blocked:  # east
+                    val += 2
+                if y < self.height - 1 and tiles[x][y + 1].blocked:  # south
+                    val += 4
+                if x > 0 and tiles[x - 1][y].blocked:  # west
+                    val += 8
+                tiles[x][y].wall_info = val
+        return tiles
 
     def get_monster(self, x, y, room, monster_choice):
         monsters = []
@@ -56,18 +99,20 @@ class GameMap:
         elif monster_choice == "wolfpack":
             packsize = randint(1, 3)
             diffs = [(-1, -1), (-1, 0), (-1, 1),
-                     (0, -1),           (0, 1 ),
-                     (1, -1),  (1, 0),  (1, 1 )]
+                     (0, -1), (0, 1),
+                     (1, -1), (1, 0), (1, 1)]
             clean_diffs = []
             for d in diffs:
+                dpos = Pos(x + d[0], y + d[1])
                 occupied = False
                 for e in self.entities:
-                    if e.pos == Pos(x + d[0], y + d[1]):
+                    if e.pos == dpos and dpos.x in range(room.x1 + 2, room.x2 - 2) and dpos.y in range(room.y1 + 2,
+                                                                                                       room.y2 - 2):
                         occupied = True
                 if not occupied:
                     clean_diffs.append(d)
             for w in range(packsize):
-                diff_idx = randint(0, len(clean_diffs)-1)
+                diff_idx = randint(0, len(clean_diffs) - 1)
                 diff = clean_diffs[diff_idx]
                 wx, wy = x + diff[0], y + diff[1]
                 clean_diffs.remove(diff)

@@ -34,10 +34,11 @@ class VisualEffectSystem():
         elif visual in self.attached_effects:
             self.attached_effects.remove(visual)
 
-    def add_temporary(self, pos, endpos, lifespan, asset, color=None, transform=None):
+    def add_temporary(self, pos, endpos, lifespan, asset, color=None, wait=None, transform=None):
         fps_lifespan = lifespan * self.fps_per_second
+        fps_wait = wait * self.fps_per_second if wait else 0
         drawable = Drawable(asset)
-        effect = TemporaryVisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self,
+        effect = TemporaryVisualEffect(pos, endpos, fps_lifespan, drawable, color, owner=self, wait=fps_wait,
                                        transform=transform(fps_lifespan) if transform else None)
         self.temporary_effects.append(effect)
         return effect
@@ -71,10 +72,11 @@ def rotation_transform(_=None):
 
 
 class TemporaryVisualEffect():
-    def __init__(self, pos, endpos, lifespan, drawable, color, owner, transform=None):
+    def __init__(self, pos, endpos, lifespan, drawable, color, owner, wait, transform=None):
         self.pos = pos
         self.endpos = endpos
         self.lifespan = lifespan
+        self.wait = wait
         self.age = 0
         if pos != endpos:
             distance = pos.distance_to(endpos)
@@ -91,6 +93,10 @@ class TemporaryVisualEffect():
 
         if color:
             self.drawable.colorize(color)
+
+    @property
+    def visible(self):
+        return self.age >= self.wait
 
     def update(self):
         self.pos += self.move_per_update
@@ -109,6 +115,10 @@ class AttachedVisualEffect():
         if color:
             self.drawable.colorize(color)
         self.transform = transform
+
+    @property
+    def visible(self):
+        return True
 
     def update(self):
         self.pos = self.owner.pos

@@ -41,7 +41,6 @@ class Fighter:
             dmg = actual_dmg
             for res in shield_results:
                 if res.get("depleted"):
-                    self.owner.attached_effects.remove(self.shield.effect)
                     self.shield = None
         self.hp = max(0, self.hp - dmg)
         if self.hp <= 0:

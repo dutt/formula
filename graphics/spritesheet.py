@@ -7,13 +7,15 @@ class Spritesheet():
     def __init__(self, path):
         self.sheet = pygame.image.load(path).convert()
 
-    def get_image(self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None):
+    def get_image(self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None, rotate=None):
         image = pygame.Surface((width, height))
         image.blit(self.sheet, (0, 0), (col * width, row * height, width, height))
         image.set_colorkey(constants.colors.BLACK)
         if scale:
             new_w, new_h = scale
             image = pygame.transform.scale(image, (new_w, new_h))
+        if rotate:
+            image = pygame.transform.rotate(image, rotate)
         image.convert()
         image.set_alpha(255)
         return [image]
