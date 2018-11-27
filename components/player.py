@@ -16,7 +16,7 @@ from graphics.pygame_gfx import render_all
 from graphics.render_order import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
-from util import Pos, Vec
+from util import Pos
 
 
 class Player(Entity):
@@ -65,6 +65,10 @@ class Player(Entity):
             do_exit = action.get(Event.exit)
             left_click = mouse_action.get(Event.left_click)
             right_click = mouse_action.get(Event.right_click)
+
+            if left_click:
+                turn_results.extend(gfx_data.windows.handle_click(game_data, gfx_data, left_click))
+
             level_up = action.get(Event.level_up)
             show_character_screen = action.get(Event.character_screen)
             show_formula_screen = action.get(Event.formula_screen)
@@ -104,22 +108,22 @@ class Player(Entity):
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
                         gfx_data.camera.center_on(destx, desty)
 
-            """from map_objects.rect import Rect
+            from map_objects.rect import Rect
             if left_click and game_data.state == GameStates.PLAY:  # UI clicked, not targeting
-                right_panel_rect = Rect(0, 0, right_panel.width, right_panel.height)
-                cx, cy = left_click.cx, left_click.cy
+                right_panel_rect = Rect(0, 0, game_data.constants.right_panel_size.width,
+                                        game_data.constants.right_panel_size.height)
+                cx, cy = left_click.x, left_click.y
                 if right_panel_rect.contains(cx, cy):  # right panel, cast formula?
                     casting_formula = None
                     formula_idx = None
                     for i in range(self.caster.num_formulas):
-                        if Rect(1, 2 + i * 2, 10, 1).contains(cx, cy):
+                        if Rect(10, 20 + i * 40, 10, 1).contains(cx, cy):
                             casting_formula = self.caster.formulas[i]
                             formula_idx = i
                             break
                     if casting_formula:
                         start_throwing_vial_results = {"targeting_formula": casting_formula, "formula_idx": formula_idx}
                         turn_results.append(start_throwing_vial_results)
-            """
 
             if show_character_screen:
                 game_data.prev_state.append(game_data.state)
@@ -133,9 +137,9 @@ class Player(Entity):
             if game_data.state == GameStates.TARGETING:
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
-                    #distance = (self.pos - Vec(targetx, targety)).length()
+                    # distance = (self.pos - Vec(targetx, targety)).length()
                     player_action = ThrowVialAction(self, targeting_formula, targetpos=(Pos(targetx, targety)))
-                    #gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
+                    # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
                     gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=0.2,
                                                    asset=gfx_data.assets.throwing_bottle)
                     game_data.state = game_data.prev_state.pop()
@@ -177,7 +181,7 @@ class Player(Entity):
                 ingredient = action.get("ingredient")
                 if ingredient:
                     self.formula_builder.set_slot(self.formula_builder.currslot, ingredient)
-                    #go to next slot
+                    # go to next slot
                     next_num = (self.formula_builder.currslot + 1) % self.formula_builder.num_slots
                     self.formula_builder.currslot = next_num
 
@@ -185,7 +189,7 @@ class Player(Entity):
                 if next_formula:
                     next_num = (self.formula_builder.currformula + next_formula) % self.formula_builder.num_formula
                     self.formula_builder.currformula = next_num
-                    #go to first slot
+                    # go to first slot
                     self.formula_builder.currslot = 0
 
                 next_slot = action.get("next_slot")

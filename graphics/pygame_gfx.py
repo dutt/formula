@@ -1,5 +1,4 @@
 import math
-import textwrap
 
 import pygame
 import tcod
@@ -8,13 +7,19 @@ import util
 from game_states import GameStates
 from graphics.assets import Assets
 from graphics.camera import Camera
-from graphics.constants import CELL_HEIGHT, CELL_WIDTH, colors
+from graphics.constants import CELL_HEIGHT, CELL_WIDTH
+from graphics.display_helpers import display_text
+from graphics.menu import story_screen_help, story_screen, formula_help_menu, formula_menu, help_menu, levelup_menu, \
+    welcome_menu
 from graphics.visual_effect import VisualEffectSystem
 from util import Pos
+from graphics.window import WindowManager, RightPanelWindow
 
+class stuff:
+    pass
 
 class GfxState:
-    def __init__(self, main, assets, camera, fullscreen, visuals, fps_per_second, clock):
+    def __init__(self, main, assets, camera, fullscreen, visuals, fps_per_second, clock, windows):
         self.main = main
         self.assets = assets
         self.camera = camera
@@ -22,6 +27,7 @@ class GfxState:
         self.visuals = visuals
         self.fps_per_second = fps_per_second
         self.clock = clock
+        self.windows = windows
 
 
 def initialize_gfx(constants):
@@ -34,6 +40,8 @@ def initialize_gfx(constants):
     fps_per_second = 30
     visuals = VisualEffectSystem(fps_per_second)
     clock = pygame.time.Clock()
+    windows = WindowManager()
+    windows.push(RightPanelWindow(constants))
     return GfxState(
             main=main,
             assets=assets,
@@ -41,47 +49,9 @@ def initialize_gfx(constants):
             fullscreen=False,
             visuals=visuals,
             fps_per_second=fps_per_second,
-            clock=clock
+            clock=clock,
+            windows=windows
     )
-
-
-def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=None, center=False):
-    if bg_color:
-        text_surface = font.render(text, False, text_color, bg_color)
-    else:
-        text_surface = font.render(text, False, text_color)
-
-    rect = text_surface.get_rect()
-    if center:
-        rect.center = coords
-    else:
-        rect.topleft = coords
-
-    surface.blit(text_surface, rect)
-
-
-def display_lines(surface, font, lines, x=50, starty=50, ydiff=20):
-    y = starty
-    for line in lines:
-        display_text(surface, line, font, (x, y))
-        y += ydiff
-
-
-def display_menu(gfx_data, lines, size, surface=None):
-    has_surface=surface is not None
-    if not has_surface:
-        surface = pygame.Surface(size)
-    display_lines(surface, gfx_data.assets.font_message, lines)
-    if not has_surface:
-        gfx_data.main.blit(surface, (200, 200))
-
-
-def render_bar(surface, assets, pos, width, current, maxval, color, bgcolor, height=30, text=None):
-    current_length = max(0, (current / maxval) * width)
-    pygame.draw.rect(surface, bgcolor, pygame.Rect(pos.x, pos.y, width, height))
-    pygame.draw.rect(surface, color, pygame.Rect(pos.x, pos.y, current_length, height))
-    msg = "{}/{}".format(current, maxval)
-    display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
 
 
 from components.drawable import Drawable
@@ -111,11 +81,11 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                 floor_type = game_data.map.tiles[x][y].floor_info
                 visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
                 sx, sy = gfx_data.camera.map_to_screen(x, y)
-                #visible = True
+                # visible = True
                 if visible:
                     distance = game_data.player.pos - Pos(x, y)
                     if distance.length() > 5:
-                        darken = (distance.length()-3) * 10
+                        darken = (distance.length() - 3) * 10
                     else:
                         darken = 0
                     if wall:
@@ -125,18 +95,18 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
                     drawable = Drawable(asset)
                     drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
                     surface.blit(drawable.asset[0],
-                              (panel_width + sx * CELL_WIDTH,
-                               sy * CELL_HEIGHT))
+                                 (panel_width + sx * CELL_WIDTH,
+                                  sy * CELL_HEIGHT))
                     game_data.map.tiles[x][y].explored = True
                 elif game_data.map.tiles[x][y].explored:
                     if wall:
                         surface.blit(assets.dark_wall[wall_type][0],
-                                  (panel_width + sx * CELL_WIDTH,
-                                   sy * CELL_HEIGHT))
+                                     (panel_width + sx * CELL_WIDTH,
+                                      sy * CELL_HEIGHT))
                     else:
                         surface.blit(assets.dark_floor[floor_type][0],
-                                  (panel_width + sx * CELL_WIDTH,
-                                   sy * CELL_HEIGHT))
+                                     (panel_width + sx * CELL_WIDTH,
+                                      sy * CELL_HEIGHT))
         surface.set_alpha(150)
         gfx_data.main.blit(surface, (0, 0))
 
@@ -162,36 +132,8 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     def draw_bottom_panel():
         draw_message_log()
 
-    def draw_right_panel():
-        surface = pygame.Surface((game_data.constants.right_panel_size.width, game_data.constants.window_size.height))
-        surface.fill(game_data.constants.colors.dark_wall)
-
-        y = 20
-        render_bar(surface, assets, Pos(10, y), 100, game_data.player.fighter.hp, game_data.player.fighter.max_hp,
-                   (160, 0, 0), (100, 0, 0))
-
-        if game_data.player.fighter.shield:
-            y += 30
-            render_bar(surface, assets, Pos(10, y), 100, game_data.player.fighter.shield.level,
-                       game_data.player.fighter.shield.max_level,
-                       (0, 160, 0), (0, 100, 0))
-
-        y += 50
-        display_text(surface, "Formulas", assets.font_title, (10, y))
-        player = game_data.player
-        y += 30
-        for idx, formula in enumerate(player.caster.formulas):
-            if player.caster.is_on_cooldown(idx):
-                render_bar(surface, assets, Pos(20, y + idx * 20), 80, player.caster.get_cooldown(idx),
-                           formula.cooldown,
-                           (0, 127, 255), colors.BLACK)
-
-            else:
-                msg = "{}: {}".format(idx + 1, formula.text_repr)
-                display_text(surface, msg, assets.font_message, (10, y + idx * 20))
-            y += 40
-
-        main.blit(surface, (0, 0))
+    def draw_gui():
+        gfx_data.windows.draw(game_data, gfx_data)
 
     def global_screen_pos_to_map_screen_pos(x, y):
         return x - panel_width, y
@@ -262,7 +204,7 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
         gfx_data.main.blit(surface, (0, 0))
 
     draw_bottom_panel()
-    draw_right_panel()
+    draw_gui()
     draw_terrain()
     draw_entities()
     draw_effects()
@@ -286,132 +228,3 @@ def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data
     elif game_data.state == GameStates.VICTORY:
         story_screen(gfx_data, game_data.story)
     pygame.display.flip()
-
-
-def story_screen(gfx_data, story_data):
-    surface = pygame.Surface((800, 600))
-    page_lines = story_data.current_page.split("\n")
-    lines = []
-    for pl in page_lines:
-        if pl == "":
-            lines.append("")
-        else:
-            lines.extend(textwrap.wrap(pl, 60))
-    display_menu(gfx_data, lines, (800, 600), surface=surface)
-    display_text(surface, "{}/{}".format(story_data.page_num, story_data.page_count),
-                 gfx_data.assets.font_message, (40, 400))
-    gfx_data.main.blit(surface, (200, 200))
-
-
-def story_screen_help(gfx_data):
-    lines = [
-        "This is the next page of the story",
-        "",
-        "Press Space for the next page",
-        "Press Escape or Tab to go back",
-    ]
-    display_menu(gfx_data, lines, (800, 600))
-
-
-def formula_menu(gfx_data, formulabuilder):
-    surface = pygame.Surface((800, 600))
-    linediff = 12
-    y = 5 * linediff
-    display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
-
-    y += 2 * linediff
-    display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
-    y += linediff
-    for idx, formula in enumerate(formulabuilder.current_slots):
-        text = "Slot {}: {}".format(idx, formula.name)
-        if idx == formulabuilder.currslot:
-            text += "<-- "
-        display_text(surface, text, gfx_data.assets.font_message, (50, y))
-        y += linediff
-
-    y += 3 * linediff
-    display_text(surface, "Formula {}".format(formulabuilder.currformula + 1), gfx_data.assets.font_message, (50, y))
-    formulas = formulabuilder.evaluate()
-    y += linediff
-    display_text(surface,
-                 "Formula stats:",
-                 gfx_data.assets.font_message,
-                 (50, y))
-    y += linediff
-    lines = textwrap.wrap(formulas[formulabuilder.currformula].text_stats, 60)
-    display_lines(surface, gfx_data.assets.font_message, lines, 50, y, ydiff=10)
-    y += len(lines) * linediff
-
-    y += 6 * linediff
-    display_text(surface, "Press Tab for help".format(formulabuilder.currformula + 1), gfx_data.assets.font_message,
-                 (50, y))
-    gfx_data.main.blit(surface, (200, 200))
-
-
-def levelup_menu(gfx_data, menu_data):
-    surface = pygame.Surface((800, 600))
-    header = [
-        "You have expanded your skills and equipment, please choose:",
-        ""
-    ]
-    linediff = 15
-    y = 3 * linediff
-    display_lines(surface, gfx_data.assets.font_message, header, starty=y)
-
-    y += 2 * linediff
-    choices = [
-        "Bigger vials (+1 slot per vial)",
-        "More vials (+1 prepared formula)"
-    ]
-    for idx, choice in enumerate(choices):
-        text = choice
-        if idx == menu_data.currchoice:
-            text += "<--"
-        display_text(surface, text, gfx_data.assets.font_message, (50, y))
-        y += linediff
-    gfx_data.main.blit(surface, (200, 200))
-
-
-def welcome_menu(gfx_data):
-    lines = [
-        "Welcome to Formula",
-        "",
-        "A game of dungeon crawling, potion brewing and vial slinging",
-        "",
-        "Next you'll be shown the formula screen, press Tab to show help",
-        "Escape to cancel actions or quit the current menu, or the game",
-        "",
-        "Press Escape to continue"
-    ]
-    display_menu(gfx_data, lines, (800, 600))
-
-
-def help_menu(gfx_data):
-    lines = [
-        "How to play",
-        "WASD: to walk around",
-        "1-5: Cast vial",
-        "E: Interact",
-        "You select targets using the mouse",
-        "    Throw with left click, cancel with right click",
-        "",
-        "ESCAPE: Close current screen",
-        "TAB: Show help for the current screen"
-    ]
-    display_menu(gfx_data, lines, (800, 600))
-
-
-def formula_help_menu(gfx_data):
-    lines = [
-        "Building formulas:",
-        "Q,W,E,R,A,S, D: Set current slot to ingredient",
-        "Up/down arrow: Switch to next/previous slot",
-        "Right/left arrow: Switch to next/previous formula",
-        "Cooldown is increased for every used slot",
-        "",
-        "Adding fire to a formula increases damage",
-        "Adding life to a formula increases healing",
-        "Adding range to a formula makes it reach further",
-        "Adding area to a formula gives it wider area of effect"
-    ]
-    display_menu(gfx_data, lines, (800, 600))

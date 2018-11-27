@@ -16,8 +16,8 @@ def get_constants():
     bottom_panel_height = 7 * CELL_HEIGHT
     bottom_panel_y = screen_size.height - bottom_panel_height
 
-    right_panel_size = Size(150, screen_size.height - bottom_panel_height)
     window_size = Size(1200, 1000)
+    right_panel_size = Size(150, window_size.height - bottom_panel_height)
 
     message_x = bar_width + 2
     message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)
@@ -69,19 +69,19 @@ def get_constants():
 
 from time_system import TimeSystem
 from state_data import StateData
-from gamemap import GameMap
 from messages import MessageLog
 from components.player import Player
 from fov import initialize_fov
 from story import StoryLoader, StoryData
 from run_planner import RunPlanner
 
+
 def get_game_variables(constants, gfx_data):
     player = Player(gfx_data.assets)
     timesystem = TimeSystem()
     log = MessageLog(constants.message_x, constants.message_size)
     state = GameStates.WELCOME_SCREEN
-    #state = GameStates.PLAY
+    state = GameStates.PLAY
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)
     planner = RunPlanner(3, player, gfx_data.assets, constants, timesystem)
