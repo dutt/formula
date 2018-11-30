@@ -1,12 +1,12 @@
 from gamemap import GameMap
-from random_utils import from_dungeon_level
+from graphics.assets import Assets
 
 class RunPlanner:
-    def __init__(self, levels, player, assets, constants, timesystem):
+    def __init__(self, levels, player, constants, timesystem):
         parts = levels // 3
         self.levels = []
         self.player = player
-        self.assets = assets
+        self.assets = Assets.get()
         self.constants = constants
         self.size = constants.map_size
 

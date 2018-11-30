@@ -1,6 +1,6 @@
 class StateData():
     def __init__(self, player, entities, log, constants, timesystem,
-                 fov_map, fov_recompute, story_data, run_planner):
+                 fov_map, fov_recompute, story_data, run_planner, formula_builder, menu_data):
         self.player = player
         self.entities = entities
         self.log = log
@@ -11,3 +11,7 @@ class StateData():
         self.story = story_data
         self.run_planner = run_planner
         self.map = run_planner.current_map
+        self.formula_builder = formula_builder
+        self.targeting_formula = None,
+        self.menu_data = menu_data
+

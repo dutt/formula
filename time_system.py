@@ -1,6 +1,6 @@
 from collections import deque
 
-from graphics.pygame_gfx import render_all
+import pygame
 
 
 class TimeSystem():
@@ -24,9 +24,10 @@ class TimeSystem():
             turn_data = actor.take_turn(game_data, gfx_data)
             while turn_data:
                 while not gfx_data.visuals.done:
-                    render_all(gfx_data, game_data, None, None, None)
+                    gfx_data.windows.draw(game_data, gfx_data)
                     gfx_data.visuals.update()
                     gfx_data.clock.tick(gfx_data.fps_per_second)
+                    pygame.display.flip()
                 results.extend(turn_data.result)
                 actor.action_points -= turn_data.action.cost
                 turn_data = actor.take_turn(game_data, gfx_data)

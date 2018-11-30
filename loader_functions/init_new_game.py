@@ -1,8 +1,19 @@
+import pygame
 from attrdict import AttrDict
 
 from game_states import GameStates
+from graphics.camera import Camera
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
-from util import Size
+from graphics.formula_window import FormulaWindow, FormulaHelpWindow
+from graphics.game_window import GameWindow
+from graphics.message_log_window import MessageLogWindow
+from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
+from graphics.right_panel_window import RightPanelWindow
+from graphics.story_window import StoryWindow, StoryHelpWindow
+from graphics.level_up_window import LevelUpWindow
+from graphics.visual_effect import VisualEffectSystem
+from graphics.window_manager import WindowManager
+from util import Size, Pos
 
 
 def get_constants():
@@ -16,6 +27,9 @@ def get_constants():
     right_panel_size = Size(150, window_size.height)
     message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height)
     message_log_text_size = Size(message_log_size.width - 10 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT)
+
+    helper_window_size = Size(800, 600)
+    helper_window_pos = Pos(200, 200)
 
     room_max_size = 15
     room_min_size = 6
@@ -34,6 +48,8 @@ def get_constants():
         "right_panel_size": right_panel_size,
         "message_log_size": message_log_size,
         "message_log_text_size": message_log_text_size,
+        "helper_window_size": helper_window_size,
+        "helper_window_pos": helper_window_pos,
 
         "room_max_size": room_max_size,
         "room_min_size": room_min_size,
@@ -47,6 +63,18 @@ def get_constants():
     return retr
 
 
+class GfxState:
+    def __init__(self, main, assets, camera, fullscreen, visuals, fps_per_second, clock, windows):
+        self.main = main
+        self.assets = assets
+        self.camera = camera
+        self.fullscreen = fullscreen
+        self.visuals = visuals
+        self.fps_per_second = fps_per_second
+        self.clock = clock
+        self.windows = windows
+
+
 from time_system import TimeSystem
 from state_data import StateData
 from messages import MessageLog
@@ -56,20 +84,64 @@ from story import StoryLoader, StoryData
 from run_planner import RunPlanner
 from graphics.font import get_width
 from graphics.assets import Assets
+from formula_builder import FormulaBuilder
 
 
-def get_game_variables(constants, gfx_data):
-    player = Player(gfx_data.assets)
-    timesystem = TimeSystem()
-    text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
-    log = MessageLog(text_width)  # for some margin on the sides
+def setup_data_state(constants):
     state = GameStates.WELCOME_SCREEN
     state = GameStates.PLAY
+
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)
-    planner = RunPlanner(3, player, gfx_data.assets, constants, timesystem)
+    timesystem = TimeSystem()
+
+    pygame.init()
+    pygame.display.set_caption("Formulas")
+    pygame.mixer.quit()
+    main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
+    assets = Assets()
+
+    camera = Camera(constants.camera_size.width, constants.camera_size.height, constants.map_size)
+    fps_per_second = 30
+    visuals = VisualEffectSystem(fps_per_second)
+    clock = pygame.time.Clock()
+
+    windows = WindowManager()
+    windows.push(GameWindow(constants, visible=True))
+    windows.push(RightPanelWindow(constants))
+    windows.push(MessageLogWindow(constants))
+    windows.push(WelcomeWindow(constants, state == GameStates.WELCOME_SCREEN))
+    windows.push(StoryWindow(constants, state == GameStates.STORY_SCREEN, story_data))
+    windows.push(StoryHelpWindow(constants))
+    windows.push(FormulaWindow(constants, state == GameStates.FORMULA_SCREEN))
+    windows.push(FormulaHelpWindow(constants))
+    windows.push(GeneralHelpWindow(constants))
+    windows.push(LevelUpWindow(constants))
+    gfx_data = GfxState(
+            main=main,
+            assets=assets,
+            camera=camera,
+            fullscreen=False,
+            visuals=visuals,
+            fps_per_second=fps_per_second,
+            clock=clock,
+            windows=windows
+    )
+
+    text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
+    log = MessageLog(text_width)  # for some margin on the sides
+
+    player = Player()
+    formula_builder = FormulaBuilder(player.caster.num_slots, player.caster.num_formulas)
+
+    planner = RunPlanner(3, player, constants, timesystem)
     player.pos = planner.current_map.player_pos
     fov_map = initialize_fov(planner.current_map)
+
+    menu_data = AttrDict({
+        "currchoice": 0
+    })
+
     game_data = StateData(
             player,
             planner.current_map.entities,
@@ -79,6 +151,8 @@ def get_game_variables(constants, gfx_data):
             fov_map,
             fov_recompute=True,
             story_data=story_data,
-            run_planner=planner
+            run_planner=planner,
+            formula_builder=formula_builder,
+            menu_data=menu_data
     )
-    return game_data, state
+    return game_data, gfx_data, state

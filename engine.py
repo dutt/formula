@@ -4,9 +4,8 @@ import traceback
 with contextlib.redirect_stdout(None):
     import pygame
 
-from graphics.pygame_gfx import initialize_gfx
 from death import kill_player, kill_monster
-from loader_functions.init_new_game import get_constants, get_game_variables
+from loader_functions.init_new_game import get_constants, setup_data_state
 from messages import Message
 from game_states import GameStates
 
@@ -72,8 +71,7 @@ def setup_prevstate(state):
 
 def main():
     constants = get_constants()
-    gfx_data = initialize_gfx(constants)
-    game_data, state = get_game_variables(constants, gfx_data)
+    game_data, gfx_data, state = setup_data_state(constants)
 
     game_data.state = state
     game_data.prev_state = setup_prevstate(state)
