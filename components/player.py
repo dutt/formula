@@ -55,8 +55,13 @@ class Player(Entity):
             render_all(gfx_data, game_data, targeting_formula, self.formula_builder, menu_data)
 
             events = pygame.event.get()
+            quit_events = [e for e in events if e.type == pygame.QUIT]
+            if quit_events:
+                player_action = ExitAction()
+
             key_events = [e for e in events if e.type == pygame.KEYDOWN]
             mouse_events = [e for e in events if e.type == pygame.MOUSEBUTTONDOWN]
+
             action = handle_keys(key_events, game_data.state)
             mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera)
 
@@ -66,8 +71,10 @@ class Player(Entity):
             left_click = mouse_action.get(Event.left_click)
             right_click = mouse_action.get(Event.right_click)
 
-            if left_click:
-                turn_results.extend(gfx_data.windows.handle_click(game_data, gfx_data, left_click))
+            if mouse_action:
+                gui_result = gfx_data.windows.handle_click(game_data, gfx_data, mouse_action)
+                if gui_result:
+                    action = gui_result
 
             level_up = action.get(Event.level_up)
             show_character_screen = action.get(Event.character_screen)

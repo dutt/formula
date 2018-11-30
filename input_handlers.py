@@ -12,6 +12,8 @@ class Event:
     exit = "exit"
     left_click = "left_click"
     right_click = "right_click"
+    scroll_up = "scroll_up"
+    scroll_down = "scroll_down"
     level_up = "level_up"
     character_screen = "character_screen"
     formula_screen = "formula"
@@ -128,6 +130,10 @@ def handle_mouse(events, constants, camera):
             return {Event.left_click: data}
         elif e.button == 3:
             return {Event.right_click: data}
+        elif e.button == 4:
+            return {Event.scroll_up: data}
+        elif e.button == 5:
+            return {Event.scroll_down: data}
     return {}
 
 

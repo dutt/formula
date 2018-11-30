@@ -1,26 +1,21 @@
 from attrdict import AttrDict
 
 from game_states import GameStates
-from graphics.constants import CELL_HEIGHT
+from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from util import Size
 
 
 def get_constants():
     window_title = "Formula"
 
-    screen_size = Size(80, 50)
     map_size = Size(80, 50)
-    camera_size = Size(30, 30)
-
-    bar_width = 20
-    bottom_panel_height = 7 * CELL_HEIGHT
-    bottom_panel_y = screen_size.height - bottom_panel_height
-
+    camera_size = Size(30, 25)
+    game_window_size = Size(camera_size.width * CELL_WIDTH, camera_size.height * CELL_HEIGHT)
     window_size = Size(1200, 1000)
-    right_panel_size = Size(150, window_size.height - bottom_panel_height)
 
-    message_x = bar_width + 2
-    message_size = Size(screen_size.width - bar_width - 2, bottom_panel_height - 1)
+    right_panel_size = Size(150, window_size.height)
+    message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height)
+    message_log_text_size = Size(message_log_size.width - 10 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT)
 
     room_max_size = 15
     room_min_size = 6
@@ -30,28 +25,15 @@ def get_constants():
     fov_light_walls = True
     fov_radius = 10
 
-    colors = {
-        "dark_wall": (30, 30, 30),
-        "dark_ground": (60, 60, 60),
-        "light_wall": (90, 90, 90),
-        "light_ground": (140, 140, 140)
-    }
-
     retr = AttrDict({
         "window_title": window_title,
         "window_size": window_size,
-        "screen_size": screen_size,
+        "game_window_size": game_window_size,
         "camera_size": camera_size,
         "map_size": map_size,
-
-        "bar_width": bar_width,
-        "bottom_panel_height": bottom_panel_height,
-        "bottom_panel_y": bottom_panel_y,
-
         "right_panel_size": right_panel_size,
-
-        "message_x": message_x,
-        "message_size": message_size,
+        "message_log_size": message_log_size,
+        "message_log_text_size": message_log_text_size,
 
         "room_max_size": room_max_size,
         "room_min_size": room_min_size,
@@ -60,8 +42,6 @@ def get_constants():
         "fov_algorithm": fov_algorithm,
         "fov_light_walls": fov_light_walls,
         "fov_radius": fov_radius,
-
-        "colors": colors
     })
 
     return retr
@@ -74,12 +54,15 @@ from components.player import Player
 from fov import initialize_fov
 from story import StoryLoader, StoryData
 from run_planner import RunPlanner
+from graphics.font import get_width
+from graphics.assets import Assets
 
 
 def get_game_variables(constants, gfx_data):
     player = Player(gfx_data.assets)
     timesystem = TimeSystem()
-    log = MessageLog(constants.message_x, constants.message_size)
+    text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
+    log = MessageLog(text_width)  # for some margin on the sides
     state = GameStates.WELCOME_SCREEN
     state = GameStates.PLAY
     story_loader = StoryLoader()

@@ -17,18 +17,15 @@ class Message:
 
 
 class MessageLog:
-    def __init__(self, x, size):
+    def __init__(self, width):
         self.messages = []
-        self.x = x
-        self.size = size
+        self.width = width
+        self.offset = 0
         self.last_id = 0
 
     def add_message(self, msg):
         msg.id = self.last_id
         self.last_id += 1
-        lines = textwrap.wrap(msg.text, self.size.width)
-
+        lines = textwrap.wrap(msg.text, self.width)
         for line in lines:
-            if len(self.messages) == self.size.height:
-                del self.messages[0]
             self.messages.append(Message("{}: {}".format(msg.id, line), msg.color))

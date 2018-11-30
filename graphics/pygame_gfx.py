@@ -7,13 +7,13 @@ import util
 from game_states import GameStates
 from graphics.assets import Assets
 from graphics.camera import Camera
-from graphics.constants import CELL_HEIGHT, CELL_WIDTH
+from graphics.constants import CELL_HEIGHT, CELL_WIDTH, colors
 from graphics.display_helpers import display_text
 from graphics.menu import story_screen_help, story_screen, formula_help_menu, formula_menu, help_menu, levelup_menu, \
     welcome_menu
 from graphics.visual_effect import VisualEffectSystem
 from util import Pos
-from graphics.window import WindowManager, RightPanelWindow
+from graphics.window import WindowManager, RightPanelWindow, MessageLogWindow
 
 class stuff:
     pass
@@ -42,6 +42,7 @@ def initialize_gfx(constants):
     clock = pygame.time.Clock()
     windows = WindowManager()
     windows.push(RightPanelWindow(constants))
+    windows.push(MessageLogWindow(constants))
     return GfxState(
             main=main,
             assets=assets,
@@ -58,7 +59,7 @@ from components.drawable import Drawable
 
 
 def render_all(gfx_data, game_data, targeting_formula, formulabuilder, menu_data):
-    gfx_data.main.fill(game_data.constants.colors.dark_wall)
+    gfx_data.main.fill(colors.BACKGROUND)
     assets = gfx_data.assets
     panel_width = game_data.constants.right_panel_size.width
     main = gfx_data.main
