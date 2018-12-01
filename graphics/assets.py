@@ -20,17 +20,17 @@ class Assets:
 
         graphics_file_tile_size = util.Size(16, 16)
 
-        self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Reptile0.png"))
+        self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Reptile"))
         self.wall_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Wall.png"))
-        self.undead_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Undead0.png"))
-        self.decor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Decor0.png"))
+        self.undead_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Undead"))
+        self.decor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Decor"))
         self.floor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Floor.png"))
         self.potion_sheet = Spritesheet(util.resource_path("data/graphics/Items/Potion.png"))
         self.medium_weapons_sheet = Spritesheet(util.resource_path("data/graphics/Items/MedWep.png"))
-        self.effect0_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Effect0.png"))
+        self.effect0_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Effect"))
         self.ammo_sheet = Spritesheet(util.resource_path("data/graphics/Items/Ammo.png"))
-        self.humanoid_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Humanoid0.png"))
-        self.quadraped_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Quadraped0.png"))
+        self.humanoid_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Humanoid"))
+        self.quadraped_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Quadraped"))
 
         if graphics_file_tile_size.width != CELL_WIDTH or graphics_file_tile_size.height != CELL_HEIGHT:
             scale = (CELL_WIDTH, CELL_HEIGHT)
@@ -40,6 +40,10 @@ class Assets:
         def get_img(sheet, col, row, rotate=None):
             return sheet.get_image(col, row, graphics_file_tile_size.width, graphics_file_tile_size.height,
                                    scale=scale, rotate=rotate)
+
+        def get_animation(sheet, col, row, rotate=None):
+            return sheet.get_animation(col, row, graphics_file_tile_size.width, graphics_file_tile_size.height,
+                                       scale=scale, rotate=rotate)
 
         def get_wall(sheet, col, row):  # col, row are coords of the top left sprite
             retr = []
@@ -81,7 +85,7 @@ class Assets:
             retr.append(get_img(sheet, col + 1, row + 1, rotate=  0))  # 15, floor all around
             return retr
 
-        self.player = get_img(self.reptile_sheet, 1, 1)
+        self.player = get_animation(self.reptile_sheet, 1, 1)
 
         self.stairs = get_img(self.decor_sheet, 2, 9)
 
@@ -91,11 +95,11 @@ class Assets:
         self.light_floor = get_floor(self.floor_sheet, 0, 6)
         self.dark_floor = get_floor(self.floor_sheet, 0, 9)
 
-        self.ghost = get_img(self.undead_sheet, 2, 2)
-        self.demon = get_img(self.undead_sheet, 7, 2)
+        self.ghost = get_animation(self.undead_sheet, 2, 2)
+        self.demon = get_animation(self.undead_sheet, 7, 2)
         self.monster_corpse = get_img(self.decor_sheet, 2, 12)
-        self.chucker = get_img(self.humanoid_sheet, 2, 12)
-        self.wolf = get_img(self.quadraped_sheet, 5, 0)
+        self.chucker = get_animation(self.humanoid_sheet, 2, 12)
+        self.wolf = get_animation(self.quadraped_sheet, 5, 0)
 
         self.throwing_bottle = get_img(self.potion_sheet, 0, 0)
         self.sword = get_img(self.medium_weapons_sheet, 0, 0)

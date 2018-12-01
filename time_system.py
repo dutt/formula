@@ -25,7 +25,7 @@ class TimeSystem():
             while turn_data:
                 while not gfx_data.visuals.done:
                     gfx_data.windows.draw(game_data, gfx_data)
-                    gfx_data.visuals.update()
+                    gfx_data.visuals.update(gfx_data.visuals.update(game_data, gfx_data))
                     gfx_data.clock.tick(gfx_data.fps_per_second)
                     pygame.display.flip()
                 results.extend(turn_data.result)

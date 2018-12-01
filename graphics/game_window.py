@@ -55,7 +55,7 @@ class GameWindow(Window):
                             asset = assets.light_floor[floor_type]
                         drawable = Drawable(asset)
                         drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
-                        surface.blit(drawable.asset[0],
+                        surface.blit(drawable.asset,
                                      (sx * CELL_WIDTH,
                                       sy * CELL_HEIGHT))
                         game_data.map.tiles[x][y].explored = True
@@ -75,11 +75,11 @@ class GameWindow(Window):
             for e in rendering_sorted:
                 if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
-                    main.blit(e.drawable.asset[0],
+                    main.blit(e.drawable.asset,
                               (sx * CELL_WIDTH,
                                sy * CELL_HEIGHT))
                     for ad in e.attached_effects:
-                        main.blit(ad.drawable.asset[0],
+                        main.blit(ad.drawable.asset,
                                   (sx * CELL_WIDTH,
                                    sy * CELL_HEIGHT))
 
@@ -149,7 +149,7 @@ class GameWindow(Window):
                 if not effect.visible:
                     continue
                 sx, sy = gfx_data.camera.map_to_screen(effect.pos.x, effect.pos.y)
-                surface.blit(effect.drawable.asset[0],
+                surface.blit(effect.drawable.asset,
                              (sx * CELL_WIDTH,
                               sy * CELL_HEIGHT))
             main.blit(surface, (0, 0))

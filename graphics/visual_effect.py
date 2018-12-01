@@ -4,7 +4,7 @@ from components.drawable import Drawable
 from util import Vec
 
 
-class VisualEffectSystem():
+class VisualEffectSystem:
     _instance = None
 
     def __init__(self, fps_per_second):
@@ -22,11 +22,14 @@ class VisualEffectSystem():
     def effects(self):
         return self.temporary_effects + self.attached_effects
 
-    def update(self):
+    def update(self, game_data, gfx_data):
         for e in self.temporary_effects:
             e.update()
         for e in self.attached_effects:
             e.update()
+        for e in game_data.entities:
+            if e.drawable:
+                e.drawable.update(gfx_data.clock)
 
     def remove(self, visual):
         if visual in self.temporary_effects:

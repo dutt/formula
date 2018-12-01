@@ -174,7 +174,7 @@ class Player(Entity):
                     game_data.state = game_data.prev_state.pop()
                     game_data.log.add_message(Message("Targeting cancelled"))
 
-            gfx_data.visuals.update()
+            gfx_data.visuals.update(game_data, gfx_data)
             gfx_data.clock.tick(gfx_data.fps_per_second)
             pygame.display.flip()
 
