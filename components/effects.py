@@ -60,6 +60,7 @@ class EffectBuilder:
                 VisualEffectSystem.get().add_temporary(target.pos, target.pos, lifespan=0.2,
                                                        asset=Assets.get().spark_effect, color=color, wait=0.2)
                 return target.fighter.take_damage(source=None, dmg=dmg_amount, dmg_type=dmg_type)
+
             def stats_func():
                 return AttrDict({
                     "type": EffectType.DAMAGE,
@@ -117,9 +118,10 @@ class EffectBuilder:
 
             def apply(target):
                 target.fighter.shield = Shield(level, strikebacks, target, distance)
-                target.fighter.shield.effect = VisualEffectSystem.get().add_attached(target, Assets.get().shield_effect,
-                                                                                     target.fighter.shield.color,
-                                                                                     transform=rotation_transform())
+                target.fighter.shield.visual_effect = VisualEffectSystem.get().add_attached(target,
+                                                                                            Assets.get().shield_effect,
+                                                                                            target.fighter.shield.color,
+                                                                                            transform=rotation_transform())
                 return []
 
             def stats_func():

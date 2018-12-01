@@ -17,7 +17,6 @@ class WindowManager:
             GameStates.GENERAL_HELP_SCREEN: GeneralHelpWindow,
             GameStates.LEVEL_UP : LevelUpWindow
         }
-        self.active = []
 
     def push(self, window):
         self.windows.append(window)
@@ -54,14 +53,8 @@ class WindowManager:
         return None
 
     def draw(self, game_data, gfx_data):
-        drawing = []
         for wnd in self.windows:
-            if wnd.draw(game_data, gfx_data):
-                drawing.append(wnd)
-        if drawing != self.active:
-            types = [type(d) for d in drawing]
-            print(types)
-            self.active = drawing
+            wnd.draw(game_data, gfx_data)
 
     def get(self, wndtype):
         for wnd in self.windows:

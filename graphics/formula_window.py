@@ -76,7 +76,8 @@ class FormulaWindow(Window):
             # return self.close(game_data, FormulaWindow)
             game_data.state = game_data.prev_state.pop()
             self.visible = False
-            # return {Event.show_window: next_window}
+            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+            gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
             return {}
 
         slot = key_action.get("slot")

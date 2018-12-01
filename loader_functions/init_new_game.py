@@ -89,7 +89,8 @@ from formula_builder import FormulaBuilder
 
 def setup_data_state(constants):
     state = GameStates.WELCOME_SCREEN
-    state = GameStates.PLAY
+    #state = GameStates.FORMULA_SCREEN
+    #state = GameStates.PLAY
 
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)

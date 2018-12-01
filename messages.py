@@ -27,5 +27,6 @@ class MessageLog:
         msg.id = self.last_id
         self.last_id += 1
         lines = textwrap.wrap(msg.text, self.width)
+        print("LOG: {} {}".format(msg.id, msg.text))
         for line in lines:
             self.messages.append(Message("{}: {}".format(msg.id, line), msg.color))

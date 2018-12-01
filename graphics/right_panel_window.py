@@ -1,11 +1,11 @@
 import pygame
 
-from graphics.window import Window, Bar, Label, Clickable
-from util import Pos, Size
-from graphics.constants import colors
 from graphics.assets import Assets
+from graphics.constants import colors
 from graphics.display_helpers import display_text
+from graphics.window import Window, Bar, Label, Clickable
 from input_handlers import Event
+from util import Pos, Size
 
 
 class FormulaMarker(Clickable):
@@ -62,7 +62,8 @@ class RightPanelWindow(Window):
 
         self.health_bar.draw(surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp)
         if game_data.player.fighter.shield:
-            self.shield_bar.draw(surface, game_data.player.fighter.shield.level, game_data.player.fighter.max_level)
+            self.shield_bar.draw(surface, game_data.player.fighter.shield.level,
+                                 game_data.player.fighter.shield.max_level)
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):

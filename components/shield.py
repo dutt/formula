@@ -1,7 +1,7 @@
 from components.damage_type import DamageType
 from components.effect_type import EffectType
 from messages import Message
-
+from graphics.visual_effect import VisualEffectSystem
 
 class Shield:
     def __init__(self, level, strikebacks, owner, distance):
@@ -10,20 +10,24 @@ class Shield:
         self.strikebacks = strikebacks
         self.owner = owner
         self.distance = distance
+        self.visual_effect = None # set by effects
 
     def on_hit(self, source, dmg, dmg_type):
+        assert self.visual_effect
         results = []
         if source and self.owner.distance_to(source) <= self.distance:
             for sb in self.strikebacks:
                 sb.apply(source)
-                text = "Shield hits {} for {} {} damage".format(source.name, sb.stats.amount,
-                                                                sb.stats.dmg_type.name.lower())
-                results.append({"message": Message(text)})
+                if "amount" in sb.stats:
+                    text = "Shield hits {} for {} {} damage".format(source.name, sb.stats.amount,
+                                                                    sb.stats.dmg_type.name.lower())
+                    results.append({"message": Message(text)})
         actual_dmg = max(0, dmg - self.level)
         self.level = max(0, self.level - dmg)
         if self.level <= 0:
             results.append({"depleted": True})
             results.append({"message": Message("Your shield has been depleted")})
+            VisualEffectSystem.get().remove(self.visual_effect)
         return results, actual_dmg
 
     @property

@@ -144,18 +144,7 @@ class Player(Entity):
                     turn_results.append(start_throwing_vial_results)
 
             if do_exit:
-                if game_data.state == GameStates.FORMULA_SCREEN:
-                    self.caster.set_formulas(game_data.formula_builder.evaluate())
-                    gfx_data.camera.center_on(self.pos.x, self.pos.y)
-                    game_data.state = game_data.prev_state.pop()
-                elif game_data.state in [GameStates.CHARACTER_SCREEN,
-                                         GameStates.FORMULA_HELP_SCEEN,
-                                         GameStates.GENERAL_HELP_SCREEN,
-                                         GameStates.WELCOME_SCREEN,
-                                         GameStates.STORY_SCREEN,
-                                         GameStates.STORY_HELP_SCREEN]:
-                    game_data.state = game_data.prev_state.pop()
-                elif game_data.state == GameStates.TARGETING:
+                if game_data.state == GameStates.TARGETING:
                     turn_results.append({"targeting_cancelled": True})
                 else:
                     player_action = ExitAction()
