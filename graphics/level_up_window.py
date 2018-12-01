@@ -37,6 +37,14 @@ class LevelUpWindow(Window):
         return True
 
     def handle_key(self, game_data, gfx_data, key_action):
-        do_quit = key_action.get(Event.exit)
-        if do_quit:
-            return self.close(game_data, None)
+        choice = key_action.get("choice")
+        if choice:
+            game_data.menu_data.currchoice += choice
+
+        level_up = key_action.get(Event.level_up)
+        if level_up:
+            if game_data.menu_data.currchoice == 0:
+                game_data.formula_builder.add_slot()
+            elif game_data.menu_data.currchoice == 1:
+                game_data.formula_builder.add_formula()
+            self.close(game_data)

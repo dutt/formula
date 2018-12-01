@@ -15,6 +15,7 @@ from graphics.render_order import RenderOrder
 from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
 from util import Pos
+from graphics.level_up_window import LevelUpWindow
 
 
 class Player(Entity):
@@ -110,9 +111,7 @@ class Player(Entity):
                         gfx_data.camera.center_on(destx, desty)
 
             if game_data.state == GameStates.LEVEL_UP:
-                choice = key_action.get("choice")
-                if choice:
-                    game_data.menu_data.currchoice += choice
+                gfx_data.windows.get(LevelUpWindow).visible = True
 
             if game_data.state == GameStates.TARGETING:
                 if left_click:
@@ -126,13 +125,6 @@ class Player(Entity):
                     game_data.state = game_data.prev_state.pop()
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
-
-            if level_up:
-                if game_data.menu_data.currchoice == 0:
-                    game_data.formula_builder.add_slot()
-                elif game_data.menu_data.currchoice == 1:
-                    game_data.formula_builder.add_formula()
-                game_data.state = game_data.prev_state.pop()
 
             if start_throwing_vial is not None:
                 if start_throwing_vial >= len(self.caster.formulas):

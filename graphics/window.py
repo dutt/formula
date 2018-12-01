@@ -33,7 +33,7 @@ class Window(Clickable):
     def draw(self, game_data, gfx_data):
         raise NotImplementedError("draw called on Window base class")
 
-    def close(self, game_data, next_window):
+    def close(self, game_data, next_window=None):
         game_data.state = game_data.prev_state.pop()
         self.visible = False
         return {Event.show_window: next_window}
