@@ -20,7 +20,7 @@ def get_constants():
     window_title = "Formula"
 
     map_size = Size(80, 50)
-    camera_size = Size(30, 25)
+    camera_size = Size(33, 25)
     game_window_size = Size(camera_size.width * CELL_WIDTH, camera_size.height * CELL_HEIGHT)
     window_size = Size(1200, 1000)
 

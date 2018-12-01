@@ -25,12 +25,12 @@ class Formula:
         for e in self.effects:
             e_text_message, e_applied_msg = self.parse_effect(e)
             text_msg += e_text_message
-            applied_msg += applied_msg
+            applied_msg += e_applied_msg
         postfix = "range={}, area={}".format(self.distance, self.area)
         if text_msg:
             self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
             self.text_stats_text = "{}, {}".format(text_msg[:-2], postfix)
-            self.applied_text = "The {} is " + applied_msg[:-2]
+            self.applied_text = "The {} " + applied_msg[:-2]
         else:
             self.targeting_message_text = ""
             self.text_stats_text = ""
@@ -46,13 +46,13 @@ class Formula:
             applied_msg = "takes {} {} damage, ".format(stats.amount, name)
         elif stats.type == EffectType.HEALING:
             text_msg = "{} healing, ".format(stats.amount)
-            applied_msg = "healed for {}, ".format(stats.amount)
+            applied_msg = "is healed for {}, ".format(stats.amount)
         elif stats.type == EffectType.SLOW:
             text_msg = "slow for {} rounds, ".format(stats.rounds)
-            applied_msg = "slowed for {} rounds, ".format(stats.rounds)
+            applied_msg = "is slowed for {} rounds, ".format(stats.rounds)
         elif stats.type == EffectType.DEFENSE:
             text_msg = "shield resisting {} damage".format(stats.level)
-            applied_msg = "shielded for {} damage".format(stats.level)
+            applied_msg = "is shielded for {} damage".format(stats.level)
             if stats.strikebacks:
                 text_msg += " and dealing "
                 applied_msg += ", shield dealing "

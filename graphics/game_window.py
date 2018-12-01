@@ -21,12 +21,12 @@ class GameWindow(Window):
             return False
         main = pygame.Surface(self.size.tuple())
 
-        gfx_data.main.fill(colors.BACKGROUND)
+        gfx_data.main.fill(colors.YELLOW)
         assets = gfx_data.assets
 
         def draw_terrain():
             surface = pygame.Surface(game_data.constants.game_window_size.tuple(), pygame.SRCALPHA)
-
+            surface.fill(colors.BACKGROUND)
             # for x in range(30):
             #    for y in range(15):
             #        #main.blit(assets.effect0_sheet.get_image(x, 15+y)[0],
@@ -68,7 +68,6 @@ class GameWindow(Window):
                             surface.blit(assets.dark_floor[floor_type][0],
                                          (sx * CELL_WIDTH,
                                           sy * CELL_HEIGHT))
-            surface.set_alpha(150)
             main.blit(surface, (0, 0))
 
         def draw_entities():
@@ -165,11 +164,6 @@ class GameWindow(Window):
         return True
 
     def handle_key(self, game_data, gfx_data, key_action):
-        do_quit = key_action.get(Event.exit)
-        if do_quit:
-            # return self.close(game_data, FormulaWindow)
-            return
-
         show_help = key_action.get(Event.show_help)
         if show_help:
             return {Event.show_window: GeneralHelpWindow}

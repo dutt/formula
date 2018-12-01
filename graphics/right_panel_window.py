@@ -33,8 +33,8 @@ class RightPanelWindow(Window):
     def __init__(self, constants):
         super().__init__(Pos(0, 0), constants.right_panel_size, visible=True)
         self.health_bar = Bar(Pos(10, 20), colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND)
-        self.shield_bar = Bar(Pos(10, 50), colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND)
-        self.formula_label = Label(Pos(10, 70), "Formulas")
+        self.shield_bar = Bar(Pos(10, 60), colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND)
+        self.formula_label = Label(Pos(10, 150), "Formulas")
         self.formula_markers = []
 
     def handle_click(self, game_data, gfx_data, mouse_action):
@@ -58,7 +58,7 @@ class RightPanelWindow(Window):
         surface.fill(colors.BACKGROUND)
 
         if len(self.formula_markers) != len(game_data.player.caster.formulas):
-            self.update_formula_markers(game_data.player, start_y=100)
+            self.update_formula_markers(game_data.player, start_y=self.formula_label.pos.y + 40)
 
         self.health_bar.draw(surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp)
         if game_data.player.fighter.shield:
