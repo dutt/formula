@@ -21,7 +21,7 @@ from graphics.level_up_window import LevelUpWindow
 class Player(Entity):
     def __init__(self):
         caster_component = Caster(num_slots=3, num_formulas=3)
-        fighter_component = Fighter(hp=10, defense=0, power=3)
+        fighter_component = Fighter(hp=100, defense=200, power=300)
         level_component = Level()
         drawable_component = Drawable(Assets.get().player)
         super(Player, self).__init__(0, 0, "Player", speed=100, blocks=True,
@@ -81,7 +81,7 @@ class Player(Entity):
             if interact:
                 for e in game_data.entities:
                     if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
-                        player_action = DescendStairsAction(self)
+                        player_action = DescendStairsAction(self, gfx_data)
                         game_data.story.next_story()
                         # TODO clear cooldowns?
                         break
@@ -96,6 +96,7 @@ class Player(Entity):
                     game_data.state = GameStates.STORY_HELP_SCREEN
                 else:
                     game_data.state = GameStates.GENERAL_HELP_SCREEN
+                gfx_data.windows.activate_wnd_for_state(game_data.state)
 
             elif move:
                 dx, dy = move

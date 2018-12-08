@@ -47,6 +47,11 @@ class WindowManager:
             return True, {}
         return False, key_action
 
+    def activate_wnd_for_state(self, state):
+        wnd = self.get_wnd_for_state(state)
+        assert wnd
+        wnd.visible = True
+
     def get_wnd_for_state(self, state):
         if state in self.state_wnd_mapping:
             return self.get(self.state_wnd_mapping[state])

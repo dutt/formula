@@ -73,7 +73,7 @@ def fader_transform(fps_lifespan):
 
 def rotation_transform(_=None):
     def doer(drawable):
-        return Drawable([pygame.transform.rotate(drawable.asset[0], 90)])
+        return Drawable([pygame.transform.rotate(drawable.asset, 90)])
 
     return doer
 

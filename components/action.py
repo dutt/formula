@@ -37,8 +37,9 @@ class WaitAction(Action):
 class DescendStairsAction(Action):
     COST = 100
 
-    def __init__(self, actor):
+    def __init__(self, actor, gfx_data):
         super(DescendStairsAction, self).__init__(actor=actor, cost=DescendStairsAction.COST)
+        self.gfx_data = gfx_data
 
     def execute(self, game_data):
         if game_data.run_planner.has_next:
@@ -49,9 +50,11 @@ class DescendStairsAction(Action):
             game_data.entities = game_data.map.entities
             game_data.fov_map = initialize_fov(game_data.map)
             game_data.fov_recompute = True
+            self.gfx_data.windows.activate_wnd_for_state(game_data.state)
             result = [{"descended": True}]
         else:
             game_data.state = GameStates.VICTORY
+            self.gfx_data.windows.activate_wnd_for_state(GameStates.STORY_SCREEN)
             result = [{"victory": True}]
         return self.package(result)
 

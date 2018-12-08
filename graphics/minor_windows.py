@@ -8,7 +8,9 @@ class WelcomeWindow(TextWindow):
         "",
         "A game of dungeon crawling, potion brewing and vial slinging",
         "",
-        "Next you'll be shown the formula screen, press Tab to show help",
+        "Next you'll be shown the formula screen.",
+        "",
+        "You can always press Tab to get help for the current screen",
         "Escape to cancel actions or quit the current menu, or the game",
         "",
         "Press Escape to continue"
