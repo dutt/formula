@@ -21,7 +21,7 @@ from graphics.level_up_window import LevelUpWindow
 class Player(Entity):
     def __init__(self):
         caster_component = Caster(num_slots=3, num_formulas=3)
-        fighter_component = Fighter(hp=100, defense=200, power=300)
+        fighter_component = Fighter(hp=10, defense=0, power=3)
         level_component = Level()
         drawable_component = Drawable(Assets.get().player)
         super(Player, self).__init__(0, 0, "Player", speed=100, blocks=True,

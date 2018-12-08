@@ -18,7 +18,9 @@ class FormulaHelpWindow(TextWindow):
         "Adding fire to a formula increases damage",
         "Adding life to a formula increases healing",
         "Adding range to a formula makes it reach further",
-        "Adding area to a formula gives it wider area of effect"
+        "Adding area to a formula gives it wider area of effect",
+        "Adding shield makes it defensive, combine with others for a shield that strikes back on hits",
+        "Adding cold does less damage than fire, but also slows the enemy down"
     ]
 
     def __init__(self, constants, visible=False):
