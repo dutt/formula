@@ -32,9 +32,6 @@ class FormulaWindow(Window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
-        if not self.visible:
-            return False
-
         surface = pygame.Surface(self.size.tuple())
         linediff = 12
         y = 5 * linediff
@@ -70,17 +67,18 @@ class FormulaWindow(Window):
                      gfx_data.assets.font_message,
                      (50, y))
         gfx_data.main.blit(surface, self.pos.tuple())
-        return True
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
         if do_quit:
-            # return self.close(game_data, FormulaWindow)
-            game_data.state = game_data.prev_state.pop()
-            self.visible = False
+            #
+            #game_data.state = game_data.prev_state.pop()
+            #self.visible = False
             game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
             gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
-            return {}
+            #return {}
+            from graphics.game_window import GameWindow
+            return self.close(game_data, GameWindow)
 
         slot = key_action.get("slot")
         if slot is not None:

@@ -47,7 +47,7 @@ class DescendStairsAction(Action):
             game_data.prev_state.append(GameStates.FORMULA_SCREEN)
             game_data.state = GameStates.STORY_SCREEN
             game_data.map = game_data.run_planner.activate_next_level()
-            game_data.entities = game_data.map.entities
+            game_data.map.entities = game_data.map.entities
             game_data.fov_map = initialize_fov(game_data.map)
             game_data.fov_recompute = True
             self.gfx_data.windows.activate_wnd_for_state(game_data.state)
@@ -67,7 +67,7 @@ class MoveToPositionAction(Action):
         self.targetpos = targetpos
 
     def execute(self, game_data):
-        self.actor.move_towards(self.targetpos.x, self.targetpos.y, game_data.entities, game_data.map)
+        self.actor.move_towards(self.targetpos.x, self.targetpos.y, game_data.map.entities, game_data.map)
         result = [{"moved": True}]
         return self.package(result)
 
@@ -80,7 +80,7 @@ class MoveToTargetAction(Action):
         self.target = target
 
     def execute(self, game_data):
-        self.actor.move_astar(self.target, game_data.entities, game_data.map)
+        self.actor.move_astar(self.target, game_data.map.entities, game_data.map)
         result = [{"moved": True}]
         return self.package(result)
 
@@ -106,7 +106,7 @@ class ThrowVialAction(Action):
         self.targetpos = targetpos
 
     def execute(self, game_data):
-        result = self.formula.apply(entities=game_data.entities,
+        result = self.formula.apply(entities=game_data.map.entities,
                                     fov_map=game_data.fov_map, caster=self.actor,
                                     target_x=self.targetpos.x, target_y=self.targetpos.y)
         return self.package(result)

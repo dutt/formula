@@ -9,9 +9,9 @@ from util import Pos
 
 
 class MessageLogWindow(Window):
-    def __init__(self, constants):
+    def __init__(self, constants, parent):
         super().__init__(Pos(constants.right_panel_size.width, constants.game_window_size.height),
-                         constants.message_log_size, visible=True)
+                         constants.message_log_size, visible=False, parent=parent)
         self.offset = 0
         self.num_messages = 9
 
@@ -25,7 +25,6 @@ class MessageLogWindow(Window):
         for idx, msg in enumerate(messages[start:end]):
             display_text(surface, msg.text, Assets.get().font_message, (180, y + idx * 20), msg.color)
         gfx_data.main.blit(surface, self.pos.tuple())
-        return True
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(Event.scroll_up)

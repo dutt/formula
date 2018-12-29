@@ -13,12 +13,10 @@ from util import Pos, distance
 
 
 class GameWindow(Window):
-    def __init__(self, constants, visible):
+    def __init__(self, constants, visible=False):
         super().__init__(Pos(constants.right_panel_size.width, 0), constants.game_window_size, visible)
 
     def draw(self, game_data, gfx_data):
-        if not self.visible:
-            return False
         main = pygame.Surface(self.size.tuple())
 
         gfx_data.main.fill(colors.YELLOW)
@@ -42,13 +40,14 @@ class GameWindow(Window):
                     floor_type = game_data.map.tiles[x][y].floor_info
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
                     sx, sy = gfx_data.camera.map_to_screen(x, y)
-                    # visible = True
+                    #visible = True
                     if visible:
                         distance = game_data.player.pos - Pos(x, y)
                         if distance.length() > 5:
                             darken = (distance.length() - 3) * 10
                         else:
                             darken = 0
+                        darken = min(255, darken)
                         if wall:
                             asset = assets.light_wall[wall_type]
                         else:
@@ -71,7 +70,7 @@ class GameWindow(Window):
             main.blit(surface, (0, 0))
 
         def draw_entities():
-            rendering_sorted = sorted(game_data.entities, key=lambda e: e.render_order.value)
+            rendering_sorted = sorted(game_data.map.entities, key=lambda e: e.render_order.value)
             for e in rendering_sorted:
                 if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
@@ -161,7 +160,6 @@ class GameWindow(Window):
             draw_targeting()
 
         gfx_data.main.blit(main, self.pos.tuple())
-        return True
 
     def handle_key(self, game_data, gfx_data, key_action):
         show_help = key_action.get(Event.show_help)

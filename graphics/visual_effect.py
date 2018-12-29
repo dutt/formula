@@ -27,7 +27,7 @@ class VisualEffectSystem:
             e.update()
         for e in self.attached_effects:
             e.update()
-        for e in game_data.entities:
+        for e in game_data.map.entities:
             if e.drawable:
                 e.drawable.update(gfx_data.clock)
 

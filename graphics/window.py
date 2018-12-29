@@ -26,9 +26,13 @@ class Clickable(Widget):
 
 
 class Window(Clickable):
-    def __init__(self, pos, size, visible):
+    def __init__(self, pos, size, visible, parent=None):
         super().__init__(pos, size)
-        self.visible = visible
+        self._visible = visible
+        self.children = []
+        self.parent = parent
+        if parent:
+            parent.children.append(self)
 
     def draw(self, game_data, gfx_data):
         raise NotImplementedError("draw called on Window base class")
@@ -38,6 +42,15 @@ class Window(Clickable):
         self.visible = False
         return {Event.show_window: next_window}
 
+    @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, value):
+        self._visible = value
+        for child in self.children:
+            child.visible = value
 
 class Bar(Clickable):
     def __init__(self, pos, color, bgcolor, size=Size(100, 30)):
@@ -67,10 +80,7 @@ class TextWindow(Window):
         self.next_window = next_window
 
     def draw(self, game_data, gfx_data):
-        if not self.visible:
-            return False
         display_menu(gfx_data, self.lines, self.size.tuple())
-        return True
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)

@@ -26,8 +26,6 @@ class StoryWindow(Window):
         self.story_data = story_data
 
     def draw(self, game_data, gfx_data):
-        if not self.visible:
-            return False
         surface = pygame.Surface(self.size.tuple())
         page_lines = self.story_data.current_page.split("\n")
         lines = []
@@ -40,7 +38,6 @@ class StoryWindow(Window):
         display_text(surface, "{}/{}".format(self.story_data.page_num, self.story_data.page_count),
                      gfx_data.assets.font_message, (40, 400))
         gfx_data.main.blit(surface, self.pos.tuple())
-        return True
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)

@@ -32,6 +32,12 @@ class Vec:
     def length(self):
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
+    def to_pos(self):
+        return Pos(self.x, self.y)
+
+    def tuple(self):
+        return self.x, self.y
+
     def __mul__(self, other):
         if type(other) == Vec:
             return Vec(self.x * other.x, self.y * other.y)
@@ -41,14 +47,14 @@ class Vec:
     def __add__(self, other):
         return Vec(self.x + other.x, self.y + other.y)
 
-    def to_pos(self):
-        return Pos(self.x, self.y)
-
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         return "<vec w={}, h={}>".format(self.x, self.y)
+
+    def __hash__(self):
+        return self.tuple().__hash__()
 
 
 class Pos:
@@ -60,7 +66,7 @@ class Pos:
         return self.x == other.x and self.y == other.y
 
     def __ne__(self, other):
-        return (self == other) == False
+        return not self == other
 
     def __repr__(self):
         return str(self)
@@ -73,6 +79,9 @@ class Pos:
 
     def __add__(self, other):
         return Vec(self.x + other.x, self.y + other.y)
+
+    def __hash__(self):
+        return self.tuple().__hash__()
 
     def distance_to(self, other):
         return distance(self.x, self.y, other.x, other.y)

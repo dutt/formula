@@ -31,4 +31,7 @@ class TimeSystem():
                 results.extend(turn_data.result)
                 actor.action_points -= turn_data.action.cost
                 turn_data = actor.take_turn(game_data, gfx_data)
+        else:
+            gfx_data.windows.draw(game_data, gfx_data)
+            pygame.display.flip()
         return results

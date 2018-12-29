@@ -317,29 +317,34 @@ def check_path(m, src, dest):
 
 import sys
 from collections import defaultdict
+import itertools
+
+def get_pairs(origins):
+    retr = []
+    for o1 in origins:
+        for o2 in origins:
+            if o1 == o2:
+                continue
+            p1 = (o1, o2)
+            p2 = (o2, o1)
+            if p1 not in retr and p2 not in retr:
+                retr.append(p1)
+    return retr
 
 
-def make_doors(m, origins):
-    def get_wall():
+def make_doors(m, origins, paths):
+    def get_wall(attempted):
+        flat = list(itertools.chain.from_iterable(paths))
         while True:
-            x = random.randint(0, m.width - 1)
-            y = random.randint(0, m.height - 1)
-            if m.tiles[x][y].wall:
-                return Pos(x, y)
-
-    def get_pairs():
-        retr = []
-        for o1 in origins:
-            for o2 in origins:
-                p1 = (o1, o2)
-                p2 = (o2, o1)
-                if p1 not in retr and p2 not in retr:
-                    retr.append(p1)
-        return retr
+            #x = random.randint(0, m.width - 1)
+            #y = random.randint(0, m.height - 1)
+            pos = random.choice(flat)
+            if m.tiles[pos.x][pos.y].wall and pos not in attempted:
+                return pos
 
     def validate():
         failures = 0
-        pairs = get_pairs()
+        pairs = get_pairs(origins)
         for p in pairs:
             o1, o2 = p
             if o1 == o2:
@@ -349,8 +354,11 @@ def make_doors(m, origins):
         return failures
 
     current_failures = validate()
+    attempted = []
     while current_failures > 0:
-        possible_removed = get_wall()
+        possible_removed = get_wall(attempted)
+        attempted.append(possible_removed)
+        print(possible_removed)
         m.tiles[possible_removed.x][possible_removed.y].wall = False
         possible_valid_count = validate()
         if possible_valid_count == current_failures:  # removing a wall added a valid path
@@ -363,8 +371,8 @@ def print_map(m):
         for x in range(m.width):
             if m.tiles[x][y].wall:
                 print("#", end="")
-            elif m.tiles[x][y].room != -1:
-                print(m.tiles[x][y].room, end="")
+            # elif m.tiles[x][y].room != -1:
+            #    print(m.tiles[x][y].room, end="")
             else:
                 print(" ", end="")
             # print(m.tiles[x][y].room if m.tiles[x][y].room != -1 else ' ', end="")
@@ -376,10 +384,8 @@ def main():
     w = 3
     h = 6
     r = 8
-    w = 20
-    h = 20
-    w = 3
-    h = 6
+    w = 40
+    h = 40
     m = Map(w, h, r, 3)
     # m = make_circular(m)
     rooms = random.randint(2, 4)
@@ -415,13 +421,19 @@ def main():
     # origins = [Pos(1, 1), Pos(1, 4)]
     # origins = [Pos(1, 0), Pos(1,3)]
     BFS(origins, m)
-    print("clear")
-    print_map(m)
+    #print("clear")
+    #print_map(m)
+    paths = []
+    for p in get_pairs(origins):
+        p1, p2 = p
+        path = check_path(m, p1, p2)
+        paths.append(path)
+
     make_walls(m)
     print("walled")
     print_map(m)
     print("doored")
-    make_doors(m, origins)
+    make_doors(m, origins, paths)
     # for x in range(m.width):
     #    m.tiles[x][1].wall = True
     # print(check_path(m, Pos(0, 0), Pos(2, 4)))

@@ -1,21 +1,24 @@
 from events import Event
 from game_states import GameStates
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
-from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
-from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
+from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
+from graphics.setup_window import SetupWindow
+from graphics.story_window import StoryWindow, StoryHelpWindow
+
 
 class WindowManager:
     def __init__(self):
         self.windows = []
         self.state_wnd_mapping = {
+            GameStates.SETUP: SetupWindow,
             GameStates.WELCOME_SCREEN: WelcomeWindow,
             GameStates.STORY_SCREEN: StoryWindow,
             GameStates.STORY_HELP_SCREEN: StoryHelpWindow,
             GameStates.FORMULA_SCREEN: FormulaWindow,
             GameStates.FORMULA_HELP_SCEEN: FormulaHelpWindow,
             GameStates.GENERAL_HELP_SCREEN: GeneralHelpWindow,
-            GameStates.LEVEL_UP : LevelUpWindow
+            GameStates.LEVEL_UP: LevelUpWindow
         }
 
     def push(self, window):
@@ -58,8 +61,23 @@ class WindowManager:
         return None
 
     def draw(self, game_data, gfx_data):
+        def helper(wnd):
+            if not wnd.visible:
+                return
+            res = wnd.draw(game_data, gfx_data)
+            if not res:
+                return
+            show_window = res.get(Event.show_window)
+            if not show_window:
+                return
+            wnd = self.get(show_window)
+            if wnd:
+                wnd.visible = True
+
         for wnd in self.windows:
-            wnd.draw(game_data, gfx_data)
+            helper(wnd)
+            for child in wnd.children:
+                helper(child)
 
     def get(self, wndtype):
         for wnd in self.windows:

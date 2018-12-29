@@ -30,8 +30,8 @@ class FormulaMarker(Clickable):
 
 
 class RightPanelWindow(Window):
-    def __init__(self, constants):
-        super().__init__(Pos(0, 0), constants.right_panel_size, visible=True)
+    def __init__(self, constants, parent):
+        super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent)
         self.health_bar = Bar(Pos(10, 20), colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND)
         self.shield_bar = Bar(Pos(10, 60), colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND)
         self.formula_label = Label(Pos(10, 150), "Formulas")
@@ -70,4 +70,3 @@ class RightPanelWindow(Window):
             fm.draw(surface, game_data.player.caster.formulas[idx])
 
         gfx_data.main.blit(surface, self.pos.tuple())
-        return True

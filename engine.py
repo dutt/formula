@@ -67,9 +67,20 @@ def setup_prevstate(state):
         return retr
     retr.append(GameStates.STORY_SCREEN)
 
+    if state == GameStates.WELCOME_SCREEN:
+        return retr
+    retr.append(GameStates.WELCOME_SCREEN)
+
     return retr
 
 def main():
+    import datetime
+    now = datetime.datetime.now()
+    txt = str(now)
+    print("Using seed: <{}>".format(txt))
+    import random
+    random.seed(txt)
+    
     constants = get_constants()
     game_data, gfx_data, state = setup_data_state(constants)
 
@@ -77,6 +88,12 @@ def main():
     game_data.prev_state = setup_prevstate(state)
 
     gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
+
+    def generate_thread():
+        game_data.run_planner.generate(game_data)
+    import threading
+    t = threading.Timer(0, generate_thread)
+    t.start()
 
     play_game(game_data, gfx_data)
 

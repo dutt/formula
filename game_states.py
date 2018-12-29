@@ -2,6 +2,7 @@ from enum import Enum, auto
 
 
 class GameStates(Enum):
+    SETUP = auto()
     WELCOME_SCREEN = auto()
     GENERAL_HELP_SCREEN = auto()
     PLAY = auto()

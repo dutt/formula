@@ -10,8 +10,6 @@ class LevelUpWindow(Window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
-        if not self.visible:
-            return False
         surface = pygame.Surface(self.size.tuple())
         header = [
             "You have expanded your skills and equipment, please choose:",
@@ -33,8 +31,6 @@ class LevelUpWindow(Window):
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
         gfx_data.main.blit(surface, self.pos.tuple())
-
-        return True
 
     def handle_key(self, game_data, gfx_data, key_action):
         choice = key_action.get("choice")

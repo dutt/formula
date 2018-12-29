@@ -79,7 +79,7 @@ class Player(Entity):
             interact = key_action.get(Event.interact)
 
             if interact:
-                for e in game_data.entities:
+                for e in game_data.map.entities:
                     if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
                         player_action = DescendStairsAction(self, gfx_data)
                         game_data.story.next_story()
@@ -104,7 +104,7 @@ class Player(Entity):
                 desty = self.pos.y + dy
 
                 if not game_data.map.is_blocked(destx, desty):
-                    target = get_blocking_entites_at_location(game_data.entities, destx, desty)
+                    target = get_blocking_entites_at_location(game_data.map.entities, destx, desty)
                     if target and target.fighter:
                         player_action = AttackAction(self, target=target)
                     else:

@@ -13,13 +13,14 @@ from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
 from graphics.visual_effect import VisualEffectSystem
 from graphics.window_manager import WindowManager
+from graphics.setup_window import SetupWindow
 from util import Size, Pos
 
 
 def get_constants():
     window_title = "Formula"
 
-    map_size = Size(80, 50)
+    map_size = Size(35, 35)
     camera_size = Size(33, 25)
     game_window_size = Size(camera_size.width * CELL_WIDTH, camera_size.height * CELL_HEIGHT)
     window_size = Size(1200, 1000)
@@ -33,7 +34,7 @@ def get_constants():
 
     room_max_size = 15
     room_min_size = 6
-    max_rooms = 10
+    max_rooms = 2
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -79,7 +80,6 @@ from time_system import TimeSystem
 from state_data import StateData
 from messages import MessageLog
 from components.player import Player
-from fov import initialize_fov
 from story import StoryLoader, StoryData
 from run_planner import RunPlanner
 from graphics.font import get_width
@@ -88,7 +88,7 @@ from formula_builder import FormulaBuilder
 
 
 def setup_data_state(constants):
-    state = GameStates.WELCOME_SCREEN
+    state = GameStates.SETUP
     #state = GameStates.FORMULA_SCREEN
     #state = GameStates.PLAY
 
@@ -108,9 +108,10 @@ def setup_data_state(constants):
     clock = pygame.time.Clock()
 
     windows = WindowManager()
-    windows.push(GameWindow(constants, visible=True))
-    windows.push(RightPanelWindow(constants))
-    windows.push(MessageLogWindow(constants))
+    gw = GameWindow(constants)
+    windows.push(gw)
+    windows.push(RightPanelWindow(constants, parent=gw))
+    windows.push(MessageLogWindow(constants, parent=gw))
     windows.push(WelcomeWindow(constants, state == GameStates.WELCOME_SCREEN))
     windows.push(StoryWindow(constants, state == GameStates.STORY_SCREEN, story_data))
     windows.push(StoryHelpWindow(constants))
@@ -118,6 +119,7 @@ def setup_data_state(constants):
     windows.push(FormulaHelpWindow(constants))
     windows.push(GeneralHelpWindow(constants))
     windows.push(LevelUpWindow(constants))
+    windows.push(SetupWindow(constants, visible=True))
     gfx_data = GfxState(
             main=main,
             assets=assets,
@@ -136,8 +138,7 @@ def setup_data_state(constants):
     formula_builder = FormulaBuilder(player.caster.num_slots, player.caster.num_formulas)
 
     planner = RunPlanner(3, player, constants, timesystem)
-    player.pos = planner.current_map.player_pos
-    fov_map = initialize_fov(planner.current_map)
+    fov_map = None
 
     menu_data = AttrDict({
         "currchoice": 0
@@ -145,7 +146,6 @@ def setup_data_state(constants):
 
     game_data = StateData(
             player,
-            planner.current_map.entities,
             log,
             constants,
             timesystem,
@@ -156,4 +156,5 @@ def setup_data_state(constants):
             formula_builder=formula_builder,
             menu_data=menu_data
     )
+
     return game_data, gfx_data, state

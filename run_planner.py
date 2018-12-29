@@ -1,30 +1,38 @@
 from gamemap import GameMap
 from graphics.assets import Assets
 
+from fov import initialize_fov
+
 class RunPlanner:
     def __init__(self, levels, player, constants, timesystem):
-        parts = levels // 3
+        self.parts = levels // 3
+        self.level_count = levels
         self.levels = []
         self.player = player
         self.assets = Assets.get()
         self.constants = constants
         self.size = constants.map_size
-
-        current = 0
-        for i in range(parts):
-            self.levels.append(self.make_easy_map(i))
-        current += parts
-        for i in range(parts):
-            self.levels.append(self.make_medium_map(current+i))
-        current += parts
-        for i in range(parts):
-            self.levels.append(self.make_hard_map(current+i))
-        current += parts
-        self.levels.append(self.make_final_map(current))
-        self.current_level_index = None
         self.timesystem = timesystem
-        self.activate_next_level()
+        self.current_level_index = None
+        self.gen_level_idx = 0
 
+    def generate(self, game_state):
+        for i in range(self.parts):
+            self.levels.append(self.make_easy_map(i))
+            self.gen_level_idx += 1
+
+        for i in range(self.parts):
+            self.levels.append(self.make_medium_map(self.gen_level_idx+i))
+            self.gen_level_idx += 1
+
+        for i in range(self.parts):
+            self.levels.append(self.make_hard_map(self.gen_level_idx+i))
+            self.gen_level_idx += 1
+
+        self.levels.append(self.make_final_map(self.gen_level_idx))
+        game_state.map = self.levels[0]
+        game_state.fov_map = initialize_fov(game_state.map)
+        self.activate_next_level()
 
     @property
     def current_map(self):
@@ -49,8 +57,8 @@ class RunPlanner:
         return self.current_map
 
     def make_easy_map(self, current_level):
-        monster_chances = { "ghost" : 60,
-                            "chucker" : 40}
+        monster_chances = {"ghost": 60,
+                           "chucker": 40}
         map = GameMap(self.size, self.assets, current_level, self.constants, monster_chances)
         return map
 
