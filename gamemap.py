@@ -108,14 +108,16 @@ def make_walls(m):
     # fix up left  - down right diagonals
     for x in range(0, m.width - 1):
         for y in range(0, m.height - 1):
-            if tiles[x][y].blocked and tiles[x + 1][y + 1].blocked:
+            if tiles[x][y].blocked and tiles[x + 1][y + 1].blocked and \
+                    not tiles[x + 1][y].blocked and not tiles[x][y + 1].blocked:
                 tiles[x + 1][y].blocked = True
                 tiles[x + 1][y].block_sight = True
 
     # fix up right- down left diagonals
     for x in range(0, m.width - 1):
         for y in range(1, m.height):
-            if tiles[x][y].blocked and tiles[x + 1][y - 1].blocked:
+            if tiles[x][y].blocked and tiles[x + 1][y - 1].blocked and \
+                    not tiles[x + 1][y].blocked and not tiles[x][y - 1].blocked:
                 tiles[x][y - 1].blocked = True
                 tiles[x][y - 1].block_sight = True
 
@@ -274,7 +276,7 @@ def make_doors(m, origins, paths):
             m.tiles[x][y].block_sight = False
             # print("Clearing {}, {}".format(x, y))
         #print_map(m, room_ids=False, extra_points=[first, second])
-        print_map(m, room_ids=False, extra_points=origins)
+        #print_map(m, room_ids=False, extra_points=origins)
         print("origins {}".format(origins))
         current_failures = validate()
         print("failures {}".format(current_failures))
@@ -572,10 +574,10 @@ class GameMap:
 
         make_rooms(origins, self)
         print("Rooms")
-        # print_map(self)
+        print_map(self)
         make_walls(self)
         print("Walls")
-        # print_map(self)
+        print_map(self)
         make_doors(self, origins, paths)
         print("Doors")
         # print_map(self)
