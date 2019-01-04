@@ -20,10 +20,10 @@ from util import Size, Pos
 def get_constants():
     window_title = "Formula"
 
-    map_size = Size(35, 35)
-    camera_size = Size(33, 25)
-    game_window_size = Size(camera_size.width * CELL_WIDTH, camera_size.height * CELL_HEIGHT)
-    window_size = Size(1200, 1000)
+    map_size = Size(40, 30)
+    camera_size = Size(30, 25)
+    game_window_size = Size((camera_size.width+1) * CELL_WIDTH, (camera_size.height+1) * CELL_HEIGHT)
+    window_size = Size(150 + game_window_size.width, 1000)
 
     right_panel_size = Size(150, window_size.height)
     message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height)
@@ -34,7 +34,7 @@ def get_constants():
 
     room_max_size = 15
     room_min_size = 6
-    max_rooms = 2
+    max_rooms = 5
 
     fov_algorithm = 0
     fov_light_walls = True

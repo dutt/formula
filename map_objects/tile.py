@@ -8,6 +8,7 @@ class Tile:
         self.wall_info = 0
         self.floor_info = 0
         self.room = -1
+        self.hallway = False
         self.symbol = None  # debugging
 
     def __repr__(self):

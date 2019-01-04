@@ -33,40 +33,38 @@ class GameWindow(Window):
             # return
             for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
                 for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
-                    if x >= game_data.map.width or y >= game_data.map.height:
-                        continue
+                    #if x >= game_data.map.width or y >= game_data.map.height:
+                    #    continue
                     wall = game_data.map.tiles[x][y].block_sight
                     wall_type = game_data.map.tiles[x][y].wall_info
                     floor_type = game_data.map.tiles[x][y].floor_info
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
-                    sx, sy = gfx_data.camera.map_to_screen(x, y)
                     #visible = True
+                    asset = None
                     if visible:
+                        if wall:
+                            asset = assets.light_wall[wall_type]
+                        else:
+                            asset = assets.light_floor[floor_type]
+                        game_data.map.tiles[x][y].explored = True
+                    elif game_data.map.tiles[x][y].explored:
+                        if wall:
+                            asset = assets.dark_wall[wall_type]
+                        else:
+                            asset = assets.dark_floor[floor_type]
+                    if asset:
                         distance = game_data.player.pos - Pos(x, y)
                         if distance.length() > 5:
                             darken = (distance.length() - 3) * 10
                         else:
                             darken = 0
                         darken = min(255, darken)
-                        if wall:
-                            asset = assets.light_wall[wall_type]
-                        else:
-                            asset = assets.light_floor[floor_type]
                         drawable = Drawable(asset)
                         drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
+                        sx, sy = gfx_data.camera.map_to_screen(x, y)
                         surface.blit(drawable.asset,
                                      (sx * CELL_WIDTH,
                                       sy * CELL_HEIGHT))
-                        game_data.map.tiles[x][y].explored = True
-                    elif game_data.map.tiles[x][y].explored:
-                        if wall:
-                            surface.blit(assets.dark_wall[wall_type][0],
-                                         (sx * CELL_WIDTH,
-                                          sy * CELL_HEIGHT))
-                        else:
-                            surface.blit(assets.dark_floor[floor_type][0],
-                                         (sx * CELL_WIDTH,
-                                          sy * CELL_HEIGHT))
             main.blit(surface, (0, 0))
 
         def draw_entities():

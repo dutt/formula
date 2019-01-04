@@ -49,7 +49,7 @@ class Assets:
             retr = []
             retr.append(get_img(sheet, col + 3, row + 0, rotate=  0))  # 0, solo wall
             retr.append(get_img(sheet, col + 1, row + 1, rotate=  0))  # 1, wall to the north
-            retr.append(get_img(sheet, col + 1, row + 1, rotate= 90))  # 2, wall to the east
+            retr.append(get_img(sheet, col + 1, row + 0, rotate=  0))  # 2, wall to the east
             retr.append(get_img(sheet, col + 0, row + 2, rotate=  0))  # 3, wall to the north, east
             retr.append(get_img(sheet, col + 1, row + 1, rotate=180))  # 4, wall to the south
             retr.append(get_img(sheet, col + 0, row + 1, rotate=  0))  # 5, wall to the north, south
@@ -68,7 +68,7 @@ class Assets:
         def get_floor(sheet, col, row): # col, row are coords for the top left sprite
             retr = []
             retr.append(get_img(sheet, col + 3, row + 0, rotate=  0))  # 0, solo floor
-            retr.append(get_img(sheet, col + 2, row + 3, rotate=  0))  # 1, floor to the north
+            retr.append(get_img(sheet, col + 3, row + 2, rotate=  0))  # 1, floor to the north
             retr.append(get_img(sheet, col + 4, row + 1, rotate=  0))  # 2, floor to the east
             retr.append(get_img(sheet, col + 0, row + 2, rotate=  0))  # 3, floor to the north, east
             retr.append(get_img(sheet, col + 1, row + 1, rotate=180))  # 4, floor to the south

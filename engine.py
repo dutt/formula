@@ -77,10 +77,11 @@ def main():
     import datetime
     now = datetime.datetime.now()
     txt = str(now)
+    txt = "2018-12-30 09:38:04.303108"
     print("Using seed: <{}>".format(txt))
     import random
     random.seed(txt)
-    
+
     constants = get_constants()
     game_data, gfx_data, state = setup_data_state(constants)
 
@@ -89,11 +90,7 @@ def main():
 
     gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
 
-    def generate_thread():
-        game_data.run_planner.generate(game_data)
-    import threading
-    t = threading.Timer(0, generate_thread)
-    t.start()
+    game_data.run_planner.generate(game_data)
 
     play_game(game_data, gfx_data)
 
