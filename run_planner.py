@@ -1,7 +1,7 @@
-from gamemap import GameMap
+from fov import initialize_fov
+from map_related.tower_map_gen import TowerMapGenerator
 from graphics.assets import Assets
 
-from fov import initialize_fov
 
 class RunPlanner:
     def __init__(self, levels, player, constants, timesystem):
@@ -18,18 +18,18 @@ class RunPlanner:
 
     def generate(self, game_state):
         for i in range(self.parts):
-            self.levels.append(self.make_easy_map(i))
+            self.levels.append(self.make_easy_map(self.gen_level_idx + 1))
             self.gen_level_idx += 1
 
         for i in range(self.parts):
-            self.levels.append(self.make_medium_map(self.gen_level_idx+i))
+            self.levels.append(self.make_medium_map(self.gen_level_idx + i))
             self.gen_level_idx += 1
 
         for i in range(self.parts):
-            self.levels.append(self.make_hard_map(self.gen_level_idx+i))
+            self.levels.append(self.make_hard_map(self.gen_level_idx + i))
             self.gen_level_idx += 1
 
-        self.levels.append(self.make_final_map(self.gen_level_idx))
+        self.levels.append(self.make_final_map(self.gen_level_idx + 1))
         game_state.map = self.levels[0]
         game_state.fov_map = initialize_fov(game_state.map)
         self.activate_next_level()
@@ -57,22 +57,25 @@ class RunPlanner:
         return self.current_map
 
     def make_easy_map(self, current_level):
-        monster_chances = {"ghost": 60,
+        monster_chances = {"any": 60,
+                           "ghost": 60,
                            "chucker": 40}
-        map = GameMap(self.size, self.assets, current_level, self.constants, monster_chances)
-        return map
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_medium_map(self, current_level):
-        monster_chances = {"ghost": 90,
+        monster_chances = {"any": 90,
+                           "ghost": 90,
                            "demon": 10}
-        return GameMap(self.size, self.assets, current_level, self.constants, monster_chances)
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_hard_map(self, current_level):
-        monster_chances = {"ghost": 90,
+        monster_chances = {"any": 95,
+                           "ghost": 90,
                            "demon": 10}
-        return GameMap(self.size, self.assets, current_level, self.constants, monster_chances)
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_final_map(self, current_level):
-        monster_chances = {"ghost": 90,
+        monster_chances = {"any":100,
+                           "ghost": 90,
                            "demon": 10}
-        return GameMap(self.size, self.assets, current_level, self.constants, monster_chances)
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
