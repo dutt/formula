@@ -58,24 +58,26 @@ class RunPlanner:
 
     def make_easy_map(self, current_level):
         monster_chances = {"any": 60,
-                           "ghost": 60,
-                           "chucker": 40}
+                           "thug": 40,
+                           "axe_thrower": 20,
+                           "dog_group": 20}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_medium_map(self, current_level):
         monster_chances = {"any": 90,
-                           "ghost": 90,
-                           "demon": 10}
+                           "mercenary": 40,
+                           "boar_group": 20,
+                           "rifleman": 20}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_hard_map(self, current_level):
         monster_chances = {"any": 95,
-                           "ghost": 90,
-                           "demon": 10}
+                           "stalker": 40,
+                           "armored_bear_group": 20,
+                           "zapper" : 20}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_final_map(self, current_level):
         monster_chances = {"any":100,
-                           "ghost": 90,
-                           "demon": 10}
+                           "boss": 100}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)

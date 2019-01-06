@@ -21,6 +21,7 @@ class Assets:
         graphics_file_tile_size = util.Size(16, 16)
 
         self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Reptile"))
+        self.dog_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Dog"))
         self.wall_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Wall.png"))
         self.undead_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Undead"))
         self.decor_sheet = Spritesheet(util.resource_path("data/graphics/Objects/Decor"))
@@ -95,11 +96,24 @@ class Assets:
         self.light_floor = get_floor(self.floor_sheet, 0, 6)
         self.dark_floor = get_floor(self.floor_sheet, 0, 9)
 
+        self.monster_corpse = get_img(self.decor_sheet, 2, 12)
+
         self.ghost = get_animation(self.undead_sheet, 2, 2)
         self.demon = get_animation(self.undead_sheet, 7, 2)
-        self.monster_corpse = get_img(self.decor_sheet, 2, 12)
         self.chucker = get_animation(self.humanoid_sheet, 2, 12)
         self.wolf = get_animation(self.quadraped_sheet, 5, 0)
+
+        self.thug = get_animation(self.humanoid_sheet, 0, 0)
+        self.mercenary = get_animation(self.humanoid_sheet, 0, 4)
+        self.stalker = get_animation(self.humanoid_sheet, 4, 8)
+
+        self.dog = get_animation(self.quadraped_sheet, 5, 0)
+        self.boar = get_animation(self.quadraped_sheet, 3, 0)
+        self.armored_bear = get_animation(self.quadraped_sheet, 7, 0)
+
+        self.axe_thrower = get_animation(self.humanoid_sheet, 0, 5)
+        self.rifleman = get_animation(self.humanoid_sheet, 5, 2)
+        self.zapper = get_animation(self.humanoid_sheet, 3, 12)
 
         self.throwing_bottle = get_img(self.potion_sheet, 0, 0)
         self.sword = get_img(self.medium_weapons_sheet, 0, 0)

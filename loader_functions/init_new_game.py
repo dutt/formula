@@ -23,7 +23,7 @@ def get_constants():
     map_size = Size(40, 30)
     camera_size = Size(30, 25)
     game_window_size = Size((camera_size.width+1) * CELL_WIDTH, (camera_size.height+1) * CELL_HEIGHT)
-    window_size = Size(150 + game_window_size.width, 1000)
+    window_size = Size(150 + game_window_size.width, 1020)
 
     right_panel_size = Size(150, window_size.height)
     message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height)

@@ -52,7 +52,10 @@ class StoryLoader:
         self.load(path)
 
     def load(self, path):
-        files = sorted(os.listdir(path))
+        def get_key(val):
+            return int(val[len("floor."):-4])
+
+        files = sorted(os.listdir(path), key=get_key)
         for file in files:
             filepath = os.path.join(path, file)
             section = self.load_section(filepath)

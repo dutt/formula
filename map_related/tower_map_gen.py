@@ -40,7 +40,7 @@ class TowerMapGenerator:
         py = chunks[0].y + chunks[0].height // 2
         retr.player_pos = Pos(px, py)
 
-        print_map(retr)
+        #print_map(retr)
 
         return retr
 

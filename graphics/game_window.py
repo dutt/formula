@@ -24,7 +24,7 @@ class GameWindow(Window):
 
         def draw_terrain():
             surface = pygame.Surface(game_data.constants.game_window_size.tuple(), pygame.SRCALPHA)
-            surface.fill(colors.BACKGROUND)
+            surface.fill(colors.RED)
             # for x in range(30):
             #    for y in range(15):
             #        #main.blit(assets.effect0_sheet.get_image(x, 15+y)[0],
@@ -115,11 +115,10 @@ class GameWindow(Window):
             dist = distance(orig[0], orig[1], rect_center[0], rect_center[1])
 
             if dist > max_dist:
-                vec = (px - orig[0], py - orig[1])
-                length = math.sqrt(vec[0] ** 2 + vec[1] ** 2)
-                normalized = (vec[0] / length, vec[1] / length)
-                partial_dist = (max_dist / dist) * dist
-                red_part = (orig[0] + normalized[0] * partial_dist, orig[1] + normalized[1] * partial_dist)
+                from util import Vec
+                vec = Vec(px - orig[0] - self.pos.x, py - orig[1])
+                normalized = vec.normalize()
+                red_part = (orig[0] + normalized.x * max_dist, orig[1] + normalized.y * max_dist)
                 pygame.draw.line(targeting_surface, (255, 0, 0), orig, red_part)
                 pygame.draw.line(targeting_surface, (150, 100, 100), red_part, rect_center)
                 pygame.draw.rect(targeting_surface, (150, 100, 100), rect)
