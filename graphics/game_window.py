@@ -6,6 +6,7 @@ import tcod
 from components.drawable import Drawable
 from game_states import GameStates
 from graphics.constants import colors, CELL_WIDTH, CELL_HEIGHT
+from graphics.display_helpers import display_bar
 from graphics.minor_windows import GeneralHelpWindow
 from graphics.window import Window
 from input_handlers import Event
@@ -33,13 +34,13 @@ class GameWindow(Window):
             # return
             for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
                 for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
-                    #if x >= game_data.map.width or y >= game_data.map.height:
+                    # if x >= game_data.map.width or y >= game_data.map.height:
                     #    continue
                     wall = game_data.map.tiles[x][y].block_sight
                     wall_type = game_data.map.tiles[x][y].wall_info
                     floor_type = game_data.map.tiles[x][y].floor_info
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
-                    #visible = True
+                    # visible = True
                     asset = None
                     if visible:
                         if wall:
@@ -79,6 +80,15 @@ class GameWindow(Window):
                         main.blit(ad.drawable.asset,
                                   (sx * CELL_WIDTH,
                                    sy * CELL_HEIGHT))
+
+                    # health bar for monsters
+                    bar_height = 6
+                    if e.fighter and e.ai:
+                        bar_pos = Pos(sx * CELL_WIDTH, (CELL_HEIGHT - bar_height) + sy * CELL_HEIGHT)
+                        display_bar(main, assets=None, pos=bar_pos, width=CELL_WIDTH,
+                                    current=e.fighter.hp, maxval=e.fighter.max_hp,
+                                    color=colors.HP_BAR_FRONT, bgcolor=colors.HP_BAR_BACKGROUND, height=bar_height,
+                                    text=None, show_numbers=False)
 
         def global_screen_pos_to_map_screen_pos(x, y):
             return x - game_data.constants.right_panel_size.width, y

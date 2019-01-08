@@ -34,12 +34,13 @@ def display_menu(gfx_data, lines, size, surface=None):
         gfx_data.main.blit(surface, (200, 200))
 
 
-def display_bar(surface, assets, pos, width, current, maxval, color, bgcolor, height=30, text=None):
+def display_bar(surface, assets, pos, width, current, maxval, color, bgcolor, height=30, text=None, show_numbers=True):
     current_length = max(0, (current / maxval) * width)
     pygame.draw.rect(surface, bgcolor, pygame.Rect(pos.x, pos.y, width, height))
     pygame.draw.rect(surface, color, pygame.Rect(pos.x, pos.y, current_length, height))
-    if text:
-        msg = "{} {}/{}".format(text, current, maxval)
-    else:
-        msg = "{}/{}".format(current, maxval)
-    display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
+    if show_numbers:
+        if text:
+            msg = "{} {}/{}".format(text, current, maxval)
+        else:
+            msg = "{}/{}".format(current, maxval)
+        display_text(surface, msg, assets.font_message, (pos.x + 10, pos.y + 5))
