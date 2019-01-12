@@ -75,6 +75,7 @@ class FormulaWindow(Window):
             #game_data.state = game_data.prev_state.pop()
             #self.visible = False
             game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+            gfx_data.camera.initialize_map()
             gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
             #return {}
             from graphics.game_window import GameWindow

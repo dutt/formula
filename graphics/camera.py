@@ -1,14 +1,24 @@
+from util import Size
+
 class Camera:
-    def __init__(self, width, height, map_size):
+    def __init__(self, width, height, game_data):
         self.x1 = 0
         self.y1 = 0
         self.x2 = width
         self.y2 = height
         self.width = width
         self.height = height
-        self.map_size = map_size
+        self.game_data = game_data
+        self.map_size = None
+
+    def initialize_map(self):
+        assert self.game_data
+        self.map_size = Size(self.game_data.map.width, self.game_data.map.height)
+        self.width = min(self.map_size.width, self.width)
+        self.height = min(self.map_size.height, self.height)
 
     def center_on(self, x, y):
+        assert self.map_size
         if x < self.width / 2:
             self.x1 = 0
             self.x2 = min(self.width, self.map_size.width)

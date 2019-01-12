@@ -100,9 +100,8 @@ def setup_data_state(constants):
     pygame.display.set_caption("Formulas")
     pygame.mixer.quit()
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
-    assets = Assets()
 
-    camera = Camera(constants.camera_size.width, constants.camera_size.height, constants.map_size)
+    assets = Assets()
     fps_per_second = 30
     visuals = VisualEffectSystem(fps_per_second)
     clock = pygame.time.Clock()
@@ -120,16 +119,6 @@ def setup_data_state(constants):
     windows.push(GeneralHelpWindow(constants))
     windows.push(LevelUpWindow(constants))
     windows.push(SetupWindow(constants, visible=True))
-    gfx_data = GfxState(
-            main=main,
-            assets=assets,
-            camera=camera,
-            fullscreen=False,
-            visuals=visuals,
-            fps_per_second=fps_per_second,
-            clock=clock,
-            windows=windows
-    )
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
@@ -137,7 +126,7 @@ def setup_data_state(constants):
     player = Player()
     formula_builder = FormulaBuilder(player.caster.num_slots, player.caster.num_formulas)
 
-    planner = RunPlanner(3, player, constants, timesystem)
+    planner = RunPlanner(1, player, constants, timesystem)
     fov_map = None
 
     menu_data = AttrDict({
@@ -155,6 +144,19 @@ def setup_data_state(constants):
             run_planner=planner,
             formula_builder=formula_builder,
             menu_data=menu_data
+    )
+
+    camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)
+
+    gfx_data = GfxState(
+            main=main,
+            assets=assets,
+            camera=camera,
+            fullscreen=False,
+            visuals=visuals,
+            fps_per_second=fps_per_second,
+            clock=clock,
+            windows=windows
     )
 
     return game_data, gfx_data, state

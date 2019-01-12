@@ -115,6 +115,8 @@ class Assets:
         self.rifleman = get_animation(self.humanoid_sheet, 5, 2)
         self.zapper = get_animation(self.humanoid_sheet, 3, 12)
 
+        self.boss = get_animation(self.undead_sheet, 0, 8)
+
         self.throwing_bottle = get_img(self.potion_sheet, 0, 0)
         self.sword = get_img(self.medium_weapons_sheet, 0, 0)
         self.arrow = get_img(self.ammo_sheet, 0, 2)

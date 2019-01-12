@@ -5,10 +5,10 @@ from components.drawable import Drawable
 from components.fighter import Fighter
 from components.monster import Monster
 from map_related.gamemap import GameMap
-from util import Pos
+from util import Pos, Size
 
 
-def load_map(path):
+def load_map(path, level):
     with open(path, 'r') as reader:
         content = reader.read()
 
@@ -16,7 +16,7 @@ def load_map(path):
     lines = [line for line in lines if line != ""]
     width = len(lines[0])
     height = len(lines)
-    retr = GameMap(width, height)
+    retr = GameMap(Size(width, height), level)
     for x in range(retr.width):
         for y in range(retr.height):
             if lines[y][x] == 'P':
@@ -26,7 +26,11 @@ def load_map(path):
             elif lines[y][x] == ' ':
                 retr.tiles[x][y].blocked = False
                 retr.tiles[x][y].block_sight = False
+            elif lines[y][x] == '#':
+                retr.tiles[x][y].blocked = True
+                retr.tiles[x][y].block_sight = True
     retr.set_tile_info(retr.tiles)
+    return retr
 
 
 def print_map(m, room_ids=True, walls=True, extra_points=[]):

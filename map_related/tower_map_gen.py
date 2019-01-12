@@ -7,7 +7,7 @@ from entity import Entity
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
 from map_related.gamemap import GameMap
-from map_related.map_util import get_monster, print_map
+from map_related.map_util import get_monster
 from random_utils import random_choice_from_dict, from_dungeon_level
 from util import Pos, Rect
 
@@ -15,6 +15,7 @@ from util import Pos, Rect
 class WallDirection(Enum):
     horizontal = auto()
     vertical = auto()
+
 
 class DoorDirection(Enum):
     UP = auto()
@@ -40,7 +41,7 @@ class TowerMapGenerator:
         py = chunks[0].y + chunks[0].height // 2
         retr.player_pos = Pos(px, py)
 
-        #print_map(retr)
+        # print_map(retr)
 
         return retr
 

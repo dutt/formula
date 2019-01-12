@@ -88,9 +88,10 @@ def main():
     game_data.state = state
     game_data.prev_state = setup_prevstate(state)
 
-    gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
-
     game_data.run_planner.generate(game_data)
+
+    gfx_data.camera.initialize_map()
+    gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
 
     play_game(game_data, gfx_data)
 
