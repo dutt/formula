@@ -26,12 +26,29 @@ class Rect:
         self.y = y
         self.width = width
         self.height = height
+        self.x1 = x
+        self.x2 = x + width
+        self.y1 = y
+        self.y2 = y + height
+
+    def center(self):
+        cx = int((self.x1 + self.x2) / 2)
+        cy = int((self.y1 + self.y2) / 2)
+        return cx, cy
+
+    def intersect(self, other):
+        return (self.x1 <= other.x2 and self.x2 >= other.x1 and
+                self.y1 <= other.y2 and self.y2 >= other.y1)
+
+    def contains(self, x, y):
+        return self.x1 <= x <= self.x2 and self.y1 <= y <= self.y2
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         return "<rect pos={} w={}, h={}>".format((self.x, self.y), self.width, self.height)
+
 
 class Vec:
     def __init__(self, x, y):

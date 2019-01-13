@@ -74,7 +74,7 @@ def get_monster(x, y, room, monster_choice, assets, entities):
             diff = clean_diffs[diff_idx]
             wx, wy = x + diff[0], y + diff[1]
             clean_diffs.remove(diff)
-            fighter_component = Fighter(hp=hp, defense=defense, power=power, xp=xp)
+            fighter_component = Fighter(hp=hp, defense=defense, power=power, xp=xp // packsize)
             ai = MeleeMonsterAI()
             drawable_component = Drawable(asset)
             monster = Monster(wx, wy, name, speed=150,
@@ -85,14 +85,14 @@ def get_monster(x, y, room, monster_choice, assets, entities):
     monsters = []
     #easy
     if monster_choice == "thug":
-        fighter_component = Fighter(hp=20, defense=0, power=3, xp=35)
+        fighter_component = Fighter(hp=20, defense=0, power=3, xp=40)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.thug)
         monster = Monster(x, y, "Ghost", speed=100,
                           fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "axe_thrower":
-        fighter_component = Fighter(hp=10, defense=0, power=1, xp=35)
+        fighter_component = Fighter(hp=10, defense=0, power=1, xp=40)
         ai = RangedMonsterAI()
         drawable_component = Drawable(assets.axe_thrower)
         monster = Monster(x, y, "Axe thrower", speed=100,
@@ -100,7 +100,7 @@ def get_monster(x, y, room, monster_choice, assets, entities):
                           range=5)
         monsters.append(monster)
     elif monster_choice == "dog_group":
-        monsters.extend(create_pack(hp=5, defense=0, power=1, xp=35, asset=assets.dog, name="Hound"))
+        monsters.extend(create_pack(hp=5, defense=0, power=1, xp=40, asset=assets.dog, name="Hound"))
 
     # medium
     elif monster_choice == "mercenary":
@@ -111,7 +111,7 @@ def get_monster(x, y, room, monster_choice, assets, entities):
                           fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "rifleman":
-        fighter_component = Fighter(hp=30, defense=3, power=3, xp=80)
+        fighter_component = Fighter(hp=30, defense=3, power=3, xp=100)
         ai = RangedMonsterAI()
         drawable_component = Drawable(assets.rifleman)
         monster = Monster(x, y, "Rifleman", speed=100,
@@ -123,14 +123,14 @@ def get_monster(x, y, room, monster_choice, assets, entities):
 
     #hard
     elif monster_choice == "stalker":
-        fighter_component = Fighter(hp=50, defense=5, power=5, xp=100)
+        fighter_component = Fighter(hp=50, defense=5, power=5, xp=200)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.stalker)
         monster = Monster(x, y, "Stalker", speed=100,
                           fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "zapper":
-        fighter_component = Fighter(hp=30, defense=3, power=3, xp=80)
+        fighter_component = Fighter(hp=30, defense=3, power=3, xp=200)
         ai = RangedMonsterAI()
         drawable_component = Drawable(assets.zapper)
         monster = Monster(x, y, "Zapper", speed=100,
@@ -138,9 +138,11 @@ def get_monster(x, y, room, monster_choice, assets, entities):
                           range=5)
         monsters.append(monster)
     elif monster_choice == "armored_bear_group":
-        monsters.extend(create_pack(hp=30, defense=4, power=6, xp=110, asset=assets.armored_bear, name="Panzerbear"))
+        monsters.extend(create_pack(hp=30, defense=4, power=6, xp=200, asset=assets.armored_bear, name="Panzerbear"))
+
+    # end of the world as we know it
     elif monster_choice == "boss":
-        fighter_component = Fighter(hp=100, defense=15, power=8, xp=0)
+        fighter_component = Fighter(hp=150, defense=15, power=8, xp=0)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.boss)
         monster = Monster(x, y, "Arina", speed=150,

@@ -12,7 +12,7 @@ class SetupWindow(Window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
-        if game_data.run_planner.gen_level_idx == game_data.run_planner.level_count:
+        if game_data.run_planner.gen_level_idx >= game_data.run_planner.level_count:
             return self.close(game_data, WelcomeWindow)
 
         surface = pygame.Surface(self.size.tuple())

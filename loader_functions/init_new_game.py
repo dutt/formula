@@ -126,7 +126,7 @@ def setup_data_state(constants):
     player = Player()
     formula_builder = FormulaBuilder(player.caster.num_slots, player.caster.num_formulas)
 
-    planner = RunPlanner(1, player, constants, timesystem)
+    planner = RunPlanner(9, player, constants, timesystem)
     fov_map = None
 
     menu_data = AttrDict({

@@ -8,7 +8,7 @@ from util import resource_path
 class RunPlanner:
     def __init__(self, levels, player, constants, timesystem):
         self.parts = levels // 3
-        self.level_count = levels
+        self.level_count = levels + 1
         self.levels = []
         self.player = player
         self.assets = Assets.get()
@@ -20,16 +20,24 @@ class RunPlanner:
 
     def generate(self, game_state):
         for i in range(self.parts):
-           self.levels.append(self.make_easy_map(self.gen_level_idx + 1))
-           self.gen_level_idx += 1
+            self.levels.append(self.make_easy_map(self.gen_level_idx + 1))
+            self.gen_level_idx += 1
 
         for i in range(self.parts):
             self.levels.append(self.make_medium_map(self.gen_level_idx + i))
             self.gen_level_idx += 1
 
-         for i in range(self.parts):
+        for i in range(self.parts):
             self.levels.append(self.make_hard_map(self.gen_level_idx + i))
             self.gen_level_idx += 1
+
+        # calculate average number of rooms
+        # num_chunks = []
+        # for i in range(0, 500):
+        #    map, chunks = self.make_easy_map(i)
+        #    num_chunks.append(len(chunks))
+        # chunk_sum = sum(num_chunks)
+        # print("average chunks: {}/{} = {}".format(chunk_sum, len(num_chunks), chunk_sum / len(num_chunks)))
 
         self.levels.append(self.make_final_map(self.gen_level_idx + 1))
         self.gen_level_idx += 1
@@ -60,24 +68,24 @@ class RunPlanner:
         return self.current_map
 
     def make_easy_map(self, current_level):
-        monster_chances = {"any": 80,
+        monster_chances = {"any": 100,
                            "thug": 40,
-                           "axe_thrower": 20,
-                           "dog_group": 20}
+                           "axe_thrower": 30,
+                           "dog_group": 30}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_medium_map(self, current_level):
         monster_chances = {"any": 90,
                            "mercenary": 40,
-                           "boar_group": 20,
-                           "rifleman": 20}
+                           "boar_group": 30,
+                           "rifleman": 30}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_hard_map(self, current_level):
         monster_chances = {"any": 95,
                            "stalker": 40,
-                           "armored_bear_group": 20,
-                           "zapper": 20}
+                           "armored_bear_group": 30,
+                           "zapper": 30}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_final_map(self, current_level):

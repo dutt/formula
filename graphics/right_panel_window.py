@@ -48,6 +48,7 @@ class RightPanelWindow(Window):
 
     def update_formula_markers(self, player, start_y):
         y = start_y
+        self.formula_markers.clear()
         for idx, formula in enumerate(player.caster.formulas):
             marker = FormulaMarker(Pos(20, y), idx, player)
             self.formula_markers.append(marker)

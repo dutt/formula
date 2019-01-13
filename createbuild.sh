@@ -36,7 +36,7 @@ VBoxManage startvm $vm_name --type headless
 sleep 60 # windows takes ages to boot up to ssh server reachability
 dirname="formula"
 ssh $ssh_name "mkdir $dirname"
-scp -rq *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_objects $ssh_name:$dirname
+scp -rq *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_related $ssh_name:$dirname
 ssh $ssh_name bash << HERE
     mkdir $dirname\build
     set PATH=%PATH%;C:\Users\IEUser\AppData\Local\Programs\Python\Python36;C:\Users\IEUser\AppData\Local\Programs\Python\Python36\Scripts
@@ -62,7 +62,7 @@ VBoxManage startvm $vm_name --type headless
 sleep 10
 dirname="formula"
 ssh $ssh_name "mkdir -p $dirname"
-scp -rq *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_objects $ssh_name:$dirname
+scp -rq *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_related $ssh_name:$dirname
 ssh $ssh_name << HERE
     mkdir -p $dirname/build
     python3.6 -m virtualenv ~/venv

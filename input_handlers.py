@@ -88,7 +88,7 @@ def handle_general_keys(key, modifiers):
 
 
 def handle_level_up_keys(key, modifiers):
-    if key == pygame.K_RETURN:
+    if key in [pygame.K_SPACE, pygame.K_RETURN]:
         return {Event.level_up: True}
     elif key == pygame.K_UP:
         return {"choice": -1}
@@ -133,7 +133,7 @@ def handle_player_turn_keys(key, modifiers):
         return {Event.move: (-1, 0)}
     elif key == pygame.K_d:
         return {Event.move: (1, 0)}
-    elif key == pygame.K_e:
+    elif key in [pygame.K_SPACE, pygame.K_e]:
         return {Event.interact: True}
     elif key == pygame.K_1:
         return {Event.start_throwing_vial: 0}

@@ -40,7 +40,7 @@ class GameWindow(Window):
                     wall_type = game_data.map.tiles[x][y].wall_info
                     floor_type = game_data.map.tiles[x][y].floor_info
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
-                    visible=True
+                    #visible=True
                     asset = None
                     if visible:
                         if wall:
@@ -71,8 +71,8 @@ class GameWindow(Window):
         def draw_entities():
             rendering_sorted = sorted(game_data.map.entities, key=lambda e: e.render_order.value)
             for e in rendering_sorted:
-                if e.drawable:
-                #if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                #if e.drawable:
+                if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     main.blit(e.drawable.asset,
                               (sx * CELL_WIDTH,
