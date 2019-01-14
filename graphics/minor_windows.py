@@ -8,12 +8,11 @@ class WelcomeWindow(TextWindow):
         "",
         "A game of dungeon crawling, potion brewing and vial slinging",
         "",
-        "Next you'll be shown the formula screen.",
+        "Press Tab to show or hide help for the current screen",
+        "Space moves you to the next window",
+        "Escape to cancel actions, close the current menu, or exit the game",
         "",
-        "You can always press Tab to get help for the current screen",
-        "Escape to cancel actions or quit the current menu, or the game",
-        "",
-        "Press Escape to continue"
+        "Press Space to continue"
     ]
 
     def __init__(self, constants, visible=False):
@@ -22,14 +21,14 @@ class WelcomeWindow(TextWindow):
 
 class GeneralHelpWindow(TextWindow):
     LINES = [
-        "How to play",
-        "WASD: to walk around",
-        "1-5: Cast vial",
-        "E: Interact",
+        "How to play:",
+        "WASD: Move",
+        "Number keys, 1,2,3...: Throw that vial",
         "You select targets using the mouse",
         "    Throw with left click, cancel with right click",
         "",
-        "ESCAPE: Close current screen",
+        "ESCAPE: Close current screen, or quit the game",
+        "Space: Interact or next screen",
         "TAB: Show help for the current screen"
     ]
 

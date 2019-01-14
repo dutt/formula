@@ -37,6 +37,8 @@ class StoryWindow(Window):
         display_menu(gfx_data, lines, (800, 600), surface=surface)
         display_text(surface, "{}/{}".format(self.story_data.page_num, self.story_data.page_count),
                      gfx_data.assets.font_message, (40, 400))
+
+        display_text(surface, "Press space to continue", gfx_data.assets.font_message, (400, 400))
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
