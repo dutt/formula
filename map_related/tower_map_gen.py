@@ -23,6 +23,8 @@ class DoorDirection(Enum):
     LEFT = auto()
     RIGHT = auto()
 
+# a modfiied version of
+# https://gamedev.stackexchange.com/questions/47917/procedural-house-with-rooms-generator
 
 class TowerMapGenerator:
 

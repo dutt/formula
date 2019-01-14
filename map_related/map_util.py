@@ -88,7 +88,7 @@ def get_monster(x, y, room, monster_choice, assets, entities):
         fighter_component = Fighter(hp=20, defense=0, power=3, xp=40)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.thug)
-        monster = Monster(x, y, "Ghost", speed=100,
+        monster = Monster(x, y, "Thug", speed=100,
                           fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "axe_thrower":
