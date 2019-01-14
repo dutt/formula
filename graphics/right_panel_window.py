@@ -13,7 +13,7 @@ class FormulaMarker(Clickable):
         super().__init__(pos, size)
         self.formula_idx = formula_idx
         self.player = player
-        self.cooldown_bar = Bar(pos, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND)
+        self.cooldown_bar = Bar(pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND)
 
     def draw(self, surface, formula):
         if self.player.caster.is_on_cooldown(self.formula_idx):
@@ -32,9 +32,10 @@ class FormulaMarker(Clickable):
 class RightPanelWindow(Window):
     def __init__(self, constants, parent):
         super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent)
-        self.health_bar = Bar(Pos(10, 20), colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND)
-        self.shield_bar = Bar(Pos(10, 60), colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND)
-        self.formula_label = Label(Pos(10, 150), "Formulas")
+        self.health_bar = Bar(Pos(10, 20), "HP", colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND, size=Size(120, 30))
+        self.shield_bar = Bar(Pos(10, 60), "S", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30))
+        self.xp_bar = Bar(Pos(10, 100), "XP", colors.XP_BAR_FRONT, colors.XP_BAR_BACKGROUND, size=Size(120, 30))
+        self.formula_label = Label(Pos(10, 180), "Formulas")
         self.formula_markers = []
 
     def handle_click(self, game_data, gfx_data, mouse_action):
@@ -65,6 +66,7 @@ class RightPanelWindow(Window):
         if game_data.player.fighter.shield:
             self.shield_bar.draw(surface, game_data.player.fighter.shield.level,
                                  game_data.player.fighter.shield.max_level)
+        self.xp_bar.draw(surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level)
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):

@@ -12,6 +12,8 @@ class colors:
     SHIELD_BAR_BACKGROUND = (0, 100, 0)
     COOLDOWN_BAR_FRONT = (0, 127, 255)
     COOLDOWN_BAR_BACKGROUND = (0, 0, 0)
+    XP_BAR_FRONT = (160, 160, 0)
+    XP_BAR_BACKGROUND = (100, 100, 0)
 
     # TESTING
     BLACK = (0, 0, 0)
