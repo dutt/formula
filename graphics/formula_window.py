@@ -15,12 +15,20 @@ class FormulaHelpWindow(TextWindow):
         "Right/left arrow: Switch to next/previous formula",
         "Cooldown is increased for every used slot",
         "",
-        "Adding fire to a formula increases damage",
-        "Adding life to a formula increases healing",
-        "Adding range to a formula makes it reach further",
-        "Adding area to a formula gives it wider area of effect",
-        "Adding shield makes it defensive, combine with others for a shield that strikes back on hits",
-        "Adding cold does less damage than fire, but also slows the enemy down"
+        "Q: Empty, clear the slot",
+        "W: Fire, increases damage",
+        "E: Range, vial can be thrown further",
+        "R: Area, wider area of effect",
+        "A: Cold, less damage than fire, but also slows the enemy",
+        "S: Life, heal the target",
+        "D: Shield, resists damage. Combine with others for strikebacks",
+        "    3*Shield = 12 dmg resisted",
+        "    2*Shield + Fire = 8 dmg resisted, 1 fire hit back when you're hit",
+        "    Shield + Fire + Range, 4 dmg, hit back also when hit from short range",
+        "",
+        "If this is your first run I recommend 3*Fire, 2*Fire+Range, 3*Shield",
+        "",
+        "Tab: Close this help"
     ]
 
     def __init__(self, constants, visible=False):
@@ -63,10 +71,39 @@ class FormulaWindow(Window):
         y += len(lines) * linediff
 
         y += 6 * linediff
-        display_text(surface, "Press Tab for help".format(game_data.formula_builder.currformula + 1),
+        display_text(surface, "Arrow left/right or Mouse left/right: select formula",
                      gfx_data.assets.font_message,
                      (50, y))
+        y += linediff
+        display_text(surface, "Arrow up/down or Mouse scroll: select slot",
+                     gfx_data.assets.font_message,
+                     (50, y))
+        y += 2* linediff
+        display_text(surface, "Press Tab for help, or Space to confirm selection",
+                     gfx_data.assets.font_message,
+                     (50, y))
+        ingredient_lines = [
+            "Q: Empty",
+            "W: Fire",
+            "E: Range",
+            "R: Area",
+            "A: Cold",
+            "S: Life",
+            "D: Shield"
+        ]
+        display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=12)
+
         gfx_data.main.blit(surface, self.pos.tuple())
+
+    def change_slot(self, game_data, pos_diff):
+        next_num = (game_data.formula_builder.currslot + pos_diff) % game_data.formula_builder.num_slots
+        game_data.formula_builder.currslot = next_num
+
+    def change_formula(self, game_data, pos_diff):
+        next_num = (game_data.formula_builder.currformula + pos_diff) % game_data.formula_builder.num_formula
+        game_data.formula_builder.currformula = next_num
+        # go to first slot
+        game_data.formula_builder.currslot = 0
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
@@ -89,21 +126,32 @@ class FormulaWindow(Window):
         ingredient = key_action.get("ingredient")
         if ingredient:
             game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
-            # go to next slot
-            next_num = (game_data.formula_builder.currslot + 1) % game_data.formula_builder.num_slots
-            game_data.formula_builder.currslot = next_num
+            self.change_slot(game_data, 1)
             return {}
 
         next_formula = key_action.get("next_formula")
         if next_formula:
-            next_num = (game_data.formula_builder.currformula + next_formula) % game_data.formula_builder.num_formula
-            game_data.formula_builder.currformula = next_num
-            # go to first slot
-            game_data.formula_builder.currslot = 0
+            self.change_formula(game_data, 1)
             return {}
 
         next_slot = key_action.get("next_slot")
         if next_slot:
-            next_num = (game_data.formula_builder.currslot + next_slot) % game_data.formula_builder.num_slots
-            game_data.formula_builder.currslot = next_num
+            self.change_slot(game_data, 1)
             return {}
+
+    def handle_click(self, game_data, gfx_data, mouse_action):
+        scroll_up = mouse_action.get(Event.scroll_up)
+        if scroll_up:
+            self.change_slot(game_data, -1)
+
+        scroll_down = mouse_action.get(Event.scroll_down)
+        if scroll_down:
+            self.change_slot(game_data, 1)
+
+        right_clicked = mouse_action.get(Event.right_click)
+        if right_clicked:
+            self.change_formula(game_data, 1)
+
+        left_clicked = mouse_action.get(Event.left_click)
+        if left_clicked:
+            self.change_formula(game_data, -1)

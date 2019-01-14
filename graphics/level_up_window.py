@@ -30,12 +30,17 @@ class LevelUpWindow(Window):
                 text += "<--"
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
+        display_text(surface, "W/S to change selection, space to choose", gfx_data.assets.font_message, (50, 300))
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
         choice = key_action.get("choice")
         if choice:
             game_data.menu_data.currchoice += choice
+            if game_data.menu_data.currchoice < 0:
+                game_data.menu_data.currchoice = 0
+            elif game_data.menu_data.currchoice > 1:
+                game_data.menu_data.currchoice = 1
 
         level_up = key_action.get(Event.level_up)
         if level_up:
