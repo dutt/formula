@@ -6,7 +6,7 @@ import tcod
 from components.drawable import Drawable
 from game_states import GameStates
 from graphics.constants import colors, CELL_WIDTH, CELL_HEIGHT
-from graphics.display_helpers import display_bar
+from graphics.display_helpers import display_bar, display_text
 from graphics.minor_windows import GeneralHelpWindow
 from graphics.window import Window
 from input_handlers import Event
@@ -40,7 +40,7 @@ class GameWindow(Window):
                     wall_type = game_data.map.tiles[x][y].wall_info
                     floor_type = game_data.map.tiles[x][y].floor_info
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
-                    #visible=True
+                    # visible=True
                     asset = None
                     if visible:
                         if wall:
@@ -161,12 +161,31 @@ class GameWindow(Window):
                               sy * CELL_HEIGHT))
             main.blit(surface, (0, 0))
 
+        def draw_mouse_over_info():
+            info_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+            pos = pygame.mouse.get_pos()
+            px, py = pos
+            map_screen_pos = global_screen_pos_to_map_screen_pos(px, py)
+            tile_x, tile_y = map_screen_pos_to_tile(map_screen_pos[0], map_screen_pos[1])
+            tile_pos = Pos(tile_x, tile_y)
+            names = []
+            for e in game_data.map.entities:
+                if e.pos == tile_pos:
+                    names.append(e.name)
+            if not names:
+                return
+            text = ", ".join(names)
+            display_text(info_surface, text, assets.font_message, (px - self.pos.x + 20, py),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+            main.blit(info_surface, (0, 0))
+
         draw_terrain()
         draw_entities()
         draw_effects()
         if game_data.state == GameStates.TARGETING:
             draw_targeting()
-
+        elif game_data.state == GameStates.PLAY:
+            draw_mouse_over_info()
         gfx_data.main.blit(main, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
