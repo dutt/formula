@@ -39,7 +39,7 @@ def display_bar(surface, assets, pos, width, current, maxval, color, bgcolor, he
     pygame.draw.rect(surface, bgcolor, pygame.Rect(pos.x, pos.y, width, height))
     pygame.draw.rect(surface, color, pygame.Rect(pos.x, pos.y, current_length, height))
     if show_numbers:
-        if text:
+        if text and len(text.strip()) > 0:
             msg = "{} {}/{}".format(text, current, maxval)
         else:
             msg = "{}/{}".format(current, maxval)

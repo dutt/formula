@@ -52,16 +52,18 @@ class Window(Clickable):
         for child in self.children:
             child.visible = value
 
+
 class Bar(Clickable):
-    def __init__(self, pos, color, bgcolor, size=Size(100, 30)):
+    def __init__(self, pos, text, color, bgcolor, size=Size(100, 30)):
         super().__init__(pos, size)
         self.color = color
+        self.text = text
         self.bgcolor = bgcolor
 
     def draw(self, surface, current_value, max_value):
         display_bar(surface, Assets.get(), self.pos, self.size.width, current_value,
                     max_value,
-                    self.color, self.bgcolor)
+                    self.color, self.bgcolor, text = self.text)
 
 
 class Label(Widget):

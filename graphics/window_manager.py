@@ -32,7 +32,7 @@ class WindowManager:
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         for wnd in reversed(self.windows):
-            if wnd.is_clicked(mouse_action):
+            if wnd.visible and wnd.is_clicked(mouse_action):
                 return wnd.handle_click(game_data, gfx_data, mouse_action)
         return {}
 

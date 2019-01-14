@@ -90,9 +90,9 @@ def handle_general_keys(key, modifiers):
 def handle_level_up_keys(key, modifiers):
     if key in [pygame.K_SPACE, pygame.K_RETURN]:
         return {Event.level_up: True}
-    elif key == pygame.K_UP:
+    elif key in [pygame.K_UP, pygame.K_w]:
         return {"choice": -1}
-    elif key == pygame.K_DOWN:
+    elif key in [pygame.K_DOWN, pygame.K_s]:
         return {"choice": 1}
     return handle_general_keys(key, modifiers)
 
