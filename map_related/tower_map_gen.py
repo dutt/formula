@@ -235,13 +235,12 @@ class TowerMapGenerator:
                 continue
             num_monsters = random.randint(1, max_monsters_per_room)
             for i in range(num_monsters):
-
                 x = random.randint(c.x + 1, c.x + c.width - 1)
                 y = random.randint(c.y + 1, c.y + c.height - 1)
                 already_there = [entity for entity in entities if entity.pos.x == x and entity.pos.y == y]
                 if not any(already_there) and not m.tiles[x][y].blocked:
                     monster_choice = random_choice_from_dict(monster_chances)
-                    entities.extend(get_monster(x, y, c, monster_choice, assets, entities))
+                    entities.extend(get_monster(x, y, m, c, monster_choice, assets, entities))
         m.entities = entities
 
     @staticmethod

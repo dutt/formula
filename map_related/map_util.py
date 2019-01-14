@@ -52,7 +52,7 @@ def print_map(m, room_ids=True, walls=True, extra_points=[]):
     print("")
 
 
-def get_monster(x, y, room, monster_choice, assets, entities):
+def get_monster(x, y, game_map, room, monster_choice, assets, entities):
     def create_pack(hp, defense, power, xp, asset, name):
         retr = []
         packsize = random.randint(1, 3)
@@ -67,8 +67,11 @@ def get_monster(x, y, room, monster_choice, assets, entities):
                 if e.pos == dpos and dpos.x in range(room.x1 + 2, room.x2 - 2) and dpos.y in range(room.y1 + 2,
                                                                                                    room.y2 - 2):
                     occupied = True
+                if game_map.is_blocked(dpos.x, dpos.y):
+                    occupied = True
             if not occupied:
                 clean_diffs.append(d)
+        assert len(clean_diffs) >= packsize
         for w in range(packsize):
             diff_idx = random.randint(0, len(clean_diffs) - 1)
             diff = clean_diffs[diff_idx]

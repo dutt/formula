@@ -28,4 +28,4 @@ class MapFileLoader:
         x = monster["x"]
         y = monster["y"]
         assets = Assets.get()
-        return get_monster(x, y, room=None, monster_choice=type, assets=assets, entities=[])
+        return get_monster(x, y, game_map, room=None, monster_choice=type, assets=assets, entities=[])

@@ -170,7 +170,7 @@ class GameWindow(Window):
             tile_pos = Pos(tile_x, tile_y)
             names = []
             for e in game_data.map.entities:
-                if e.pos == tile_pos:
+                if e.pos == tile_pos and tcod.map_is_in_fov(game_data.fov_map, tile_pos.x, tile_pos.y):
                     names.append(e.name)
             if not names:
                 return
