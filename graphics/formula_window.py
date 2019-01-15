@@ -59,13 +59,17 @@ class FormulaWindow(Window):
         display_text(surface, "Formula {}".format(game_data.formula_builder.currformula + 1),
                      gfx_data.assets.font_message,
                      (50, y))
+
         formulas = game_data.formula_builder.evaluate()
+
         y += linediff
-        display_text(surface,
-                     "Formula stats:",
-                     gfx_data.assets.font_message,
-                     (50, y))
-        y += linediff
+        display_text(surface, "Formula stats:", gfx_data.assets.font_message, (50, y))
+
+        y += linediff * 2
+        cooldown_text = "Cooldown: {} rounds".format(formulas[game_data.formula_builder.currformula].cooldown)
+        display_text(surface, cooldown_text, gfx_data.assets.font_message, (50, y))
+
+        y += linediff * 2
         lines = textwrap.wrap(formulas[game_data.formula_builder.currformula].text_stats, 60)
         display_lines(surface, gfx_data.assets.font_message, lines, 50, y, ydiff=10)
         y += len(lines) * linediff

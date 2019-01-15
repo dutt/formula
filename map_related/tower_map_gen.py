@@ -202,7 +202,6 @@ class TowerMapGenerator:
                 if not m.tiles[x][y].blocked:
                     hallway_found = True
             if not hallway_found:
-                print("punching through y={}".format(y))
                 xpos = random.randint(1, m.width - 2)
                 m.tiles[xpos][y].blocked = False
                 m.tiles[xpos][y].block_sight = False
@@ -216,7 +215,6 @@ class TowerMapGenerator:
                 if not m.tiles[x][y].blocked:
                     hallway_found = True
             if not hallway_found:
-                print("punching through x={}".format(x))
                 ypos = random.randint(1, m.height - 2)
                 m.tiles[xpos][y].blocked = False
                 m.tiles[xpos][y].block_sight = False

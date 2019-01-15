@@ -131,3 +131,13 @@ class GameMap:
         if self.tiles[x][y].blocked:
             return True
         return False
+
+    @property
+    def num_explored(self):
+        count = 0
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.tiles[x][y].explored:
+                    #print("{},{} is explored".format(x, y))
+                    count += 1
+        return count
