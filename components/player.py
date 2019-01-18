@@ -31,20 +31,16 @@ class Player(Entity):
         self.last_num_explored = 0
 
     def handle_tick_cooldowns(self, game_data):
-        import sys
-        if len(sys.argv) < 2:
-            mode = "unary"
-        else:
-            mode = sys.argv[1]
-        if mode == "always":
+        import config
+        if config.conf.cooldown_mode == "always":
             print("Ticking cooldowns")
             self.caster.tick_cooldowns()
-        elif mode == "unary":
+        elif config.conf.cooldown_mode == "unary":
             if game_data.map.num_explored > self.last_num_explored:
                 print("Ticking cooldowns")
                 self.caster.tick_cooldowns()
                 self.last_num_explored = game_data.map.num_explored
-        elif mode == "counting":
+        elif config.conf.cooldown_mode == "counting":
             if game_data.map.num_explored > self.last_num_explored:
                 print("Ticking cooldowns")
                 diff = game_data.map.num_explored - self.last_num_explored

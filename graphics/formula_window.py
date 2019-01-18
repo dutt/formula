@@ -86,14 +86,15 @@ class FormulaWindow(Window):
         display_text(surface, "Press Tab for help, or Space to confirm selection",
                      gfx_data.assets.font_message,
                      (50, y))
+        from components.ingredients import Ingredient
         ingredient_lines = [
             "Q: Empty",
-            "W: Fire",
-            "E: Range",
-            "R: Area",
-            "A: Cold",
-            "S: Life",
-            "D: Shield"
+            "W: Fire" if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE) else "",
+            "E: Range"  if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
+            "R: Area"  if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
+            "A: Cold"  if game_data.formula_builder.ingredient_unlocked(Ingredient.COLD) else "",
+            "S: Life"  if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
+            "D: Shield"  if game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD) else ""
         ]
         display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=12)
 
@@ -128,19 +129,19 @@ class FormulaWindow(Window):
             return {}
 
         ingredient = key_action.get("ingredient")
-        if ingredient:
+        if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient):
             game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
             self.change_slot(game_data, 1)
             return {}
 
         next_formula = key_action.get("next_formula")
         if next_formula:
-            self.change_formula(game_data, 1)
+            self.change_formula(game_data, next_formula)
             return {}
 
         next_slot = key_action.get("next_slot")
         if next_slot:
-            self.change_slot(game_data, 1)
+            self.change_slot(game_data, next_slot)
             return {}
 
     def handle_click(self, game_data, gfx_data, mouse_action):

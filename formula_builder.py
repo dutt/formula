@@ -11,6 +11,36 @@ class FormulaBuilder:
         self.num_slots = num_slots
         self.num_formula = num_formula
         self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
+        self.unlock_state = self.init_lock_state()
+
+    def init_lock_state(self):
+        import config
+        if config.conf.unlock_mode == "none":
+            return {
+                Ingredient.EMPTY: True,
+                Ingredient.FIRE: True,
+                Ingredient.RANGE: True,
+                Ingredient.AREA: True,
+                Ingredient.COLD: True,
+                Ingredient.LIFE: True,
+                Ingredient.SHIELD: True
+            }
+        else:
+            return {
+                Ingredient.EMPTY: True,
+                Ingredient.FIRE: True,
+                Ingredient.RANGE: True,
+                Ingredient.AREA: False,
+                Ingredient.COLD: False,
+                Ingredient.LIFE: False,
+                Ingredient.SHIELD: False
+            }
+
+    def ingredient_unlocked(self, ingredient):
+        return self.unlock_state[ingredient]
+
+    def unlock_ingredient(self, ingredient):
+        self.unlock_state[ingredient] = True
 
     def set_slot(self, slot, ingredient):
         self.slots[self.currformula][slot] = ingredient
