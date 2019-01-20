@@ -84,11 +84,16 @@ def handle_general_keys(key, modifiers):
         return {Event.exit: True}
     elif key == pygame.K_RETURN and (pygame.K_RALT in modifiers or pygame.K_LALT in modifiers):
         return {Event.fullscreen: True}
+    elif key in [pygame.K_UP, pygame.K_w]:
+        return {Event.scroll_up: 1}
+    elif key in [pygame.K_DOWN, pygame.K_s]:
+        return {Event.scroll_down: 1}
+
     return {}
 
 
 def handle_level_up_keys(key, modifiers):
-    if key in [pygame.K_SPACE, pygame.K_RETURN]:
+    if key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_e]:
         return {Event.level_up: True}
     elif key in [pygame.K_UP, pygame.K_w]:
         return {"choice": -1}

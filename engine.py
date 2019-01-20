@@ -74,13 +74,23 @@ def setup_prevstate(state):
     return retr
 
 def main():
-    import datetime
-    now = datetime.datetime.now()
-    txt = str(now)
-    txt = "2018-12-30 09:38:04.303108"
-    print("Using seed: <{}>".format(txt))
     import random
-    random.seed(txt)
+    import config
+
+    if config.conf.random_seed == "now":
+        import datetime
+        now = datetime.datetime.now()
+        seed = str(now)
+    else:
+        seed = config.conf.random_seed
+    # debugging seeds
+    # original seed
+    # seed = "2018-12-30 09:38:04.303108"
+    print("Using seed: <{}>".format(seed))
+    random.seed(seed)
+
+    from components.ingredients import Ingredient
+    print(Ingredient.FIRE.description)
 
     constants = get_constants()
     game_data, gfx_data, state = setup_data_state(constants)

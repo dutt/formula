@@ -81,6 +81,7 @@ class BasicMapGenerator(MapGenerator):
             self.tiles[x][y].block_sight = False
 """
 
+
 class GameMap:
     def __init__(self, size, dungeon_level):
         self.width = size.width

@@ -12,7 +12,7 @@ class WelcomeWindow(TextWindow):
         "Space moves you to the next window",
         "Escape to cancel actions, close the current menu, or exit the game",
         "",
-        "Press Space to continue"
+        "Press Space to continue",
     ]
 
     def __init__(self, constants, visible=False):

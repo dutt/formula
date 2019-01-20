@@ -29,7 +29,7 @@ class MessageLogWindow(Window):
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(Event.scroll_up)
         if scroll_up:
-            self.offset = max(-len(game_data.log.messages) + self.num_messages, self.offset - 2)
+            self.offset = max(-len(game_data.log.messages) + self.num_messages, self.offset - 2, 0)
         scroll_down = mouse_action.get(Event.scroll_down)
         if scroll_down:
             self.offset = min(len(game_data.log.messages) - self.num_messages, self.offset + 2)

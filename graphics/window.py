@@ -78,13 +78,41 @@ class Label(Widget):
 class TextWindow(Window):
     def __init__(self, constants, visible, lines, next_window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
-        self.lines = lines
         self.next_window = next_window
+        self.lines = lines
+        self.num_lines = 9
+        self.offset = 0
 
     def draw(self, game_data, gfx_data):
-        display_menu(gfx_data, self.lines, self.size.tuple())
+        current_lines = self.lines[self.offset:self.offset + self.num_lines]
+        show_lines = []
+        import textwrap
+        for current in current_lines:
+            if len(show_lines) >= self.num_lines:
+                break
+            if current.strip() == "":
+                show_lines.append(current)
+            else:
+                split_lines = textwrap.wrap(current, 60)
+                show_lines.extend(split_lines)
+        display_menu(gfx_data, show_lines, self.size.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
         if do_quit:
             return self.close(game_data, self.next_window)
+
+        scroll_up = key_action.get(Event.scroll_up)
+        if scroll_up:
+            self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
+        scroll_down = key_action.get(Event.scroll_down)
+        if scroll_down:
+            self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)
+
+    def handle_click(self, game_data, gfx_data, mouse_action):
+        scroll_up = mouse_action.get(Event.scroll_up)
+        if scroll_up:
+            self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
+        scroll_down = mouse_action.get(Event.scroll_down)
+        if scroll_down:
+            self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)

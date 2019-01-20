@@ -32,6 +32,7 @@ class Assets:
         self.ammo_sheet = Spritesheet(util.resource_path("data/graphics/Items/Ammo.png"))
         self.humanoid_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Humanoid"))
         self.quadraped_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Quadraped"))
+        self.player_sheet = Spritesheet(util.resource_path("data/graphics/Characters/Player"))
 
         if graphics_file_tile_size.width != CELL_WIDTH or graphics_file_tile_size.height != CELL_HEIGHT:
             scale = (CELL_WIDTH, CELL_HEIGHT)
@@ -86,7 +87,7 @@ class Assets:
             retr.append(get_img(sheet, col + 1, row + 1, rotate=  0))  # 15, floor all around
             return retr
 
-        self.player = get_animation(self.reptile_sheet, 1, 1)
+        self.player = get_animation(self.player_sheet, 1, 0)
 
         self.stairs = get_img(self.decor_sheet, 2, 9)
 
@@ -124,5 +125,6 @@ class Assets:
         self.shield_effect = get_img(self.effect0_sheet, 4, 23)
         self.spark_effect = get_img(self.effect0_sheet, 3, 24)
 
-        self.font_title = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 16)
-        self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 12)
+        self.font_title = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 20)
+        #self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 14)
+        self.font_message = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 16)

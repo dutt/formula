@@ -24,7 +24,7 @@ class Player(Entity):
         fighter_component = Fighter(hp=10, defense=0, power=3)
         level_component = Level()
         drawable_component = Drawable(Assets.get().player)
-        super(Player, self).__init__(0, 0, "Player", speed=100, blocks=True,
+        super(Player, self).__init__(0, 0, "You", speed=100, blocks=True,
                                      render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
@@ -33,7 +33,7 @@ class Player(Entity):
     def handle_tick_cooldowns(self, game_data):
         import config
         if config.conf.cooldown_mode == "always":
-            print("Ticking cooldowns")
+            #print("Ticking cooldowns")
             self.caster.tick_cooldowns()
         elif config.conf.cooldown_mode == "unary":
             if game_data.map.num_explored > self.last_num_explored:

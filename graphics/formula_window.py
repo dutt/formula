@@ -10,7 +10,8 @@ from input_handlers import Event
 class FormulaHelpWindow(TextWindow):
     LINES = [
         "Building formulas:",
-        "Q,W,E,R,A,S, D: Set current slot to ingredient",
+        "You have a number of formulas, each formula consist of a number of slots blarg blarg blarg",
+        "Each slot is "
         "Up/down arrow: Switch to next/previous slot",
         "Right/left arrow: Switch to next/previous formula",
         "Cooldown is increased for every used slot",
@@ -40,10 +41,16 @@ class FormulaWindow(Window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
+        formulas = game_data.formula_builder.evaluate()
+
         surface = pygame.Surface(self.size.tuple())
         linediff = 12
         y = 5 * linediff
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
+
+        y += 3 * linediff
+        text = "Formula {}/{}".format(game_data.formula_builder.currformula + 1, game_data.formula_builder.num_formula)
+        display_text(surface, text, gfx_data.assets.font_message, (50, y))
 
         y += 2 * linediff
         display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
@@ -54,13 +61,6 @@ class FormulaWindow(Window):
                 text += "<-- "
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
-
-        y += 3 * linediff
-        display_text(surface, "Formula {}".format(game_data.formula_builder.currformula + 1),
-                     gfx_data.assets.font_message,
-                     (50, y))
-
-        formulas = game_data.formula_builder.evaluate()
 
         y += linediff
         display_text(surface, "Formula stats:", gfx_data.assets.font_message, (50, y))
