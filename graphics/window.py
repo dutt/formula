@@ -1,3 +1,5 @@
+import textwrap
+
 from graphics.assets import Assets
 from graphics.display_helpers import display_text, display_bar, display_menu
 from input_handlers import Event
@@ -86,7 +88,6 @@ class TextWindow(Window):
     def draw(self, game_data, gfx_data):
         current_lines = self.lines[self.offset:self.offset + self.num_lines]
         show_lines = []
-        import textwrap
         for current in current_lines:
             if len(show_lines) >= self.num_lines:
                 break
@@ -104,7 +105,10 @@ class TextWindow(Window):
 
         scroll_up = key_action.get(Event.scroll_up)
         if scroll_up:
-            self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
+            if self.num_lines > len(self.lines):
+                self.offset = max(self.offset - 2, 0)
+            else:
+                self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
         scroll_down = key_action.get(Event.scroll_down)
         if scroll_down:
             self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)
@@ -112,7 +116,14 @@ class TextWindow(Window):
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(Event.scroll_up)
         if scroll_up:
-            self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
+            if self.num_lines > len(self.lines):
+                self.offset = max(self.offset - 2, 0)
+            else:
+                self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
         scroll_down = mouse_action.get(Event.scroll_down)
         if scroll_down:
-            self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)
+            if self.num_lines > len(self.lines):
+                self.offset = min(self.offset + 2, len(self.lines))
+            else:
+                self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)
+

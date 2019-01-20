@@ -112,7 +112,7 @@ def setup_data_state(constants):
     windows.push(RightPanelWindow(constants, parent=gw))
     windows.push(MessageLogWindow(constants, parent=gw))
     windows.push(WelcomeWindow(constants, state == GameStates.WELCOME_SCREEN))
-    windows.push(StoryWindow(constants, state == GameStates.STORY_SCREEN, story_data))
+    windows.push(StoryWindow(constants, story_data, state == GameStates.STORY_SCREEN))
     windows.push(StoryHelpWindow(constants))
     windows.push(FormulaWindow(constants, state == GameStates.FORMULA_SCREEN))
     windows.push(FormulaHelpWindow(constants))

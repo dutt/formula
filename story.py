@@ -14,35 +14,18 @@ class StoryData:
     def load_current(self):
         self.section = self.loader.sections[self.current_story_idx]
 
-    @property
-    def current_page(self):
-        return self.section.pages[self.current_page_idx]
-
-    @property
-    def page_count(self):
-        return len(self.section.pages)
-
-    @property
-    def page_num(self):
-        return self.current_page_idx+1
-
-    @property
-    def is_last_page(self):
-        return self.current_page_idx+1 >= len(self.section.pages)
-
     def next_story(self):
-        self.current_page_idx = 0
         self.current_story_idx += 1
         self.load_current()
 
-    def next_page(self):
-        self.current_page_idx += 1
-
+    @property
+    def current_content(self):
+        return self.section.content
 
 class StorySection:
-    def __init__(self, floor, pages):
+    def __init__(self, floor, content):
         self.floor = floor
-        self.pages = pages
+        self.content = content
 
 
 class StoryLoader:
@@ -66,10 +49,7 @@ class StoryLoader:
             content = reader.read()
         base = os.path.basename(filepath)
         base = os.path.splitext(base)[0]
-        num = int(base.split(".")[1])
-        pages = content.split("----")
-        pages = [page.strip() for page in pages]
-        return StorySection(base, pages)
+        return StorySection(base, content)
 
     def get(self, floor):
         return self.sections[floor]

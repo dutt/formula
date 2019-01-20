@@ -25,11 +25,13 @@ def display_lines(surface, font, lines, x=50, starty=50, ydiff=20):
         y += ydiff
 
 
-def display_menu(gfx_data, lines, size, surface=None):
+def display_menu(gfx_data, lines, size, surface=None, font=None):
     has_surface = surface is not None
     if not has_surface:
         surface = pygame.Surface(size)
-    display_lines(surface, gfx_data.assets.font_message, lines)
+    if not font:
+        font = gfx_data.assets.font_message
+    display_lines(surface, font, lines)
     if not has_surface:
         gfx_data.main.blit(surface, (200, 200))
 
