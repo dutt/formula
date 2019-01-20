@@ -73,7 +73,8 @@ def setup_prevstate(state):
 
     return retr
 
-def main():
+
+def set_seed():
     import random
     import config
 
@@ -85,42 +86,44 @@ def main():
         seed = config.conf.random_seed
     # debugging seeds
     # original seed
-    # seed = "2018-12-30 09:38:04.303108"
+    seed = "2018-12-30 09:38:04.303108"
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
-
-    from components.ingredients import Ingredient
-    print(Ingredient.FIRE.description)
-
-    constants = get_constants()
-    game_data, gfx_data, state = setup_data_state(constants)
-
-    game_data.state = state
-    game_data.prev_state = setup_prevstate(state)
-
-    game_data.run_planner.generate(game_data)
-
-    gfx_data.camera.initialize_map()
-    gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
-
-    play_game(game_data, gfx_data)
-
-    pygame.quit()
-
-    with open("messages.log", 'w') as writer:
-        for msg in game_data.log.messages:
-            writer.write(msg.text)
+    return seed
 
 
-if __name__ == '__main__':
+def main():
+    seed = set_seed()
     try:
-        main()
+        constants = get_constants()
+        game_data, gfx_data, state = setup_data_state(constants)
+
+        game_data.state = state
+        game_data.prev_state = setup_prevstate(state)
+
+        game_data.run_planner.generate(game_data)
+
+        gfx_data.camera.initialize_map()
+        gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
+
+        play_game(game_data, gfx_data)
+
+        pygame.quit()
+
+        with open("messages.log", 'w') as writer:
+            writer.write("Seed {}".format(seed))
+            for msg in game_data.log.messages:
+                writer.write(msg.text)
     except:
         tb = traceback.format_exc()
         print(tb)
         try:
             with open("crash.log", 'w') as writer:
+                writer.write("Seed {}".format(seed))
                 writer.write(tb)
         except:
-            print("failed to write crashlog:")
+            print("Failed to write crashlog:")
             traceback.print_exc()
+
+if __name__ == '__main__':
+    main()
