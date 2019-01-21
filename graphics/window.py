@@ -1,5 +1,7 @@
 import textwrap
 
+import pygame
+
 from graphics.assets import Assets
 from graphics.display_helpers import display_text, display_bar, display_menu
 from input_handlers import Event
@@ -78,25 +80,51 @@ class Label(Widget):
 
 
 class TextWindow(Window):
-    def __init__(self, constants, visible, lines, next_window):
+    def __init__(self, constants, visible, lines=None, path=None, next_window=None):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
         self.next_window = next_window
         self.lines = lines
-        self.num_lines = 9
+        self.num_lines = 20
         self.offset = 0
+        self.offset_jump = 1
+        self.path = path
+        assert path or lines
+        if path:
+            self.lines = self.load_path(path)
+
+    def load_path(self, path):
+        with open(path, 'r') as reader:
+            return reader.read().split("\n")
 
     def draw(self, game_data, gfx_data):
-        current_lines = self.lines[self.offset:self.offset + self.num_lines]
-        show_lines = []
-        for current in current_lines:
-            if len(show_lines) >= self.num_lines:
-                break
+        surface = pygame.Surface(self.size.tuple())
+
+        all_lines = []
+        for current in self.lines:
             if current.strip() == "":
-                show_lines.append(current)
+                all_lines.append(current)
             else:
                 split_lines = textwrap.wrap(current, 60)
-                show_lines.extend(split_lines)
-        display_menu(gfx_data, show_lines, self.size.tuple())
+                all_lines.extend(split_lines)
+        show_lines = all_lines[self.offset:self.offset + self.num_lines]
+        display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface)
+
+        if len(all_lines) > self.num_lines:
+            display_text(surface, "Use W, S or mouse scroll to see more", gfx_data.assets.font_message, (50, 500))
+
+        gfx_data.main.blit(surface, self.pos.tuple())
+
+    def scroll_up(self):
+        if self.num_lines > len(self.lines):
+            self.offset = max(self.offset - self.offset_jump, 0)
+        else:
+            self.offset = max(-len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0)
+
+    def scroll_down(self):
+        if self.num_lines > len(self.lines):
+            self.offset = min(self.offset + self.offset_jump, len(self.lines))
+        else:
+            self.offset = min(len(self.lines) - self.num_lines, self.offset + self.offset_jump)
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
@@ -105,25 +133,18 @@ class TextWindow(Window):
 
         scroll_up = key_action.get(Event.scroll_up)
         if scroll_up:
-            if self.num_lines > len(self.lines):
-                self.offset = max(self.offset - 2, 0)
-            else:
-                self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
+            self.scroll_up()
+
         scroll_down = key_action.get(Event.scroll_down)
         if scroll_down:
-            self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)
+            self.scroll_down()
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(Event.scroll_up)
         if scroll_up:
-            if self.num_lines > len(self.lines):
-                self.offset = max(self.offset - 2, 0)
-            else:
-                self.offset = max(-len(self.lines) + self.num_lines, self.offset - 2, 0)
+            self.scroll_up()
+
         scroll_down = mouse_action.get(Event.scroll_down)
         if scroll_down:
-            if self.num_lines > len(self.lines):
-                self.offset = min(self.offset + 2, len(self.lines))
-            else:
-                self.offset = min(len(self.lines) - self.num_lines, self.offset + 2)
+            self.scroll_down()
 

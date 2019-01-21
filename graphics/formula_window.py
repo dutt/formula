@@ -6,34 +6,14 @@ from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window, TextWindow
 from input_handlers import Event
 
+from util import resource_path
+
 
 class FormulaHelpWindow(TextWindow):
-    LINES = [
-        "Building formulas:",
-        "You have a number of formulas, each formula consist of a number of slots blarg blarg blarg",
-        "Each slot is "
-        "Up/down arrow: Switch to next/previous slot",
-        "Right/left arrow: Switch to next/previous formula",
-        "Cooldown is increased for every used slot",
-        "",
-        "Q: Empty, clear the slot",
-        "W: Fire, increases damage",
-        "E: Range, vial can be thrown further",
-        "R: Area, wider area of effect",
-        "A: Cold, less damage than fire, but also slows the enemy",
-        "S: Life, heal the target",
-        "D: Shield, resists damage. Combine with others for strikebacks",
-        "    3*Shield = 12 dmg resisted",
-        "    2*Shield + Fire = 8 dmg resisted, 1 fire hit back when you're hit",
-        "    Shield + Fire + Range, 4 dmg, hit back also when hit from short range",
-        "",
-        "If this is your first run I recommend 3*Fire, 2*Fire+Range, 3*Shield",
-        "",
-        "Tab: Close this help"
-    ]
+    PATH = resource_path("data/help/formula_window.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(constants, visible, FormulaHelpWindow.LINES, None)
+        super().__init__(constants, visible, path=FormulaHelpWindow.PATH, next_window=None)
 
 
 class FormulaWindow(Window):
@@ -52,12 +32,13 @@ class FormulaWindow(Window):
                 "S: Life" if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
                 "D: Shield" if game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD) else ""
             ]
-            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=12)
+            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=14)
 
         formulas = game_data.formula_builder.evaluate()
+        formula = formulas[game_data.formula_builder.currformula]
 
         surface = pygame.Surface(self.size.tuple())
-        linediff = 12
+        linediff = 14
         y = 5 * linediff
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
@@ -68,8 +49,8 @@ class FormulaWindow(Window):
         y += 2 * linediff
         display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
         y += linediff
-        for idx, formula in enumerate(game_data.formula_builder.current_slots):
-            text = "Slot {}: {}".format(idx, formula.name)
+        for idx, form in enumerate(game_data.formula_builder.current_slots):
+            text = "Slot {}: {}".format(idx, form.name)
             if idx == game_data.formula_builder.currslot:
                 text += "<-- "
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
@@ -78,13 +59,17 @@ class FormulaWindow(Window):
         y += linediff
         display_text(surface, "Formula stats:", gfx_data.assets.font_message, (50, y))
 
+        if formula.suboptimal:
+            y += linediff
+            display_text(surface, "INFO: Combined heal/attack or attack modifier but no attack", gfx_data.assets.font_message, (50, y))
+
         y += linediff * 2
-        cooldown_text = "Cooldown: {} rounds".format(formulas[game_data.formula_builder.currformula].cooldown)
+        cooldown_text = "Cooldown: {} rounds".format(formula.cooldown)
         display_text(surface, cooldown_text, gfx_data.assets.font_message, (50, y))
 
         y += linediff * 2
         lines = textwrap.wrap(formulas[game_data.formula_builder.currformula].text_stats, 60)
-        display_lines(surface, gfx_data.assets.font_message, lines, 50, y, ydiff=10)
+        display_lines(surface, gfx_data.assets.font_message, lines, 50, y, ydiff=13)
         y += len(lines) * linediff
 
         y += 6 * linediff

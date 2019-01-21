@@ -82,6 +82,8 @@ class FormulaBuilder:
             slow_rounds = 0
             shield = 0
             targeted = True
+            attack_modifier = False
+            attack_ingredient = False
             for slot in slots:
                 if not slot.targeted:
                     targeted = False
@@ -89,17 +91,27 @@ class FormulaBuilder:
                     cooldown -= cooldown_per_slot
                 elif slot == Ingredient.FIRE:
                     fire_dmg += fire_dmg_per_step
+                    attack_ingredient = True
                 elif slot == Ingredient.RANGE:
+                    attack_modifier = True
                     distance += distance_per_step
                 elif slot == Ingredient.AREA:
+                    attack_modifier  = True
                     area += area_per_step
                 elif slot == Ingredient.COLD:
                     slow_rounds += slow_per_step
+                    attack_ingredient = True
                     cold_dmg += cold_dmg_per_step // 2
                 elif slot == Ingredient.LIFE:
                     healing += heal_per_step
                 elif slot == Ingredient.SHIELD:
                     shield += shield_per_step
+            if attack_modifier and not attack_ingredient:
+                suboptimal = True
+            elif healing > 0 and attack_ingredient:
+                suboptimal = True
+            else:
+                suboptimal = False
             effects = []
             if shield:
                 strikebacks = []
@@ -126,7 +138,8 @@ class FormulaBuilder:
                     effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
 
             retr.append(Formula(slots=slots, cooldown=cooldown, formula_idx=idx,
-                                distance=distance, area=area, effects=effects, targeted=targeted))
+                                distance=distance, area=area, effects=effects, targeted=targeted,
+                                suboptimal=suboptimal))
         return retr
 
 

@@ -16,6 +16,7 @@ class Formula:
         self.area = float(kwargs["area"]) + 0.5
         self.effects = kwargs["effects"]
         self.targeted = kwargs["targeted"]
+        self.suboptimal = kwargs["suboptimal"]
 
         self.targeting_message_text = self.text_stats_text = self.applied_text = None
         self.parse()

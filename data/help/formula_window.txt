@@ -1,0 +1,25 @@
+Building formulas
+
+You have a number of formulas, each formula consist of a number of slots. Each slot is filled by one ingredient, each ingredient has an effect. Combine different ingredients into formulas, try some things out. But beware, cooldown is increased for every used slot
+
+There are targeted and non-targeted ingredients, if a formula contains one non targeted ingredient it will be directly applied to you. Thus, casting Fire * 4 + Life would not be recommended. Life makes it non targeted, and the 4*Fire will hurt you.
+
+Controls:
+Up/down arrow: Switch to next/previous slot
+Right/left arrow: Switch to next/previous formula
+Q: Empty, clear the slot
+W: Fire, increases damage. Targeted.
+E: Range, vial can be thrown further. Targeted.
+R: Area, wider area of effect. Targeted.
+A: Cold, less damage than fire, but also slows the enemy. Targeted.
+S: Life, heal the target. Not targeted.
+D: Shield, resists damage. Combine with others for strikebacks. Not targeted.
+
+The shield ingredient is a special one. A pure shield is only defensive, e.g.
+3*Shield = 12 dmg resisted, but it can also be offensive if combined with
+targeted ingredients, e.g. 2*Shield + Fire = 8 dmg resisted, 1 fire hit back
+when you're hit, or Shield + Fire + Range, 4 dmg, hit back also when hit from short range
+
+Note: The basic form is Shield + X, if you want an offensive shield X should be a damage dealing formula on it's own. Thus, Shield + Range doesn't give you anything more because only Range doesn't do anything to the target. A defensive shield, Shield + Life, works though.
+
+Press tab to close this help

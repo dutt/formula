@@ -1,0 +1,14 @@
+How to play:
+
+WASD: Move around
+
+Number keys, 1,2,3...: Throw that vial
+
+You select targets using the mouse
+    Throw with left click, cancel with right click
+
+ESCAPE: Close current screen, or quit the game
+
+Space: Interact or next screen
+
+TAB: Show help for the current screen

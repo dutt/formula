@@ -1,0 +1,9 @@
+Welcome to Formula
+
+A game of dungeon crawling, potion brewing and vial slinging
+
+Press Tab to show or hide help for the current screen
+Space moves you to the next window
+Escape to cancel actions, close the current menu, or exit the game
+
+Press Space to continue
