@@ -15,6 +15,7 @@ class Formula:
         self.distance = float(kwargs["distance"]) + 0.5  # for diagonal
         self.area = float(kwargs["area"]) + 0.5
         self.effects = kwargs["effects"]
+        self.targeted = kwargs["targeted"]
 
         self.targeting_message_text = self.text_stats_text = self.applied_text = None
         self.parse()

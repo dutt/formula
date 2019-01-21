@@ -41,6 +41,19 @@ class FormulaWindow(Window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
+        def draw_ingredient_list():
+            from components.ingredients import Ingredient
+            ingredient_lines = [
+                "Q: Empty",
+                "W: Fire" if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE) else "",
+                "E: Range" if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
+                "R: Area" if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
+                "A: Cold" if game_data.formula_builder.ingredient_unlocked(Ingredient.COLD) else "",
+                "S: Life" if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
+                "D: Shield" if game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD) else ""
+            ]
+            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=12)
+
         formulas = game_data.formula_builder.evaluate()
 
         surface = pygame.Surface(self.size.tuple())
@@ -86,17 +99,8 @@ class FormulaWindow(Window):
         display_text(surface, "Press Tab for help, or Space to confirm selection",
                      gfx_data.assets.font_message,
                      (50, y))
-        from components.ingredients import Ingredient
-        ingredient_lines = [
-            "Q: Empty",
-            "W: Fire" if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE) else "",
-            "E: Range"  if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
-            "R: Area"  if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
-            "A: Cold"  if game_data.formula_builder.ingredient_unlocked(Ingredient.COLD) else "",
-            "S: Life"  if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
-            "D: Shield"  if game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD) else ""
-        ]
-        display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=12)
+
+        draw_ingredient_list()
 
         gfx_data.main.blit(surface, self.pos.tuple())
 

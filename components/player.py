@@ -152,10 +152,15 @@ class Player(Entity):
                 if start_throwing_vial >= len(self.caster.formulas):
                     game_data.log.add_message(Message("You don't have that formula yet", tcod.yellow))
                 else:
-                    start_throwing_vial_results = {
-                        "game_data.targeting_formula": self.caster.formulas[start_throwing_vial],
-                        "formula_idx": start_throwing_vial}
-                    turn_results.append(start_throwing_vial_results)
+                    formula = self.caster.formulas[start_throwing_vial]
+                    if formula.targeted:
+                        start_throwing_vial_results = {
+                            "targeting_formula": formula,
+                            "formula_idx": start_throwing_vial
+                        }
+                        turn_results.append(start_throwing_vial_results)
+                    else:
+                        player_action = ThrowVialAction(self, formula, targetpos=game_data.player.pos)
 
             if do_exit:
                 if game_data.state == GameStates.TARGETING:
@@ -180,7 +185,7 @@ class Player(Entity):
             key_action = mouse_action = None  # clear them for next round
 
             for res in turn_results:
-                game_data.targeting_formula = res.get("game_data.targeting_formula")
+                game_data.targeting_formula = res.get("targeting_formula")
                 if game_data.targeting_formula:
                     formula_idx = res.get("formula_idx")
                     if self.caster.is_on_cooldown(formula_idx):

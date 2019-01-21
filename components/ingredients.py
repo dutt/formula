@@ -30,3 +30,10 @@ class Ingredient(Enum):
             return "Shield ingredient, add shield points, makes the formula defensive"
         else:
             return str(self)
+
+    @property
+    def targeted(self):
+        return self in [Ingredient.FIRE,
+                        Ingredient.RANGE,
+                        Ingredient.AREA,
+                        Ingredient.COLD]

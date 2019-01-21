@@ -33,7 +33,7 @@ class FormulaBuilder:
                 Ingredient.AREA: False,
                 Ingredient.COLD: False,
                 Ingredient.LIFE: False,
-                Ingredient.SHIELD: False
+                Ingredient.SHIELD: False,
             }
 
     def ingredient_unlocked(self, ingredient):
@@ -81,7 +81,10 @@ class FormulaBuilder:
             healing = 0
             slow_rounds = 0
             shield = 0
+            targeted = True
             for slot in slots:
+                if not slot.targeted:
+                    targeted = False
                 if slot == Ingredient.EMPTY:
                     cooldown -= cooldown_per_slot
                 elif slot == Ingredient.FIRE:
@@ -123,7 +126,7 @@ class FormulaBuilder:
                     effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
 
             retr.append(Formula(slots=slots, cooldown=cooldown, formula_idx=idx,
-                                distance=distance, area=area, effects=effects))
+                                distance=distance, area=area, effects=effects, targeted=targeted))
         return retr
 
 
