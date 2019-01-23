@@ -59,13 +59,13 @@ def setup_prevstate(state):
         return retr
     retr.append(GameStates.PLAY)
 
-    if state == GameStates.FORMULA_SCREEN:
-        return retr
-    retr.append(GameStates.FORMULA_SCREEN)
-
     if state == GameStates.STORY_SCREEN:
         return retr
     retr.append(GameStates.STORY_SCREEN)
+
+    if state == GameStates.FORMULA_SCREEN:
+        return retr
+    retr.append(GameStates.FORMULA_SCREEN)
 
     if state == GameStates.WELCOME_SCREEN:
         return retr

@@ -4,6 +4,7 @@ import pygame
 
 from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window, TextWindow
+from graphics.story_window import StoryWindow
 from input_handlers import Event
 
 from util import resource_path
@@ -102,15 +103,10 @@ class FormulaWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
         if do_quit:
-            #
-            #game_data.state = game_data.prev_state.pop()
-            #self.visible = False
             game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
             gfx_data.camera.initialize_map()
             gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
-            #return {}
-            from graphics.game_window import GameWindow
-            return self.close(game_data, GameWindow)
+            return self.close(game_data, StoryWindow)
 
         slot = key_action.get("slot")
         if slot is not None:

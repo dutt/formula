@@ -1,4 +1,5 @@
 import math
+import textwrap
 
 import pygame
 import tcod
@@ -6,7 +7,7 @@ import tcod
 from components.drawable import Drawable
 from game_states import GameStates
 from graphics.constants import colors, CELL_WIDTH, CELL_HEIGHT
-from graphics.display_helpers import display_bar, display_text
+from graphics.display_helpers import display_bar, display_text, display_lines
 from graphics.minor_windows import GeneralHelpWindow
 from graphics.window import Window
 from input_handlers import Event
@@ -179,7 +180,55 @@ class GameWindow(Window):
                          text_color=colors.WHITE, bg_color=colors.BACKGROUND)
             main.blit(info_surface, (0, 0))
 
+        def draw_help():
+            help_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+            px, py = game_data.player.pos.tuple()
+            px, py = gfx_data.camera.map_to_screen(px, py)
+            px, py = px * CELL_WIDTH + 40, py * CELL_HEIGHT
+
+            welcome_px, welcome_py = px, py - 80
+            display_text(help_surface, "Welcome to formula!", assets.font_message, (welcome_px, welcome_py),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            move_px, move_py = px, py - 40
+            display_text(help_surface, "Use W,A,S,D to move", assets.font_message, (move_px, move_py),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            cast_px, cast_py = px, py + 40
+            display_text(help_surface, "Use 1,2,3,... to cast vials", assets.font_message, (cast_px, cast_py),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            display_text(help_surface, "This is your health bar", assets.font_message, (20, 20),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            display_text(help_surface, "This will be is your shield bar", assets.font_message, (20, 70),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            display_text(help_surface, "This is your experience bar", assets.font_message, (20, 105),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            display_text(help_surface, "Press Tab for help", assets.font_message, (20, 400),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+            display_text(help_surface, "Press Escape to quit", assets.font_message, (20, 430),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            pygame.draw.rect(help_surface, colors.BACKGROUND, pygame.rect.Rect(20, 200, 200, 150))
+            text = "These are your formulas. You will gain more formulas, slots and ingredients as you level up"
+
+            lines = textwrap.wrap(text, 20)
+            display_lines(help_surface, assets.font_message, lines, 25, 205)
+            #display_text(help_surface, "These are your formulas", assets.font_message, (20, 200),
+            #             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+            #display_text(help_surface, "You will gain more formulas,", assets.font_message, (20, 225),
+            #             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+            #display_text(help_surface, "slots and ingredients as you level up", assets.font_message, (20, 250),
+            #             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            main.blit(help_surface, (0, 0))
+
         draw_terrain()
+        if game_data.run_planner.current_level_index == 0 and game_data.player.pos.distance_to(game_data.map.orig_player_pos) < 5:
+            draw_help()
         draw_entities()
         draw_effects()
         if game_data.state == GameStates.TARGETING:

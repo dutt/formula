@@ -1,9 +1,7 @@
 import textwrap
 
-import pygame
-
 from graphics.display_helpers import display_menu
-from graphics.formula_window import FormulaWindow
+from graphics.game_window import GameWindow
 from graphics.window import Window, TextWindow
 from input_handlers import Event
 
@@ -63,11 +61,11 @@ class StoryWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
         if do_quit:
-            return self.close(game_data, FormulaWindow)
+            return self.close(game_data, GameWindow)
 
         next = key_action.get("next")
         if next:
-            return self.close(game_data, FormulaWindow)
+            return self.close(game_data, GameWindow)
 
         scroll_up = key_action.get(Event.scroll_up)
         if scroll_up:

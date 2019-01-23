@@ -2,7 +2,7 @@ import pygame
 
 from game_states import GameStates
 from graphics.display_helpers import display_text
-from graphics.minor_windows import WelcomeWindow
+#from graphics.minor_windows import WelcomeWindow
 from graphics.window import Window
 from input_handlers import Event
 
@@ -13,7 +13,8 @@ class SetupWindow(Window):
 
     def draw(self, game_data, gfx_data):
         if game_data.run_planner.gen_level_idx >= game_data.run_planner.level_count:
-            return self.close(game_data, WelcomeWindow)
+            #return self.close(game_data, WelcomeWindow)
+            return self.close(game_data, None)
 
         surface = pygame.Surface(self.size.tuple())
 
@@ -24,4 +25,5 @@ class SetupWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
         if do_quit:
-            return self.close(game_data, WelcomeWindow)
+            #return self.close(game_data, WelcomeWindow)
+            return self.close(game_data, None)

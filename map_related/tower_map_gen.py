@@ -32,16 +32,17 @@ class TowerMapGenerator:
     def make_map(constants, level, monster_chances):
         retr = GameMap(constants.map_size, level)
         assets = Assets.get()
-        chunks = TowerMapGenerator.chunkify(retr)
+        retr.chunks = TowerMapGenerator.chunkify(retr)
         TowerMapGenerator.cleanup_walls(retr)
-        TowerMapGenerator.make_doors(retr, chunks)
-        TowerMapGenerator.place_monsters(retr, chunks, monster_chances, level, assets)
-        TowerMapGenerator.place_stairs(retr, chunks, assets)
+        TowerMapGenerator.make_doors(retr, retr.chunks)
+        TowerMapGenerator.place_monsters(retr, retr.chunks, monster_chances, level, assets)
+        TowerMapGenerator.place_stairs(retr, retr.chunks, assets)
         retr.set_tile_info(retr.tiles)
 
-        px = chunks[0].x + chunks[0].width // 2
-        py = chunks[0].y + chunks[0].height // 2
+        px = retr.chunks[0].x + retr.chunks[0].width // 2
+        py = retr.chunks[0].y + retr.chunks[0].height // 2
         retr.player_pos = Pos(px, py)
+        retr.orig_player_pos = Pos(px, py)
 
         # print_map(retr)
 

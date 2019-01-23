@@ -44,8 +44,8 @@ class DescendStairsAction(Action):
     def execute(self, game_data):
         if game_data.run_planner.has_next:
             game_data.prev_state.append(game_data.state)
-            game_data.prev_state.append(GameStates.FORMULA_SCREEN)
-            game_data.state = GameStates.STORY_SCREEN
+            game_data.prev_state.append(GameStates.STORY_SCREEN)
+            game_data.state = GameStates.FORMULA_SCREEN
             game_data.map = game_data.run_planner.activate_next_level()
             game_data.map.entities = game_data.map.entities
             game_data.fov_map = initialize_fov(game_data.map)

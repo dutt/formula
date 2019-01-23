@@ -7,7 +7,8 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.game_window import GameWindow
 from graphics.message_log_window import MessageLogWindow
-from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
+#from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
+from graphics.minor_windows import GeneralHelpWindow
 from graphics.right_panel_window import RightPanelWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
@@ -88,9 +89,13 @@ from formula_builder import FormulaBuilder
 
 
 def setup_data_state(constants):
-    state = GameStates.SETUP
+    #state = GameStates.SETUP
     #state = GameStates.FORMULA_SCREEN
     #state = GameStates.PLAY
+    state = GameStates.STORY_SCREEN
+    import config
+    if config.conf.starting_mode == "choose":
+        state = GameStates.FORMULA_SCREEN
 
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)
@@ -111,14 +116,14 @@ def setup_data_state(constants):
     windows.push(gw)
     windows.push(RightPanelWindow(constants, parent=gw))
     windows.push(MessageLogWindow(constants, parent=gw))
-    windows.push(WelcomeWindow(constants, state == GameStates.WELCOME_SCREEN))
+    #windows.push(WelcomeWindow(constants, state == GameStates.WELCOME_SCREEN))
     windows.push(StoryWindow(constants, story_data, state == GameStates.STORY_SCREEN))
     windows.push(StoryHelpWindow(constants))
     windows.push(FormulaWindow(constants, state == GameStates.FORMULA_SCREEN))
     windows.push(FormulaHelpWindow(constants))
     windows.push(GeneralHelpWindow(constants))
     windows.push(LevelUpWindow(constants))
-    windows.push(SetupWindow(constants, visible=True))
+    #windows.push(SetupWindow(constants, visible=True))
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
@@ -143,7 +148,8 @@ def setup_data_state(constants):
             story_data=story_data,
             run_planner=planner,
             formula_builder=formula_builder,
-            menu_data=menu_data
+            menu_data=menu_data,
+            state=state
     )
 
     camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)

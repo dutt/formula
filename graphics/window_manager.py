@@ -2,7 +2,8 @@ from events import Event
 from game_states import GameStates
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.level_up_window import LevelUpWindow
-from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
+#from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
+from graphics.minor_windows import GeneralHelpWindow
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 
@@ -12,7 +13,7 @@ class WindowManager:
         self.windows = []
         self.state_wnd_mapping = {
             GameStates.SETUP: SetupWindow,
-            GameStates.WELCOME_SCREEN: WelcomeWindow,
+            #GameStates.WELCOME_SCREEN: WelcomeWindow,
             GameStates.STORY_SCREEN: StoryWindow,
             GameStates.STORY_HELP_SCREEN: StoryHelpWindow,
             GameStates.FORMULA_SCREEN: FormulaWindow,

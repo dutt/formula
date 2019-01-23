@@ -2,6 +2,7 @@ from components.damage_type import DamageType
 from components.effects import EffectType, EffectBuilder
 from components.formula import Formula
 from components.ingredients import Ingredient
+import config
 
 
 class FormulaBuilder:
@@ -10,11 +11,13 @@ class FormulaBuilder:
         self.currformula = 0
         self.num_slots = num_slots
         self.num_formula = num_formula
-        self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
         self.unlock_state = self.init_lock_state()
+        if config.conf.starting_mode == "choose":
+            self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
+        elif config.conf.starting_mode == "fire":
+            self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
 
     def init_lock_state(self):
-        import config
         if config.conf.unlock_mode == "none":
             return {
                 Ingredient.EMPTY: True,
