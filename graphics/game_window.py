@@ -211,6 +211,8 @@ class GameWindow(Window):
                          text_color=colors.WHITE, bg_color=colors.BACKGROUND)
             display_text(help_surface, "Press Escape to quit", assets.font_message, (20, 430),
                          text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+            display_text(help_surface, "Press Alt-Enter for fullscreen", assets.font_message, (20, 460),
+                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
             pygame.draw.rect(help_surface, colors.BACKGROUND, pygame.rect.Rect(20, 200, 200, 150))
             text = "These are your formulas. You will gain more formulas, slots and ingredients as you level up"
