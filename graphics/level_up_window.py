@@ -29,7 +29,7 @@ class LevelUpWindow(Window):
         y += 2 * linediff
 
         if not self.choices:
-            if config.conf.unlock_mode == "level":
+            if "level_" in config.conf.unlock_mode:
                 all_choices = [self.slots_message,
                                self.formulas_message]
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE):
@@ -44,9 +44,12 @@ class LevelUpWindow(Window):
                     all_choices.append(Ingredient.LIFE.description)
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD):
                     all_choices.append(Ingredient.SHIELD.description)
-                while len(self.choices) < 2:
-                    self.choices = set(random.choices(all_choices, k=2))
-                self.choices = list(self.choices)
+                if config.conf.unlock_mode == "level_2random":
+                    while len(self.choices) < 2:
+                        self.choices = set(random.choices(all_choices, k=2))
+                    self.choices = list(self.choices)
+                else:
+                    self.choices = all_choices
             else:
                 self.choices = [
                     self.slots_message,
