@@ -47,11 +47,20 @@ class GameWindow(Window):
                         game_data.map.tiles[x][y].explored = True
 
                     if asset:
-                        distance = game_data.player.pos - Pos(x, y)
-                        if distance.length() > 5:
-                            darken = (distance.length() - 3) * 10
+                        distance = (game_data.player.pos - Pos(x, y)).length()
+                        #if distance.length() > 5:
+                        #    darken = (distance.length() - 3) * 10
+                        #else:
+                        #    darken = 0
+                        if distance < 3.5:
+                            darken = 20
+                        elif distance < 5.5:
+                            darken = 40
+                        elif distance < 7.5:
+                            darken = 60
                         else:
-                            darken = 0
+                            darken = 80
+
                         darken = min(255, darken)
                         drawable = Drawable(asset)
                         drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
@@ -174,7 +183,7 @@ class GameWindow(Window):
                     if dist <= max_dist:
                         continue
                     drawable = Drawable(asset)
-                    darken = 50
+                    darken = 100
                     drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
                     sx, sy = gfx_data.camera.map_to_screen(x, y)
                     main.blit(drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
