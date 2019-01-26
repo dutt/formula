@@ -11,9 +11,11 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 
 last_press_time = None
 
+
 class FakeKeyPress:
     def __init__(self, code):
         self.key = code
+
 
 def handle_keys(events, state):
     pressed_keys = pygame.key.get_pressed()
@@ -55,7 +57,16 @@ def handle_keys(events, state):
             return handle_formula_screen_keys(e.key, modifiers)
         elif state == GameStates.STORY_SCREEN:
             return handle_story_screen(e.key, modifiers)
+        elif state == GameStates.ASK_QUIT:
+            return handle_ask_quit(e.key, modifiers)
     return {}
+
+
+def handle_ask_quit(key, _):
+    if key == pygame.K_SPACE:
+        return {Event.keep_playing: True}
+    elif key == pygame.K_ESCAPE:
+        return {Event.exit: True}
 
 
 def handle_story_screen(key, modifiers):

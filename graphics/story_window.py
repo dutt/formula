@@ -26,7 +26,7 @@ class StoryWindow(Window):
         self.current_content = None
         self.current_lines = None
         self.offset = 0
-        self.num_lines = 15
+        self.num_lines = 20
         self.offset_jump = 1
 
     def draw(self, game_data, gfx_data):
@@ -44,7 +44,7 @@ class StoryWindow(Window):
             self.current_lines = lines
 
         show_lines = self.current_lines[self.offset:self.offset + self.num_lines]
-        display_menu(gfx_data, show_lines, self.size.tuple())
+        display_menu(gfx_data, show_lines, self.size.tuple(), x=20, starty=20)
 
     def scroll_up(self):
         if self.num_lines > len(self.current_lines):

@@ -28,20 +28,17 @@ class Player(Entity):
                                      render_order=RenderOrder.ACTOR,
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
-        self.last_num_explored = 0
+        self.last_num_explored = None
 
     def handle_tick_cooldowns(self, game_data):
         if config.conf.cooldown_mode == "always":
-            #print("Ticking cooldowns")
             self.caster.tick_cooldowns()
         elif config.conf.cooldown_mode == "unary":
             if game_data.map.num_explored > self.last_num_explored:
-                #print("Ticking cooldowns")
                 self.caster.tick_cooldowns()
                 self.last_num_explored = game_data.map.num_explored
         elif config.conf.cooldown_mode == "counting":
             if game_data.map.num_explored > self.last_num_explored:
-                #print("Ticking cooldowns")
                 diff = game_data.map.num_explored - self.last_num_explored
                 for _ in range(diff):
                     self.caster.tick_cooldowns()
@@ -53,6 +50,11 @@ class Player(Entity):
             return None
 
         player_action = None
+        if not self.last_num_explored:
+            recompute_fov(game_data.fov_map, game_data.player.pos.x, game_data.player.pos.y,
+                          game_data.constants.fov_radius, game_data.constants.fov_light_walls,
+                          game_data.constants.fov_algorithm)
+            self.last_num_explored = game_data.map.num_explored
         self.handle_tick_cooldowns(game_data)
 
         while not player_action:
@@ -207,4 +209,4 @@ class Player(Entity):
         assert player_action
         if type(player_action) == MoveToPositionAction:
             game_data.fov_recompute = True
-        return player_action.execute(game_data)
+        return player_action.execute(game_data, gfx_data)

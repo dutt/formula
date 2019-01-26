@@ -1,5 +1,6 @@
 import contextlib
 import traceback
+import os
 
 with contextlib.redirect_stdout(None):
     import pygame
@@ -8,7 +9,7 @@ from death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, setup_data_state
 from messages import Message
 from game_states import GameStates
-
+import config
 
 def play_game(game_data, gfx_data):
     while True:
@@ -30,8 +31,12 @@ def play_game(game_data, gfx_data):
                 if cast is not None:
                     if cast:
                         formula = res.get("formula")
-                        game_data.player.caster.add_cooldown(formula.formula_idx,
-                                                             formula.cooldown + 1)
+                        if config.conf.cooldown_mode == "always":
+                            game_data.player.caster.add_cooldown(formula.formula_idx,
+                                                                 formula.cooldown+1)
+                        else:
+                            game_data.player.caster.add_cooldown(formula.formula_idx,
+                                                                 formula.cooldown)
                 do_quit = res.get("quit")
                 if do_quit:
                     return
@@ -86,7 +91,8 @@ def set_seed():
         seed = config.conf.random_seed
     # debugging seeds
     # original seed
-    seed = "2018-12-30 09:38:04.303108"
+    #seed = "2018-12-30 09:38:04.303108"
+    #seed = "2019-01-25 22:19:22.597013"
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
     return seed

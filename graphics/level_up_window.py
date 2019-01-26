@@ -34,6 +34,14 @@ class LevelUpWindow(Window):
                                self.formulas_message]
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE):
                     all_choices.append(Ingredient.FIRE.description)
+                else:
+                    inferno_unlocked = game_data.formula_builder.ingredient_unlocked(Ingredient.INFERNO)
+                    firebolt_unlocked = game_data.formula_builder.ingredient_unlocked(Ingredient.FIREBOLT)
+                    firespray_unlocked = game_data.formula_builder.ingredient_unlocked(Ingredient.FIRESPRAY)
+                    if not inferno_unlocked and not firebolt_unlocked and not firespray_unlocked:
+                        all_choices.extend([Ingredient.INFERNO.description,
+                                            Ingredient.FIREBOLT.description,
+                                            Ingredient.FIRESPRAY.description])
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE):
                     all_choices.append(Ingredient.RANGE.description)
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.AREA):
@@ -83,28 +91,40 @@ class LevelUpWindow(Window):
             game_data.formula_builder.unlock_ingredient(Ingredient.LIFE)
         elif chosen == Ingredient.SHIELD.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.SHIELD)
+        elif chosen == Ingredient.INFERNO.description:
+            game_data.formula_builder.unlock_ingredient(Ingredient.INFERNO)
+        elif chosen == Ingredient.FIREBOLT.description:
+            game_data.formula_builder.unlock_ingredient(Ingredient.FIREBOLT)
+        elif chosen == Ingredient.FIRESPRAY.description:
+            game_data.formula_builder.unlock_ingredient(Ingredient.FIRESPRAY)
         else:
             raise ValueError("Unknown choice in level up: {}".format(chosen))
+
+    def prev_choice(self, game_data):
+        game_data.menu_data.currchoice = max(0, game_data.menu_data.currchoice - 1)
+
+    def next_choice(self, game_data):
+        game_data.menu_data.currchoice = min(len(self.choices) - 1, game_data.menu_data.currchoice + 1)
 
     def handle_key(self, game_data, gfx_data, key_action):
         choice = key_action.get("choice")
         if choice:
-            game_data.menu_data.currchoice += choice
-            if game_data.menu_data.currchoice < 0:
-                game_data.menu_data.currchoice = 0
-            elif game_data.menu_data.currchoice > 1:
-                game_data.menu_data.currchoice = 1
+            if choice < 0:
+                self.prev_choice(game_data)
+            else:
+                self.next_choice(game_data)
 
         level_up = key_action.get(Event.level_up)
         if level_up:
             self.apply_choice(game_data.menu_data.currchoice, game_data)
+            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
             self.choices = []
             self.close(game_data)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(Event.scroll_up)
         if scroll_up:
-            game_data.menu_data.currchoice = max(0, game_data.menu_data.currchoice - 1)
+            self.prev_choice(game_data)
         scroll_down = mouse_action.get(Event.scroll_down)
         if scroll_down:
-            game_data.menu_data.currchoice = min(len(self.choices)-1, game_data.menu_data.currchoice + 1)
+            self.next_choice(game_data)

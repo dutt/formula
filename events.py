@@ -13,3 +13,4 @@ class Event:
     show_help = "show_help"
     interact = "interact"
     show_window = "show_window"
+    keep_playing = "keep_playing"

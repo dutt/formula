@@ -3,7 +3,7 @@ from game_states import GameStates
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.level_up_window import LevelUpWindow
 #from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
-from graphics.minor_windows import GeneralHelpWindow
+from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 
@@ -19,7 +19,8 @@ class WindowManager:
             GameStates.FORMULA_SCREEN: FormulaWindow,
             GameStates.FORMULA_HELP_SCEEN: FormulaHelpWindow,
             GameStates.GENERAL_HELP_SCREEN: GeneralHelpWindow,
-            GameStates.LEVEL_UP: LevelUpWindow
+            GameStates.LEVEL_UP: LevelUpWindow,
+            GameStates.ASK_QUIT: AskQuitWindow
         }
 
     def push(self, window):
