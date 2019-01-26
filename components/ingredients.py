@@ -10,6 +10,11 @@ class Ingredient(Enum):
     LIFE = auto()
     SHIELD = auto()
 
+    # leveled up fire
+    INFERNO = auto()
+    FIRESPRAY = auto()
+    FIREBOLT = auto()
+
     @property
     def shortname(self):
         return self.name[0:1].capitalize()
@@ -28,6 +33,12 @@ class Ingredient(Enum):
             return "Life ingredient, heals the target HP"
         elif self == Ingredient.SHIELD:
             return "Shield ingredient, add shield points, makes the formula defensive"
+        elif self == Ingredient.INFERNO:
+            return "Level up Fire to Inferno, twice the damage"
+        elif self == Ingredient.FIREBOLT:
+            return "Level up Fire to Firebolt, damage and range in one"
+        elif self == Ingredient.FIRESPRAY:
+            return "Level up Fire to Firespray, damage and area in one"
         else:
             return str(self)
 
@@ -36,4 +47,8 @@ class Ingredient(Enum):
         return self in [Ingredient.FIRE,
                         Ingredient.RANGE,
                         Ingredient.AREA,
-                        Ingredient.COLD]
+                        Ingredient.COLD,
+
+                        Ingredient.INFERNO,
+                        Ingredient.FIREBOLT,
+                        Ingredient.FIRESPRAY]

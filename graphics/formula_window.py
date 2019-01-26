@@ -25,14 +25,25 @@ class FormulaWindow(Window):
         def draw_ingredient_list():
             from components.ingredients import Ingredient
             ingredient_lines = [
-                "Q: Empty",
+                "Q: Empty"
+            ]
+            if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE):
+                if game_data.formula_builder.ingredient_unlocked(Ingredient.INFERNO):
+                    ingredient_lines.append("W: Inferno")
+                elif game_data.formula_builder.ingredient_unlocked(Ingredient.FIREBOLT):
+                    ingredient_lines.append("W: Firebolt")
+                elif game_data.formula_builder.ingredient_unlocked(Ingredient.FIRESPRAY):
+                    ingredient_lines.append("W: Firespray")
+                else:
+                    ingredient_lines.append("W: Fire")
+            ingredient_lines.extend([
                 "W: Fire" if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE) else "",
                 "E: Range" if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
                 "R: Area" if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
                 "A: Cold" if game_data.formula_builder.ingredient_unlocked(Ingredient.COLD) else "",
                 "S: Life" if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
                 "D: Shield" if game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD) else ""
-            ]
+            ])
             display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=14)
 
         formulas = game_data.formula_builder.evaluate()

@@ -18,8 +18,13 @@ class FormulaBuilder:
             self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
 
     def init_lock_state(self):
+        upgrades_locked = {
+            Ingredient.INFERNO: False,
+            Ingredient.FIREBOLT: False,
+            Ingredient.FIRESPRAY: False
+        }
         if config.conf.unlock_mode == "none":
-            return {
+            basics = {
                 Ingredient.EMPTY: True,
                 Ingredient.FIRE: True,
                 Ingredient.RANGE: True,
@@ -29,7 +34,7 @@ class FormulaBuilder:
                 Ingredient.SHIELD: True
             }
         else:
-            return {
+            basics = {
                 Ingredient.EMPTY: True,
                 Ingredient.FIRE: True,
                 Ingredient.RANGE: True,
@@ -38,6 +43,7 @@ class FormulaBuilder:
                 Ingredient.LIFE: False,
                 Ingredient.SHIELD: False,
             }
+        return {**upgrades_locked, **basics}
 
     def ingredient_unlocked(self, ingredient):
         return self.unlock_state[ingredient]
@@ -109,6 +115,20 @@ class FormulaBuilder:
                     healing += heal_per_step
                 elif slot == Ingredient.SHIELD:
                     shield += shield_per_step
+
+                # upgrades
+                elif slot == Ingredient.INFERNO:
+                    fire_dmg += 2 * fire_dmg_per_step
+                    attack_ingredient = True
+                elif slot == Ingredient.FIREBOLT:
+                    fire_dmg_per_step += fire_dmg_per_step
+                    distance += distance_per_step
+                    attack_ingredient = True
+                elif slot == Ingredient.FIRESPRAY:
+                    fire_dmg += fire_dmg_per_step
+                    area += area_per_step
+                    attack_ingredient = True
+
             if attack_modifier and not attack_ingredient:
                 suboptimal = True
             elif healing > 0 and attack_ingredient:
