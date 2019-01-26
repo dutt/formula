@@ -186,17 +186,23 @@ class GameWindow(Window):
             px, py = gfx_data.camera.map_to_screen(px, py)
             px, py = px * CELL_WIDTH + 40, py * CELL_HEIGHT
 
-            welcome_px, welcome_py = px, py - 80
-            display_text(help_surface, "Welcome to formula!", assets.font_message, (welcome_px, welcome_py),
-                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+            if game_data.state == GameStates.PLAY:
+                welcome_px, welcome_py = px, py - 80
+                display_text(help_surface, "Welcome to formula!", assets.font_message, (welcome_px, welcome_py),
+                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
-            move_px, move_py = px, py - 40
-            display_text(help_surface, "Use W,A,S,D to move", assets.font_message, (move_px, move_py),
-                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                move_px, move_py = px, py - 40
+                display_text(help_surface, "Use W,A,S,D to move", assets.font_message, (move_px, move_py),
+                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
-            cast_px, cast_py = px, py + 40
-            display_text(help_surface, "Use 1,2,3,... to cast vials", assets.font_message, (cast_px, cast_py),
-                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                cast_px, cast_py = px, py + 40
+                display_text(help_surface, "Use 1,2,3,... to select vial", assets.font_message, (cast_px, cast_py),
+                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
+            elif game_data.state == GameStates.TARGETING:
+                target_px, target_py = px, py + 40
+                display_text(help_surface, "Left click target to throw vial", assets.font_message, (target_px, target_py),
+                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
             display_text(help_surface, "This is your health bar", assets.font_message, (20, 20),
                          text_color=colors.WHITE, bg_color=colors.BACKGROUND)
