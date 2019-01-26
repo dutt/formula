@@ -22,16 +22,16 @@ def get_constants():
     window_title = "Formula"
 
     map_size = Size(40, 30)
-    camera_size = Size(30, 25)
+    camera_size = Size(25, 20)
     game_window_size = Size((camera_size.width+1) * CELL_WIDTH, (camera_size.height+1) * CELL_HEIGHT)
-    window_size = Size(150 + game_window_size.width, 1020)
+    window_size = Size(150 + game_window_size.width, 900)
 
     right_panel_size = Size(150, window_size.height)
     message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height)
     message_log_text_size = Size(message_log_size.width - 10 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT)
 
     helper_window_size = Size(800, 600)
-    helper_window_pos = Pos(200, 200)
+    helper_window_pos = Pos(100, 100)
 
     room_max_size = 15
     room_min_size = 6

@@ -16,7 +16,7 @@ from input_handlers import Event, handle_keys, handle_mouse
 from messages import Message
 from util import Pos
 from graphics.level_up_window import LevelUpWindow
-
+import config
 
 class Player(Entity):
     def __init__(self):
@@ -31,24 +31,21 @@ class Player(Entity):
         self.last_num_explored = 0
 
     def handle_tick_cooldowns(self, game_data):
-        import config
         if config.conf.cooldown_mode == "always":
             #print("Ticking cooldowns")
             self.caster.tick_cooldowns()
         elif config.conf.cooldown_mode == "unary":
             if game_data.map.num_explored > self.last_num_explored:
-                print("Ticking cooldowns")
+                #print("Ticking cooldowns")
                 self.caster.tick_cooldowns()
                 self.last_num_explored = game_data.map.num_explored
         elif config.conf.cooldown_mode == "counting":
             if game_data.map.num_explored > self.last_num_explored:
-                print("Ticking cooldowns")
+                #print("Ticking cooldowns")
                 diff = game_data.map.num_explored - self.last_num_explored
                 for _ in range(diff):
                     self.caster.tick_cooldowns()
                 self.last_num_explored = game_data.map.num_explored
-        else:
-            raise ValueError("Unknown countdown mode '{}', allowed values are: always, unary and counting".format(mode))
 
     def take_turn(self, game_data, gfx_data):
 
@@ -107,7 +104,8 @@ class Player(Entity):
                         # TODO clear cooldowns?
                         break
                 else:
-                    player_action = WaitAction(self)
+                    if config.conf.cooldown_mode != "always":
+                        player_action = WaitAction(self)
 
             if show_help:
                 game_data.prev_state.append(game_data.state)

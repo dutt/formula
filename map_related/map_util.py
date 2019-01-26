@@ -67,8 +67,8 @@ def get_monster(x, y, game_map, room, monster_choice, assets, entities):
                 if e.pos == dpos and dpos.x in range(room.x1 + 2, room.x2 - 2) and dpos.y in range(room.y1 + 2,
                                                                                                    room.y2 - 2):
                     occupied = True
-                if game_map.is_blocked(dpos.x, dpos.y):
-                    occupied = True
+            if game_map.is_blocked(dpos.x, dpos.y):
+                occupied = True
             if not occupied:
                 clean_diffs.append(d)
         assert len(clean_diffs) >= packsize
@@ -80,6 +80,7 @@ def get_monster(x, y, game_map, room, monster_choice, assets, entities):
             fighter_component = Fighter(hp=hp, defense=defense, power=power, xp=xp // packsize)
             ai = MeleeMonsterAI()
             drawable_component = Drawable(asset)
+            #randname = "{}-{}".format(name, random.randint(0, 1000))
             monster = Monster(wx, wy, name, speed=150,
                               fighter=fighter_component, ai=ai, drawable=drawable_component)
             retr.append(monster)

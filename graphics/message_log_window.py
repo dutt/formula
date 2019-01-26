@@ -23,7 +23,7 @@ class MessageLogWindow(Window):
         start = max(0, min(len(messages) - self.num_messages, len(messages) - self.num_messages + self.offset))
         end = min(len(messages), start + self.num_messages)
         for idx, msg in enumerate(messages[start:end]):
-            display_text(surface, msg.text, Assets.get().font_message, (180, y + idx * 20), msg.color)
+            display_text(surface, msg.text, Assets.get().font_message, (50, y + idx * 20), msg.color)
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_click(self, game_data, gfx_data, mouse_action):
