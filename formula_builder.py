@@ -15,7 +15,10 @@ class FormulaBuilder:
         if config.conf.starting_mode == "choose":
             self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
         elif config.conf.starting_mode == "fire":
-            self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
+            #self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
+            self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
+                          [Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
+                          [Ingredient.SHIELD, Ingredient.SHIELD, Ingredient.SHIELD]]
 
     def init_lock_state(self):
         upgrades_locked = {
@@ -168,7 +171,7 @@ class FormulaBuilder:
 
 builder = FormulaBuilder(num_slots=3, num_formula=3)
 # builder.slots = [[Ingredient.EMPTY for i in range(3)]]
-builder.slots = [[Ingredient.FIRE for i in range(3)] for i in range(3)]
-builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE] for i in range(3)]
+#builder.slots = [[Ingredient.FIRE for i in range(3)] for i in range(3)]
+#builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE] for i in range(3)]
 Formula.EMPTY = builder.evaluate()[0]
 Formula.DEFAULT = builder.evaluate()

@@ -2,6 +2,7 @@ from attrdict import AttrDict as attrdict
 
 from fov import initialize_fov
 from game_states import GameStates
+from messages import Message
 
 
 class Action:
@@ -17,6 +18,43 @@ class Action:
             return attrdict({"result": result, "action": self})
         else:
             return None
+
+
+class LootAction(Action):
+    def __init__(self, actor):
+        super().__init__(actor=actor, cost=100)
+
+    def execute(self, game_data, gfx_data):
+        import random
+        val = random.randint(0, 100)
+        if val <= 40:
+            game_data.player.fighter.heal(3)
+            result = [{"message": Message("You found a healing potion and has been healed 3 points")}]
+            return self.package(result=result)
+        elif val <= 70:
+            shield = game_data.player.fighter.shield
+            shield_strength = 3
+            if shield:
+                shield.level += shield_strength
+                if shield.level > shield.max_level:
+                    shield.max_level = shield.level
+                text = "You found a jewel, when you touch it your shield strengthens"
+            else:
+                from components.effects import EffectBuilder, EffectType
+                shield_effect = EffectBuilder.create(EffectType.DEFENSE, level=shield_strength, strikebacks=[],
+                                                     distance=0)
+                shield_effect.apply(game_data.player)
+                text = "You found a jewel, when you touch it a shield appears around you"
+            result = [{"message": Message(text)}]
+            return self.package(result=result)
+        else:
+            cooldown_reduction = 5
+            for _ in range(0, cooldown_reduction):
+                game_data.player.caster.tick_cooldowns()
+            text = "You found a crystal, when you touch it you shimmer, cooldowns reduced by {}".format(
+                cooldown_reduction)
+            result = [{"message": Message(text)}]
+            return self.package(result=result)
 
 
 class ExitAction(Action):

@@ -28,7 +28,7 @@ def get_constants():
 
     right_panel_size = Size(150, window_size.height)
     message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height)
-    message_log_text_size = Size(message_log_size.width - 10 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT)
+    message_log_text_size = Size(message_log_size.width - 2 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT)
 
     helper_window_size = Size(800, 600)
     helper_window_pos = Pos(100, 100)

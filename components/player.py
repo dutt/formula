@@ -2,7 +2,7 @@ import pygame
 import tcod
 
 from components.action import MoveToPositionAction, AttackAction, ExitAction, ThrowVialAction, WaitAction, \
-    DescendStairsAction
+    DescendStairsAction, LootAction
 from components.caster import Caster
 from components.drawable import Drawable
 from components.fighter import Fighter
@@ -100,11 +100,17 @@ class Player(Entity):
 
             if interact:
                 for e in game_data.map.entities:
-                    if e.stairs and e.pos.x == self.pos.x and e.pos.y == self.pos.y:
-                        player_action = DescendStairsAction(self, gfx_data)
-                        game_data.story.next_story()
-                        # TODO clear cooldowns?
-                        break
+                    if e.pos.x == self.pos.x and e.pos.y == self.pos.y:
+                        if e.stairs:
+                            player_action = DescendStairsAction(self)
+                            self.last_num_explored = None
+                            game_data.story.next_story()
+                            # TODO clear cooldowns?
+                            break
+                        elif e.name.startswith("Remains of"): # monster
+                            player_action = LootAction(self)
+                            e.name = "Looted r" + e.name[1:]
+                            break
                 else:
                     if config.conf.cooldown_mode != "always":
                         player_action = WaitAction(self)
