@@ -52,11 +52,11 @@ class GameWindow(Window):
                         #    darken = (distance.length() - 3) * 10
                         #else:
                         #    darken = 0
-                        if distance < 3.5:
+                        if distance < 3.5: # 1 range
                             darken = 20
-                        elif distance < 5.5:
+                        elif distance < 5.5: # 2 range
                             darken = 40
-                        elif distance < 7.5:
+                        elif distance < 7.5: # 3 range
                             darken = 60
                         else:
                             darken = 80

@@ -15,10 +15,10 @@ class FormulaBuilder:
         if config.conf.starting_mode == "choose":
             self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
         elif config.conf.starting_mode == "fire":
-            self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
-            #self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
-            #              [Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
-            #              [Ingredient.SHIELD, Ingredient.SHIELD, Ingredient.SHIELD]]
+            #self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
+            self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
+                          [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
+                          [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE, Ingredient.RANGE]]
 
     def init_lock_state(self):
         upgrades_locked = {
@@ -55,7 +55,17 @@ class FormulaBuilder:
         self.unlock_state[ingredient] = True
 
     def set_slot(self, slot, ingredient):
-        self.slots[self.currformula][slot] = ingredient
+        if ingredient == Ingredient.FIRE:
+            if self.ingredient_unlocked(Ingredient.INFERNO):
+                self.slots[self.currformula][slot] = Ingredient.INFERNO
+            elif self.ingredient_unlocked(Ingredient.FIREBOLT):
+                self.slots[self.currformula][slot] = Ingredient.FIREBOLT
+            elif self.ingredient_unlocked(Ingredient.FIRESPRAY):
+                self.slots[self.currformula][slot] = Ingredient.FIRESPRAY
+            else:
+                self.slots[self.currformula][slot] = Ingredient.FIRE
+        else:
+            self.slots[self.currformula][slot] = ingredient
 
     def add_slot(self):
         self.num_slots += 1
@@ -77,7 +87,7 @@ class FormulaBuilder:
         retr = []
         fire_dmg_per_step = 10
         cold_dmg_per_step = 5
-        distance_per_step = 3
+        distance_per_step = 2
         area_per_step = 0.5
         cooldown_per_slot = 3
         slow_per_step = 2

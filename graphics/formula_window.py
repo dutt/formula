@@ -6,7 +6,7 @@ from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window, TextWindow
 from graphics.story_window import StoryWindow
 from input_handlers import Event
-
+from game_states import GameStates
 from util import resource_path
 
 
@@ -37,7 +37,6 @@ class FormulaWindow(Window):
                 else:
                     ingredient_lines.append("W: Fire")
             ingredient_lines.extend([
-                "W: Fire" if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE) else "",
                 "E: Range" if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
                 "R: Area" if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
                 "A: Cold" if game_data.formula_builder.ingredient_unlocked(Ingredient.COLD) else "",
@@ -114,10 +113,14 @@ class FormulaWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(Event.exit)
         if do_quit:
-            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
-            gfx_data.camera.initialize_map()
-            gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
-            return self.close(game_data, StoryWindow)
+            if GameStates.STORY_SCREEN in game_data.prev_state: # between levels
+                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+                gfx_data.camera.initialize_map()
+                gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
+                return self.close(game_data, StoryWindow)
+            else: #after level up
+                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+                return self.close(game_data)
 
         slot = key_action.get("slot")
         if slot is not None:

@@ -51,6 +51,7 @@ def play_game(game_data, gfx_data):
                                     "You grow stronger, reached level {}".format(game_data.player.level.current_level),
                                     (0, 255, 0)))
                         game_data.prev_state.append(game_data.state)
+                        game_data.prev_state.append(GameStates.FORMULA_SCREEN)
                         game_data.state = GameStates.LEVEL_UP
             except AttributeError:
                 print("Failed to handle res={}".format(res))
