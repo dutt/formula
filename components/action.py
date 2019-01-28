@@ -58,8 +58,9 @@ class LootAction(Action):
 
 
 class ExitAction(Action):
-    def __init__(self):
+    def __init__(self, keep_playing):
         super(ExitAction, self).__init__(actor=None, cost=1000)
+        self.keep_playing = keep_playing
 
     def execute(self, game_data, gfx_data):
         if game_data.state == GameStates.PLAY:
@@ -67,7 +68,7 @@ class ExitAction(Action):
             game_data.state = GameStates.ASK_QUIT
             gfx_data.windows.activate_wnd_for_state(game_data.state)
         else:
-            return self.package(result=[{"quit": True}])
+            return self.package(result=[{"quit": True, "keep_playing": self.keep_playing }])
 
 
 class WaitAction(Action):

@@ -106,9 +106,15 @@ def setup_data_state(constants):
     pygame.mixer.quit()
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
 
-    assets = Assets()
+    assets = Assets.get()
+    if not assets:
+        assets = Assets()
+
     fps_per_second = 30
-    visuals = VisualEffectSystem(fps_per_second)
+    visuals = VisualEffectSystem.get()
+    if not visuals:
+        visuals = VisualEffectSystem(fps_per_second)
+
     clock = pygame.time.Clock()
 
     windows = WindowManager()

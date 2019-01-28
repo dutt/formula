@@ -174,7 +174,8 @@ class Player(Entity):
                 if game_data.state == GameStates.TARGETING:
                     turn_results.append({"targeting_cancelled": True})
                 else:
-                    player_action = ExitAction()
+                    keep_playing = key_action.get(Event.keep_playing)
+                    player_action = ExitAction(keep_playing)
 
             if fullscreen:
                 display = (game_data.constants.window_size.width, game_data.constants.window_size.height)

@@ -4,7 +4,7 @@ from graphics.window import TextWindow, Window
 from util import resource_path
 from graphics.display_helpers import display_text
 from events import Event
-
+from game_states import GameStates
 
 class GeneralHelpWindow(TextWindow):
     PATH = resource_path("data/help/general.txt")
@@ -26,7 +26,10 @@ class AskQuitWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         keep_playing = key_action.get(Event.keep_playing)
         if keep_playing:
-            self.close(game_data)
+            if game_data.state == GameStates.ASK_QUIT:
+                self.close(game_data)
+            elif game_data.state == GameStates.PLAYER_DEAD:
+                return None # propagate exit, restart
 
         do_exit = key_action.get(Event.exit)
         if do_exit:

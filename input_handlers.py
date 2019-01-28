@@ -41,8 +41,6 @@ def handle_keys(events, state):
     for e in events:
         if state == GameStates.PLAY:
             return handle_player_turn_keys(e.key, modifiers)
-        elif state == GameStates.PLAYER_DEAD:
-            return handle_player_dead_keys(e.key, modifiers)
         elif state == GameStates.LEVEL_UP:
             return handle_level_up_keys(e.key, modifiers)
         elif state in [GameStates.CHARACTER_SCREEN,
@@ -59,14 +57,25 @@ def handle_keys(events, state):
             return handle_story_screen(e.key, modifiers)
         elif state == GameStates.ASK_QUIT:
             return handle_ask_quit(e.key, modifiers)
+        elif state == GameStates.PLAYER_DEAD:
+            return handle_player_dead(e.key, modifiers)
     return {}
 
 
-def handle_ask_quit(key, _):
+def handle_ask_quit(key, modifiers):
     if key == pygame.K_SPACE:
         return {Event.keep_playing: True}
     elif key == pygame.K_ESCAPE:
         return {Event.exit: True}
+    return handle_general_keys(key, modifiers)
+
+
+def handle_player_dead(key, modifiers):
+    if key == pygame.K_SPACE:
+        return {Event.keep_playing: True, Event.exit: True}
+    elif key == pygame.K_ESCAPE:
+        return {Event.exit: True}
+    return handle_general_keys(key, modifiers)
 
 
 def handle_story_screen(key, modifiers):
@@ -160,10 +169,6 @@ def handle_mouse(events, constants, camera):
         elif e.button == 5:
             return {Event.scroll_down: data}
     return {}
-
-
-def handle_player_dead_keys(key, modifiers):
-    return handle_general_keys(key, modifiers)
 
 
 def handle_player_turn_keys(key, modifiers):

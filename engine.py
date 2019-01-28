@@ -24,6 +24,7 @@ def play_game(game_data, gfx_data):
                 if dead_entity:
                     if dead_entity == game_data.player:
                         msg, game_data = kill_player(game_data, gfx_data.assets)
+                        gfx_data.windows.activate_wnd_for_state(game_data.state)
                     else:
                         game_data.stats.monster_killed(dead_entity)
                         msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
@@ -42,7 +43,8 @@ def play_game(game_data, gfx_data):
                                                                  formula.cooldown)
                 do_quit = res.get("quit")
                 if do_quit:
-                    return
+                    keep_playing = res.get("keep_playing")
+                    return keep_playing == True # handle False and None
 
                 xp = res.get("xp")
                 if xp:
@@ -102,21 +104,28 @@ def set_seed():
     return seed
 
 
+def do_setup(constants):
+    game_data, gfx_data, state = setup_data_state(constants)
+
+    game_data.state = state
+    game_data.prev_state = setup_prevstate(state)
+
+    game_data.run_planner.generate(game_data)
+
+    gfx_data.camera.initialize_map()
+    gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
+
+    return game_data, gfx_data
+
+
 def main():
     seed = set_seed()
     try:
         constants = get_constants()
-        game_data, gfx_data, state = setup_data_state(constants)
+        game_data, gfx_data = do_setup(constants)
 
-        game_data.state = state
-        game_data.prev_state = setup_prevstate(state)
-
-        game_data.run_planner.generate(game_data)
-
-        gfx_data.camera.initialize_map()
-        gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
-
-        play_game(game_data, gfx_data)
+        while play_game(game_data, gfx_data):
+            game_data, gfx_data = do_setup(constants)
 
         pygame.quit()
 
