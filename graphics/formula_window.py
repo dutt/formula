@@ -61,7 +61,7 @@ class FormulaWindow(Window):
         display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
         y += linediff
         for idx, form in enumerate(game_data.formula_builder.current_slots):
-            text = "Slot {}: {}".format(idx, form.name)
+            text = "Slot {}: {}".format(idx+1, form.name)
             if idx == game_data.formula_builder.currslot:
                 text += "<-- "
             display_text(surface, text, gfx_data.assets.font_message, (50, y))

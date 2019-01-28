@@ -291,6 +291,14 @@ class GameWindow(Window):
                              (target_px, target_py),
                              text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
+            for e in game_data.map.entities:
+                if e.stairs and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                    sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
+                    sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
+                    display_text(help_surface, "Stairs, press E to ascend",
+                                 assets.font_message, (sx, sy),
+                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+
             main.blit(help_surface, (0, 0))
 
         draw_terrain()
