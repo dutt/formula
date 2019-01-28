@@ -228,18 +228,38 @@ class TowerMapGenerator:
         chance_any = monster_chances["any"]
         del monster_chances["any"]
         max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], level + 1)
-        for c in chunks:
+        for idx, c in enumerate(chunks):
+
             rval = random.randint(0, 100)
             if rval > chance_any:
                 continue
-            num_monsters = random.randint(1, max_monsters_per_room)
+            if idx == 0:
+                num_monsters = 1 # don't overwhelm in the first room
+            else:
+                num_monsters = random.randint(1, max_monsters_per_room)
+            room_center = Pos(c.x + c.width // 2, c.y + c.height // 2)
+            skip_room = False
+
             for i in range(num_monsters):
                 x = random.randint(c.x + 1, c.x + c.width - 1)
                 y = random.randint(c.y + 1, c.y + c.height - 1)
+                if idx == 0:
+                    # first room, don't spawn right next to player
+                    attempts = 0
+                    while Pos(x, y).distance_to(room_center) < 4:
+                        x = random.randint(c.x + 1, c.x + c.width - 1)
+                        y = random.randint(c.y + 1, c.y + c.height - 1)
+                        attempts += 1
+                        if attempts > 100:
+                            skip_room = True
+                if skip_room:
+                    continue
+
                 already_there = [entity for entity in entities if entity.pos.x == x and entity.pos.y == y]
                 if not any(already_there) and not m.tiles[x][y].blocked:
                     monster_choice = random_choice_from_dict(monster_chances)
                     entities.extend(get_monster(x, y, m, c, monster_choice, assets, entities))
+
         m.entities = entities
 
     @staticmethod

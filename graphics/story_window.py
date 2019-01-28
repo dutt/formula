@@ -1,9 +1,10 @@
 import textwrap
 
-from graphics.display_helpers import display_menu
+from graphics.display_helpers import display_menu, display_text
 from graphics.game_window import GameWindow
 from graphics.window import Window, TextWindow
 from input_handlers import Event
+from graphics.assets import Assets
 
 
 class StoryHelpWindow(TextWindow):
@@ -45,6 +46,8 @@ class StoryWindow(Window):
 
         show_lines = self.current_lines[self.offset:self.offset + self.num_lines]
         display_menu(gfx_data, show_lines, self.size.tuple(), x=20, starty=20)
+
+        display_text(gfx_data.main, "Press Space to continue", Assets.get().font_message, (350, 600))
 
     def scroll_up(self):
         if self.num_lines > len(self.current_lines):

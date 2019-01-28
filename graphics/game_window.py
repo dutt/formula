@@ -106,16 +106,19 @@ class GameWindow(Window):
             tx, ty = gfx_data.camera.map_to_screen(x, y)
             return tx * CELL_WIDTH, ty * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
 
-        def draw_rect_boundary(surface, colour, rect):
+        def draw_rect_boundary(surface, colour, rect, draw_cross):
             #pygame.draw.rect(surface, colour, rect)
             x1 = rect[0]
             x2 = rect[0] + rect[2]
             y1 = rect[1]
             y2 = rect[1] + rect[3]
-            pygame.draw.line(surface, colour, (x1, y1), (x1, y2), 5)
-            pygame.draw.line(surface, colour, (x1, y1), (x2, y1), 5)
-            pygame.draw.line(surface, colour, (x2, y1), (x2, y2), 5)
-            pygame.draw.line(surface, colour, (x1, y2), (x2, y2), 5)
+            pygame.draw.line(surface, colour, (x1, y1), (x1, y2), 4)
+            pygame.draw.line(surface, colour, (x1, y1), (x2, y1), 4)
+            pygame.draw.line(surface, colour, (x2, y1), (x2, y2), 4)
+            pygame.draw.line(surface, colour, (x1, y2), (x2, y2), 4)
+            if draw_cross:
+                pygame.draw.line(surface, colour, (x1, y1), (x2, y2), 3)
+                pygame.draw.line(surface, colour, (x2, y1), (x1, y2), 3)
 
         def draw_targeting():
             max_dist = game_data.targeting_formula.distance * CELL_WIDTH
@@ -145,10 +148,10 @@ class GameWindow(Window):
                 red_part = (orig[0] + normalized.x * max_dist, orig[1] + normalized.y * max_dist)
                 pygame.draw.line(targeting_surface, (150, 0, 0), orig, red_part)
                 pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
-                draw_rect_boundary(targeting_surface, (150, 100, 100), rect)
+                draw_rect_boundary(targeting_surface, (150, 100, 100), rect, draw_cross=True)
             elif game_data.targeting_formula.area == 1:  # no aoe
                 pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
-                draw_rect_boundary(targeting_surface, (255, 0, 0), rect)
+                draw_rect_boundary(targeting_surface, (255, 0, 0), rect, draw_cross=False)
             else:
                 pygame.draw.line(main, (255, 0, 0), orig, rect_center)
 
@@ -159,7 +162,7 @@ class GameWindow(Window):
                         dist = (math.sqrt((x - tile[0]) ** 2 + (y - tile[1]) ** 2))
                         if dist < game_data.targeting_formula.area:
                             tile_rect = get_tile_rect(x, y)
-                            draw_rect_boundary(targeting_surface, (255, 0, 0), tile_rect)
+                            draw_rect_boundary(targeting_surface, (255, 0, 0), tile_rect, draw_cross=False)
 
             targeting_surface.set_alpha(150)
             main.blit(targeting_surface, (0, 0))
