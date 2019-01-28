@@ -31,12 +31,16 @@ def display_menu(gfx_data, lines, size, surface=None, font=None, x=None, starty=
         surface = pygame.Surface(size)
     if not font:
         font = gfx_data.assets.font_message
+
     if x and starty:
         display_lines(surface, font, lines, x=x, starty=starty)
     elif x:
         display_lines(surface, font, lines, x=x)
     elif starty:
         display_lines(surface, font, lines, starty=starty)
+    else:
+        display_lines(surface, font, lines)
+
     if not has_surface:
         gfx_data.main.blit(surface, (150, 150))
 

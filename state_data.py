@@ -1,3 +1,6 @@
+from statistics import Statistics
+
+
 class StateData():
     def __init__(self, player, log, constants, timesystem,
                  fov_map, fov_recompute, story_data, run_planner, formula_builder, menu_data,
@@ -15,4 +18,4 @@ class StateData():
         self.menu_data = menu_data
         self.state = state
         self.prev_state = []
-
+        self.stats = Statistics()

@@ -110,6 +110,7 @@ class Player(Entity):
                         elif e.name.startswith("Remains of"): # monster
                             player_action = LootAction(self)
                             e.name = "Looted r" + e.name[1:]
+                            game_data.stats.loot_monster(e)
                             break
                 else:
                     if config.conf.cooldown_mode != "always":
@@ -137,6 +138,7 @@ class Player(Entity):
                     else:
                         player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
                         gfx_data.camera.center_on(destx, desty)
+                        game_data.stats.move_player(Pos(destx, desty))
 
             if game_data.state == GameStates.LEVEL_UP:
                 gfx_data.windows.get(LevelUpWindow).visible = True

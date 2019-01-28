@@ -11,6 +11,7 @@ from messages import Message
 from game_states import GameStates
 import config
 
+
 def play_game(game_data, gfx_data):
     while True:
         for res in game_data.timesystem.tick(game_data, gfx_data):
@@ -24,6 +25,7 @@ def play_game(game_data, gfx_data):
                     if dead_entity == game_data.player:
                         msg, game_data = kill_player(game_data, gfx_data.assets)
                     else:
+                        game_data.stats.monster_killed(dead_entity)
                         msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
                     game_data.log.add_message(msg)
 
@@ -31,6 +33,7 @@ def play_game(game_data, gfx_data):
                 if cast is not None:
                     if cast:
                         formula = res.get("formula")
+                        game_data.stats.throw_vial(formula)
                         if config.conf.cooldown_mode == "always":
                             game_data.player.caster.add_cooldown(formula.formula_idx,
                                                                  formula.cooldown+1)
@@ -117,10 +120,15 @@ def main():
 
         pygame.quit()
 
-        with open("messages.log", 'w') as writer:
-            writer.write("Seed {}".format(seed))
+        mode = 'w'
+        logname = "formula.log"
+        if os.path.exists(logname):
+            mode = 'a'
+        with open(logname, mode) as writer:
+            writer.write("Seed {}\n".format(seed))
             for msg in game_data.log.messages:
-                writer.write(msg.text)
+                writer.write(msg.text + "\n")
+            writer.write("\n")
     except:
         tb = traceback.format_exc()
         print(tb)

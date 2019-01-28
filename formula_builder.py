@@ -18,7 +18,7 @@ class FormulaBuilder:
             #self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
             self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
                           [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
-                          [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE, Ingredient.RANGE]]
+                          [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE]]
 
     def init_lock_state(self):
         upgrades_locked = {
