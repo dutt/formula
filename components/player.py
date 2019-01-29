@@ -146,13 +146,17 @@ class Player(Entity):
             if game_data.state == GameStates.TARGETING:
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
-                    # distance = (self.pos - Vec(targetx, targety)).length()
-                    player_action = ThrowVialAction(self, game_data.targeting_formula,
-                                                    targetpos=(Pos(targetx, targety)))
-                    # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
-                    gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=0.2,
-                                                   asset=gfx_data.assets.throwing_bottle)
-                    game_data.state = game_data.prev_state.pop()
+                    from util import Vec
+                    distance = (self.pos - Vec(targetx, targety)).length()
+                    if distance > game_data.targeting_formula.distance:
+                        turn_results.append({"target_out_of_range": True, "targeting_formula": game_data.targeting_formula})
+                    else:
+                        player_action = ThrowVialAction(self, game_data.targeting_formula,
+                                                        targetpos=(Pos(targetx, targety)))
+                        # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
+                        gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=0.2,
+                                                       asset=gfx_data.assets.throwing_bottle)
+                        game_data.state = game_data.prev_state.pop()
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
 
@@ -209,6 +213,10 @@ class Player(Entity):
                 if targeting_cancelled:
                     game_data.state = game_data.prev_state.pop()
                     game_data.log.add_message(Message("Targeting cancelled"))
+
+                target_out_of_range = res.get("target_out_of_range")
+                if target_out_of_range:
+                    game_data.log.add_message(Message("Target out of range"))
 
             gfx_data.visuals.update(game_data, gfx_data)
             gfx_data.clock.tick(gfx_data.fps_per_second)
