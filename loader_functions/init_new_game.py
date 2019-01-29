@@ -7,14 +7,12 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.game_window import GameWindow
 from graphics.message_log_window import MessageLogWindow
-#from graphics.minor_windows import WelcomeWindow, GeneralHelpWindow
 from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow
 from graphics.right_panel_window import RightPanelWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
 from graphics.visual_effect import VisualEffectSystem
 from graphics.window_manager import WindowManager
-from graphics.setup_window import SetupWindow
 from util import Size, Pos
 
 
@@ -104,6 +102,7 @@ def setup_data_state(constants):
     pygame.init()
     pygame.display.set_caption("Formulas")
     pygame.mixer.quit()
+    pygame.key.set_repeat(200)
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
 
     assets = Assets.get()

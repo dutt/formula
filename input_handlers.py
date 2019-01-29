@@ -21,23 +21,6 @@ def handle_keys(events, state):
     pressed_keys = pygame.key.get_pressed()
     modifiers = [key for key in [pygame.K_LALT, pygame.K_RALT] if pressed_keys[key]]
 
-    # implement manual key repeat since we don't get repeated KEYPRESS events
-    global last_press_time
-    now = datetime.datetime.now()
-    if events:
-        last_press_time = now
-    elif not last_press_time or now > (last_press_time + datetime.timedelta(milliseconds=200)):
-        last_press_time = now
-        events = []
-        if pressed_keys[pygame.K_a]:
-            events.append(FakeKeyPress(pygame.K_a))
-        if pressed_keys[pygame.K_s]:
-            events.append(FakeKeyPress(pygame.K_s))
-        if pressed_keys[pygame.K_d]:
-            events.append(FakeKeyPress(pygame.K_d))
-        if pressed_keys[pygame.K_w]:
-            events.append(FakeKeyPress(pygame.K_w))
-
     for e in events:
         if state == GameStates.PLAY:
             return handle_player_turn_keys(e.key, modifiers)
