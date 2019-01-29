@@ -86,7 +86,7 @@ class GameWindow(Window):
 
                     # health bar for monsters
                     bar_height = 6
-                    if e.fighter and e.ai:
+                    if e.fighter and e.ai and e.fighter.hp != e.fighter.max_hp:
                         bar_pos = Pos(sx * CELL_WIDTH, (CELL_HEIGHT - bar_height) + sy * CELL_HEIGHT)
                         display_bar(main, assets=None, pos=bar_pos, width=CELL_WIDTH,
                                     current=e.fighter.hp, maxval=e.fighter.max_hp,

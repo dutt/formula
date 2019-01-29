@@ -15,7 +15,6 @@ class FormulaBuilder:
         if config.conf.starting_mode == "choose":
             self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
         elif config.conf.starting_mode == "fire":
-            #self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE] for i in range(num_formula)]
             self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
                           [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
                           [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE]]
@@ -53,6 +52,12 @@ class FormulaBuilder:
 
     def unlock_ingredient(self, ingredient):
         self.unlock_state[ingredient] = True
+
+    def replace_all(self, to_replace, replace_with):
+        for formula in self.slots:
+            for idx, slot in enumerate(formula):
+                if formula[idx] == to_replace:
+                    formula[idx] = replace_with
 
     def set_slot(self, slot, ingredient):
         if ingredient == Ingredient.FIRE:
@@ -107,7 +112,7 @@ class FormulaBuilder:
             attack_modifier = False
             attack_ingredient = False
             for slot in slots:
-                if not slot.targeted:
+                if slot != Ingredient.EMPTY and not slot.targeted:
                     targeted = False
                 if slot == Ingredient.EMPTY:
                     cooldown -= cooldown_per_slot

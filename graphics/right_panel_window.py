@@ -13,7 +13,7 @@ class FormulaMarker(Clickable):
         super().__init__(pos, size)
         self.formula_idx = formula_idx
         self.player = player
-        self.cooldown_bar = Bar(pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND)
+        self.cooldown_bar = Bar(pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND, show_numbers=False)
 
     def draw(self, surface, formula):
         if self.player.caster.is_on_cooldown(self.formula_idx):
@@ -33,8 +33,8 @@ class RightPanelWindow(Window):
     def __init__(self, constants, parent):
         super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent)
         self.health_bar = Bar(Pos(10, 20), "HP", colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND, size=Size(120, 30))
-        self.shield_bar = Bar(Pos(10, 60), "S", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30))
-        self.xp_bar = Bar(Pos(10, 100), "XP", colors.XP_BAR_FRONT, colors.XP_BAR_BACKGROUND, size=Size(120, 30))
+        self.shield_bar = Bar(Pos(10, 60), "Shield", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30))
+        self.xp_bar = Bar(Pos(10, 130), text=None, color=colors.XP_BAR_FRONT, bgcolor=colors.XP_BAR_BACKGROUND, size=Size(120, 30), show_numbers=False)
         self.formula_label = Label(Pos(10, 180), "Formulas")
         self.formula_markers = []
 
@@ -66,10 +66,14 @@ class RightPanelWindow(Window):
         if game_data.player.fighter.shield:
             self.shield_bar.draw(surface, game_data.player.fighter.shield.level,
                                  game_data.player.fighter.shield.max_level)
+        display_text(surface, "Level {}".format(game_data.player.level.current_level), Assets.get().font_message, (10, 105))
         self.xp_bar.draw(surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level)
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):
             fm.draw(surface, game_data.player.caster.formulas[idx])
+
+        display_text(surface, "Floor {}".format(game_data.run_planner.current_level_index + 1),
+                     Assets.get().font_message, (10, 850))
 
         gfx_data.main.blit(surface, self.pos.tuple())

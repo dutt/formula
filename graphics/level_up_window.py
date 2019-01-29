@@ -94,10 +94,13 @@ class LevelUpWindow(Window):
             game_data.formula_builder.unlock_ingredient(Ingredient.SHIELD)
         elif chosen == Ingredient.INFERNO.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.INFERNO)
+            game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.INFERNO)
         elif chosen == Ingredient.FIREBOLT.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.FIREBOLT)
+            game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.FIREBOLT)
         elif chosen == Ingredient.FIRESPRAY.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.FIRESPRAY)
+            game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.FIRESPRAY)
         else:
             raise ValueError("Unknown choice in level up: {}".format(chosen))
 

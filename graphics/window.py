@@ -4,6 +4,7 @@ import pygame
 
 from graphics.assets import Assets
 from graphics.display_helpers import display_text, display_bar, display_menu
+from graphics.constants import colors
 from input_handlers import Event
 from util import Size
 
@@ -58,16 +59,16 @@ class Window(Clickable):
 
 
 class Bar(Clickable):
-    def __init__(self, pos, text, color, bgcolor, size=Size(100, 30)):
+    def __init__(self, pos, text=None, color=colors.WHITE, bgcolor=colors.BACKGROUND, size=Size(100, 30), show_numbers=True):
         super().__init__(pos, size)
         self.color = color
         self.text = text
         self.bgcolor = bgcolor
+        self.show_numbers = show_numbers
 
     def draw(self, surface, current_value, max_value):
-        display_bar(surface, Assets.get(), self.pos, self.size.width, current_value,
-                    max_value,
-                    self.color, self.bgcolor, text = self.text)
+        display_bar(surface, Assets.get(), self.pos, self.size.width, current_value, max_value,
+                    self.color, self.bgcolor, text = self.text, show_numbers=self.show_numbers)
 
 
 class Label(Widget):
