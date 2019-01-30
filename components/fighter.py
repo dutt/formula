@@ -1,8 +1,14 @@
 import tcod
+import pygame
 
 from components.damage_type import DamageType
 from messages import Message
 
+
+from graphics.visual_effect import VisualEffectSystem
+from util import Pos
+from graphics.assets import Assets
+from graphics.constants import colors
 
 class Fighter:
     def __init__(self, hp, defense, power, xp=0, dmg_type=DamageType.PHYSICAL, resistances=None, immunities=None,
@@ -18,6 +24,12 @@ class Fighter:
         self.shield = shield
         self.killed_by = None
 
+    def show_on_hit(self, dmg):
+        above = Pos(self.owner.pos.x, self.owner.pos.y - 1)
+
+        text_surface = [Assets.get().font_title.render(str(dmg), True, colors.RED)]
+        VisualEffectSystem.get().add_temporary(self.owner.pos, above, lifespan=0.5, asset=text_surface,
+                                               color=colors.RED)
     @property
     def max_hp(self):
         bonus = 0
@@ -44,6 +56,10 @@ class Fighter:
                 if res.get("depleted"):
                     self.shield = None
         self.hp = max(0, self.hp - dmg)
+
+        if dmg > 0:
+            self.show_on_hit(dmg)
+
         if self.hp <= 0:
             self.killed_by = source
             results.append({"dead": self.owner, "xp": self.xp})
