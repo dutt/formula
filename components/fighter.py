@@ -16,6 +16,7 @@ class Fighter:
         self.resistances = resistances if resistances else []
         self.immunities = immunities if immunities else []
         self.shield = shield
+        self.killed_by = None
 
     @property
     def max_hp(self):
@@ -44,6 +45,7 @@ class Fighter:
                     self.shield = None
         self.hp = max(0, self.hp - dmg)
         if self.hp <= 0:
+            self.killed_by = source
             results.append({"dead": self.owner, "xp": self.xp})
         return results
 

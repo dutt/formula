@@ -17,6 +17,7 @@ class Entity:
         Entity.LAST_ID += 1
 
         self.pos = util.Pos(int(x), int(y))
+        self.orig_name = name
         self.name = name
         self.blocks = blocks
         self.render_order = render_order

@@ -39,3 +39,25 @@ class Statistics:
 
     def move_player(self, move):
         self.moves.append(move)
+
+    @property
+    def monsters_per_type_per_level(self):
+        retr = [{} for _ in range(len(self.monsters_killed_per_level))]
+        for idx, level in enumerate(self.monsters_killed_per_level):
+            for monster in level:
+                if monster.orig_name in retr[idx]:
+                    retr[idx][monster.orig_name] += 1
+                else:
+                    retr[idx][monster.orig_name] = 1
+        return retr
+
+    @property
+    def monsters_per_type(self):
+        retr = {}
+        for idx, level in enumerate(self.monsters_killed_per_level):
+            for monster in level:
+                if monster.orig_name in retr:
+                    retr[monster.orig_name] += 1
+                else:
+                    retr[monster.orig_name] = 1
+        return retr

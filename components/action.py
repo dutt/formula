@@ -97,6 +97,7 @@ class DescendStairsAction(Action):
             game_data.fov_map = initialize_fov(game_data.map)
             game_data.fov_recompute = True
             gfx_data.windows.activate_wnd_for_state(game_data.state)
+            game_data.stats.next_level()
             result = [{"descended": True}]
         else:
             game_data.state = GameStates.VICTORY
