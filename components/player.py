@@ -169,6 +169,7 @@ class Player(Entity):
                         gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=0.2,
                                                        asset=gfx_data.assets.throwing_bottle)
                         game_data.state = game_data.prev_state.pop()
+                        game_data.targeting_formula_idx = None
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
 

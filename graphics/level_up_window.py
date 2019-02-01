@@ -68,7 +68,7 @@ class LevelUpWindow(Window):
         for idx, choice in enumerate(self.choices):
             text = str(choice)
             if idx == game_data.menu_data.currchoice:
-                text += "<--"
+                text += " <--"
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
         display_text(surface, "W/S to change selection, space to choose", gfx_data.assets.font_message, (50, 300))

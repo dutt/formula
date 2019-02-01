@@ -106,7 +106,7 @@ class Assets:
 
         self.thug = get_animation(self.humanoid_sheet, 0, 0)
         self.mercenary = get_animation(self.humanoid_sheet, 0, 4)
-        self.stalker = get_animation(self.humanoid_sheet, 4, 8)
+        self.stalker = get_animation(self.humanoid_sheet, 4, 7)
 
         self.dog = get_animation(self.quadraped_sheet, 6, 0)
         self.boar = get_animation(self.quadraped_sheet, 3, 0)

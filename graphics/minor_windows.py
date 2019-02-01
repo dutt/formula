@@ -90,7 +90,7 @@ class VictoryWindow(TextWindow):
         hours, minutes, seconds = game_data.stats.total_play_time
         playtime_text = "{}h {}m {}s".format(hours, minutes, seconds)
         display_text(surface, "This took you {}".format(playtime_text), gfx_data.assets.font_message,
-                     (150, 500))
+                     (150, 475))
         display_text(surface, "Press Escape to quit, press Space to play again", gfx_data.assets.font_message, (150, 500))
 
         gfx_data.main.blit(surface, self.pos.tuple())

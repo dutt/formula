@@ -58,6 +58,7 @@ def play_game(game_data, gfx_data):
                         game_data.prev_state.append(game_data.state)
                         game_data.prev_state.append(GameStates.FORMULA_SCREEN)
                         game_data.state = GameStates.LEVEL_UP
+                        game_data.menu_data.currchoice = 0
             except AttributeError:
                 print("Failed to handle res={}".format(res))
                 traceback.print_exc()
