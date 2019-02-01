@@ -1,0 +1,26 @@
+monsters:
+    thug: melee, solo, easy
+    mercenary: melee, solo, medium
+    stalker: melee, solo, hard
+
+    dog: melee, group, easy
+    boar: melee, group, medium
+    armored bear: melee, group, hard
+
+    axe thrower: ranged, solo, easy
+    rifleman: ranged, solo, medium
+    zapper: ranged, solo, hard
+
+    arina: solo, hard
+
+monster per level:
+    level 1: thug, axe thrower
+    level 2: thug, dog, axe thrower
+    level 3: thug, mercenary, dog, axe thrower
+    level 4: mercenary, boar, dog, axe thrower, rifleman
+    level 5: mercenary, boar, rifleman
+    level 6: mercenary, stalker, boar, armored bear, rifleman, zapper
+    level 7: mercenary, stalker, boar, armored bear, rifleman, zapper
+    level 8:  stalker, armored bear, zapper
+    level 9:  stalker, armored bear, zapper
+    level 10: boss

@@ -1,0 +1,23 @@
+I'm glad and nervous to finally show you the first official prototype for...*drumroll* Formulas!
+
+It's a streamlined roguelike where I've tried to cut away a lot of elements. What you do have is a potion making kit, a couple of vials and a bunch of ingredients. You mix and match ingredients to fill vials, but you can only swap these out between levels so your choice between an extra damage dealer or a heal is one you live with for the whole level.
+
+Some examples might clarify things:
+As you start out you have 3 vials with 3 slots each. Fill a vial with 3 parts of flogiston and it'll burn through the vial quickly leaving you no range and give you a very localized explosion. But it will pack a punch. Take two parts flogiston and one part mercury and it'll leave a bit more time, giving you more range. Or may one part flogiston, one mercury and one part copper, less punch but more time for throwing, and it'll cover a larger area.
+
+In plain english:
+Fire, range, area. Fire * 3 = melee range, no area, high damage. Fire*2 + Range = medium damage, short range. fire + range + area, low damage, short range, low area.
+
+As you level up you will get access to more formulas in parallell, and more slots per formula. But the more slots you use for a formula the more complicated it is to make, the more turns it takes until the next vial is ready.
+
+Design-wise it's sort of...slimmed. I like slim and streamlined designs. Cutting away all the pieces that don't have to be there. Hence, no items. Meaning no identify and how to do that. No inventory. No equipment. No scrolls, no potions, no shops. It's you, a bunch of vials and your target up there. I might add things back later, or variants of things. We'll see. I'll probably play around with the core a bit first. This slim design of course influences the controls too. I'm trying to keep it so that you can have one hand on the WASD area and the other on the mouse, and not have to move them.
+
+This all started maybe two years ago when I got the basic idea in my head, how to make a modular magic system. I attempted a prototype in the Godot engine, but got stuck trying to do the graphics way too early and the project was rather short-lived. Fast forward to a month ago when the now, presumably, famous "How to make a roguelike" popped up, and I saw the chance to make another attempt. This time without fussing about with fancypants graphics. After reading a bunch of theme posts I felt fantasy was a bit overdone, so I'm going with streampunk instead. Let's dive in.
+
+You're part of the Tsars police for supernatural ...problems, The Black Hounds. Feared by some, respected by all. If you're using magic to do nasty things they will find you and you will learn that actions have consequences. Some worse than others.
+
+Your mission is Arina Darishinn, a respected scientist who has has grown increasingly erratic of late. Now she's shut herself in her tower and strange things are happening. Animals flee in terror, lightning from clear blue sky, unnatural noises in the night. People are getting restless, she doesn't answer the door or telegrams. The order has come, it's time to step in.
+
+Your alchemy skills have grown quickly of late, and now you're ready for your first solo mission. No backup. No support. This is what you signed up for, this is how we Hounds operate. Go in, get to the top of the tower, fix the situation.
+
+Good luck lieutenant.

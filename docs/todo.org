@@ -1,0 +1,11 @@
+1st room tutorial
+Texter
+Uppgradera ingredienser
+
+
+"Skill tree" för ingredienser
+
+Start:
+    Fixed 2
+    Choose 2
+    Random 2 package

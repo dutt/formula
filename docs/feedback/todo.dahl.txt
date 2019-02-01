@@ -1,0 +1,67 @@
+x e för att interagera?
+x aoe targeta marken
+x tileset
+musinteraktion på spellmaker-screen
+x archer orc
+# gå med wasd
+shrine med HP
+# nedför trappan när man går på den
+x summan för spellen i spellmaker-menyn
+x mer help på spellmaker, keys etc
+
+
+x grafik för shield
+x effekt när formulas slår
+
+-----------------------------------------
+
+x Lista ingredienser i formula window och i help
+x Mer info om tangenter på alla fönster
+x XP-bar
+x Fiende spawnar i en vägg
+x Mouse-over info om fiender
+x Ny bild på hound?
+x Förklara shield
+
+------------------------------------
+
+? fixa story, se till så Nikolai nämns fler gånger
+? icke-aoe-spells ska inte ta en tur om man inte targetar en fiende?
+? shield är lite okonsekvent. loot är +5, formula sätter till max.
+? visa hur många cooldown som återstår
+highlighta formulan man kastar
+fixa en trigger för när Arina dör, Victory
+
+krash till level 10?
+Seed 2019-01-31 20:07:43.177233Traceback (most recent call last):
+File "C:\Users\IEUser\formula\engine.py", line 127, in main
+File "C:\Users\IEUser\formula\engine.py", line 17, in play_game
+File "C:\Users\IEUser\formula\time_system.py", line 24, in tick
+File "C:\Users\IEUser\formula\components\player.py", line 68, in take_turn
+File "C:\Users\IEUser\formula\graphics\window_manager.py", line 79, in draw
+File "C:\Users\IEUser\formula\graphics\window_manager.py", line 68, in helper
+File "C:\Users\IEUser\formula\graphics\game_window.py", line 311, in draw
+File "C:\Users\IEUser\formula\graphics\game_window.py", line 40, in draw_terrain
+IndexError: list index out of range
+
+
+
+spawna inte fiender precis vid dörren
+
+X snyggare death screen med lite stats
+X double move när man anfalls och går?
+X när man dör, kan man inte få en restart eller något?
+X går turn när man försöker casta men inte når?
+X visa vilken level man är på
+X en autouppgradering av fire till inferno på alla slots där man har fire vore nice så man slapp sätt ut inferno på samma plats
+X något buggade, när jag skulle kasta min formula nr 3 (den med buggad slott så tog jag helt plötsligt 20 fire dmg och dog, klickade aldrig utan tryckte bara på siffran 3
+X ingen press "Button" to continue på startskärmen
+X spawna inte fiender precis vid spelaren
+X mouse over cross out of range
+X Jag trodde första att tutorialskärmen var en tutorialgrej och undrade hur jag skulle komma vidare till nästa steg. Kanske behövs något som visar i stil med "go explore to continue!"
+X Kanske något som poppar upp ang cooldowns när man kastat sin första spell, typ "cooldowns will decrease when you explore new areas"
+nya cooldownsystemet var nice! man blev lite försiktigare med hur man springer in i rum nu
+X är det mening att man ska har 4 slots på formula 3 från start? Jag kan inte ändra slot 3 på formula 3, den är låst på ranged. X Verkar buggad, när jag tog extra slots som level up så kan jag inte komma åt slotten längst ner
+X Varför börjar slots på 0 och inte 1?
+X skulle vilja ha något i stil med att "press E to descend" när man kommer till trappan på första banan, så man vet hur man går ner
+X när jag trycker TAB får jag bara en svart ruta

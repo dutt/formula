@@ -1,0 +1,74 @@
+Todo:
+
+X 2 fönster när man kör? pyinstaller?
+kolla i 1920x1080
+X mer läsbar font
+kolla story/help-texter
+X gör formulas window tydligare, lägg formula index högre upp
+X gör en scrollbar help screen
+X växla player character
+X E för att acceptera val
+X WS för att navigera i menyer, t.ex. levelup
+Ta bort interact, helt eller kanske bara om inget finns där. auto-interact med trappor.
+X Lite tutorial i första rummet, kapa welcome screen?
+X Logga levelup val, förtydliga innebörden av valen
+X Shield + area...förtydliga vilka val som inte kommer vara bra?
+
+#######################
+
+- 2 fönster öppnas (för en spelare är det ett förvirringsmoment)
+- Huvudfönstret anpassas inte efter skärmen vid start utan mojoriteten av fönstret är utanför synlig yta vid 1920x1080
+- Texten till första info/introt bör förstoras eller byta till något som är lite mer läsbart
+-
+
+Introt:
+- Sida 1: Meningsbyggnad där "you" syftar till spelaren först och sedan vänder sig till fiender?
+- Sida 2: "Your mission is person X" är svårtolkat. Att hitta/döda/skydda/whatever?
+- Sida 3: Texten känns som att den hoppar runt. Att mina förmågor inom alkemi förbättrats känns bara onödigt. Räcker med att veta att det är första solo mission. "Good luck lieutenent" känns som att det kommer som slutet på en mission brief men resten av texten speglar inte det.
+
+
+Formulas Help Screen
+- Flera mellanslag innan 'D' i första meningen
+- Ingredienserna låter som delar av en spell men resten av ramverket säger att det är potions. "Area" är en udda ingrediens till potion brewing. Mindre anmärkning
+- Right/Left Arrow: Förklaring är svår att förstå. Formula syftar till hela potionen vanligtvis men här till en av ingredienserna?
+- Adding shield: Verkar som att meningen är kapad pga fönsterstorlek
+
+
+Formulas:
+- Jag tappade bort mig i vad jag såg. Att det finns flera tabbar/sidor med formulas utan någon form av indikation gjorde att jag inte förstod vad som hände när jag tryckte på olika knappar. Nollställde jag eller skiftade jag till ny vy?
+- Formula stats: Startar jag med Shield och sedan lägger på Life så uppdateras inte tooltip. Vet inte om det kommer ha någon effekt eller inte i spelet. Andra modifiers ändrar tooltip.
+- Fråga som dyker upp i huvudet efter det är om det finns några otillåtna kombinationer, typ Shield och Area vad är effekten av det?
+
+Start av spel:
+- Första skärmen, det finns en entitet i mitten och en i ytterkanten av rummet. Jag skulle utgå ifrån att spelarkaraktären startar i mitten men det ser inte ut som en spelarkaraktär. När man väl började spela så var det tydligen den som är ens karaktär.
+- Första skärmen: Finns ingen ledning om vad man ska göra. Man har fått info om tab för hjälp men en förstagångsspelare kan mycket väl ha glömt det under tiden man exprimenterat i Formulas. Jag skulle rekommendera en frivillig step-by-step tutorial i första rummet.
+
+
+Första fighten:
+- Efter att haft ihjäl spöket försökte jag interagera med liket. Det påverkde cooldowns men fick ingen feedback om att något hände eller inte. Om det inte är en interaktion så borde inte tiden gå.
+
+Går ur första rummet:
+- Exit är south, jag går ut i en korridor som går W-E. Går East och har en möjlighet att gå N i en ny korridor. Hela kartan hoppar ett steg i någon form av utritning som inte alls känns naturligt. Även första steget S i första rummet triggade en liknande omritning.
+
+
+När man använder Cold så utgår jag ifrån, efter ett par försök, att mobs bara går varannan runda om de är slowade. Det är dock inte självklart vilket gjorde att de första striderna/förflyttningarna så visste jag inte om det fanns actions som inte kostade ett tick.
+
+Ser att man får Exp av att döda monster men jag har ingen indikation på att jag närmar mig ny level eller att det ens finns sånt. Eftersom help sa att 1-5 är potions och man bara har 3 i början så gissar jag på att det kan gå upp men i detta läge kan det mycket väl bara vara en felskrivning. Saknar en Exp bar
+
+Hittar en ny rått-/hundliknande fiende som verkar vara i/på väggen.
+- Hound står det i loggen efter att jag haft ihjäl dem men de verkade inte göra något alls. Väldigt enkla att ha att göra med. Hittade senare en som inte var i/på väggen som faktiskt gjorde något.
+
+Level up:
+- Förväntade mig att kunna nagivera i den med wasd men var tvungen att skrifta till piltangenter.
+- Valde fler potion slots men ser ingen skillnad till vänster i informationsarean, ser inget i loggen om att det skett och jag får ingen prompt om att bygga en ny potion. Funkar detta eller var det något som gick sönder är min tanke. Testar att trycka "4" men får bara i loggen "You don't have that formula yet".
+
+Senare i spelet uppskattar jag att kunna trycka på "E" för att ticka tiden utan att flytta på mig. Vet inte om det är meningen men det gör det enklare att abusa terräng.
+
+Hittar en trappa, antar jag, och när jag interagerar med den möts jag av pop-up som känns som intro "Your very first solo mission...". Detta efter att jag helt har rensat första våningen. Känns malplacerat.
+- Ah, nu får jag ändra mina formulas...
+- Använda instinktivt enter för att acceptera mina val men det funkade inte. Var tvungen att använda space.
+- Min Shield + Area var för övrigt riktigt dålig och jag kunde inte se någon vits med den alls, mer än att av misstag lägga Shield på mobs?
+
+Våning 2:
+- Mina nya uppgraderade SSL verkade inte alls ha någon L-komponent. Mitt liv gick iaf inte upp.
+- Slutet på våning två ger mig en ny pop-up som känns hemma i slutet på våning 1.
