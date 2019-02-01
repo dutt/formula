@@ -211,6 +211,7 @@ class Player(Entity):
 
             for res in turn_results:
                 game_data.targeting_formula = res.get("targeting_formula")
+                game_data.targeting_formula_idx = res.get("formula_idx")
                 if game_data.targeting_formula:
                     formula_idx = res.get("formula_idx")
                     if self.caster.is_on_cooldown(formula_idx):

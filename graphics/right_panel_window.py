@@ -15,9 +15,15 @@ class FormulaMarker(Clickable):
         self.player = player
         self.cooldown_bar = Bar(pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND, show_numbers=False)
 
-    def draw(self, surface, formula):
+    def draw(self, surface, game_data, formula):
         if self.player.caster.is_on_cooldown(self.formula_idx):
             self.cooldown_bar.draw(surface, self.player.caster.get_cooldown(self.formula_idx), formula.cooldown)
+        elif self.formula_idx == game_data.targeting_formula_idx:
+            msg = "{}: {}".format(self.formula_idx + 1, formula.text_repr)
+            x, y = self.pos.x-5, self.pos.y-5
+            w, h = self.size.width, self.size.height
+            pygame.draw.rect(surface, (150, 75, 75), (x, y, w, h), 5)
+            display_text(surface, msg, Assets.get().font_message, self.pos.tuple())
         else:
             msg = "{}: {}".format(self.formula_idx + 1, formula.text_repr)
             display_text(surface, msg, Assets.get().font_message, self.pos.tuple())
@@ -71,7 +77,7 @@ class RightPanelWindow(Window):
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):
-            fm.draw(surface, game_data.player.caster.formulas[idx])
+            fm.draw(surface, game_data, game_data.player.caster.formulas[idx])
 
         display_text(surface, "Floor {}".format(game_data.run_planner.current_level_index + 1),
                      Assets.get().font_message, (10, 850))

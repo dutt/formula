@@ -15,6 +15,7 @@ class StateData():
         self.run_planner = run_planner
         self.formula_builder = formula_builder
         self.targeting_formula = None,
+        self.targeting_formula_idx = None,
         self.menu_data = menu_data
         self.state = state
         self.prev_state = []
