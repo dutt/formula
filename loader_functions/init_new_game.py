@@ -7,7 +7,7 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.game_window import GameWindow
 from graphics.message_log_window import MessageLogWindow
-from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow, DeadWindow
+from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow, DeadWindow, VictoryWindow
 from graphics.right_panel_window import RightPanelWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
@@ -130,6 +130,7 @@ def setup_data_state(constants):
     windows.push(LevelUpWindow(constants))
     windows.push(AskQuitWindow(constants))
     windows.push(DeadWindow(constants))
+    windows.push(VictoryWindow(constants))
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides

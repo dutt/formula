@@ -9,14 +9,6 @@ from game_states import GameStates
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 
 
-last_press_time = None
-
-
-class FakeKeyPress:
-    def __init__(self, code):
-        self.key = code
-
-
 def handle_keys(events, state):
     pressed_keys = pygame.key.get_pressed()
     modifiers = [key for key in [pygame.K_LALT, pygame.K_RALT] if pressed_keys[key]]
@@ -31,8 +23,7 @@ def handle_keys(events, state):
                        GameStates.TARGETING,
                        GameStates.GENERAL_HELP_SCREEN,
                        GameStates.FORMULA_HELP_SCEEN,
-                       GameStates.STORY_HELP_SCREEN,
-                       GameStates.VICTORY]:
+                       GameStates.STORY_HELP_SCREEN]:
             return handle_general_keys(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
             return handle_formula_screen_keys(e.key, modifiers)
@@ -40,7 +31,7 @@ def handle_keys(events, state):
             return handle_story_screen(e.key, modifiers)
         elif state == GameStates.ASK_QUIT:
             return handle_ask_quit(e.key, modifiers)
-        elif state == GameStates.PLAYER_DEAD:
+        elif state in [GameStates.VICTORY, GameStates.PLAYER_DEAD]:
             return handle_player_dead(e.key, modifiers)
     return {}
 

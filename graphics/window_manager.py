@@ -2,7 +2,7 @@ from events import Event
 from game_states import GameStates
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.level_up_window import LevelUpWindow
-from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow, DeadWindow
+from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow, DeadWindow, VictoryWindow
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 
@@ -20,6 +20,7 @@ class WindowManager:
             GameStates.LEVEL_UP: LevelUpWindow,
             GameStates.ASK_QUIT: AskQuitWindow,
             GameStates.PLAYER_DEAD: DeadWindow,
+            GameStates.VICTORY: VictoryWindow,
         }
 
     def push(self, window):

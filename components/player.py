@@ -21,7 +21,7 @@ import config
 class Player(Entity):
     def __init__(self):
         caster_component = Caster(num_slots=3, num_formulas=3)
-        fighter_component = Fighter(hp=10, defense=0, power=3)
+        fighter_component = Fighter(hp=1, defense=60, power=300)
         level_component = Level()
         drawable_component = Drawable(Assets.get().player)
         super(Player, self).__init__(0, 0, "You", speed=100, blocks=True,
@@ -106,11 +106,16 @@ class Player(Entity):
                             self.last_num_explored = None
                             game_data.story.next_story()
                             # TODO clear cooldowns?
-                            break
                         elif e.name.startswith("Remains of"): # monster
-                            player_action = LootAction(self)
-                            e.name = "Looted r" + e.name[1:]
-                            game_data.stats.loot_monster(e)
+                            if e.orig_name == "Arina":
+                                game_data.prev_state.append(game_data.state)
+                                game_data.state = GameStates.VICTORY
+                                game_data.story.next_story()
+                                gfx_data.windows.activate_wnd_for_state(game_data.state)
+                            else:
+                                player_action = LootAction(self)
+                                e.name = "Looted r" + e.name[1:]
+                                game_data.stats.loot_monster(e)
                             break
                 else:
                     if config.conf.cooldown_mode != "always":

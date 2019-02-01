@@ -27,37 +27,24 @@ class GameWindow(Window):
         def draw_terrain():
             surface = pygame.Surface(game_data.constants.game_window_size.tuple(), pygame.SRCALPHA)
             surface.fill(colors.BACKGROUND)
-            # for x in range(30):
-            #    for y in range(15):
-            #        #main.blit(assets.effect0_sheet.get_image(x, 15+y)[0],
-            #        main.blit(assets.shield_effect[0],
-            #                  (x * CELL_WIDTH, y* CELL_HEIGHT))
-            # return
             for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
                 for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
-                    # if x >= game_data.map.width or y >= game_data.map.height:
-                    #    continue
-                    wall = game_data.map.tiles[x][y].block_sight
-                    wall_type = game_data.map.tiles[x][y].wall_info
-                    floor_type = game_data.map.tiles[x][y].floor_info
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
-                    # visible=True
                     asset = game_data.map.tiles[x][y].get_drawable(visible)
                     if visible:
                         game_data.map.tiles[x][y].explored = True
 
                     if asset:
                         distance = (game_data.player.pos - Pos(x, y)).length()
-                        #if distance.length() > 5:
-                        #    darken = (distance.length() - 3) * 10
-                        #else:
-                        #    darken = 0
-                        if distance < 3.5: # 1 range
-                            darken = 20
-                        elif distance < 5.5: # 2 range
-                            darken = 40
-                        elif distance < 7.5: # 3 range
-                            darken = 60
+                        if visible:
+                            if distance < 3.5: # 1 range
+                                darken = 20
+                            elif distance < 5.5: # 2 range
+                                darken = 40
+                            elif distance < 7.5: # 3 range
+                                darken = 60
+                            else:
+                                darken = 80
                         else:
                             darken = 80
 
@@ -73,7 +60,6 @@ class GameWindow(Window):
         def draw_entities():
             rendering_sorted = sorted(game_data.map.entities, key=lambda e: e.render_order.value)
             for e in rendering_sorted:
-                # if e.drawable:
                 if e.drawable and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     main.blit(e.drawable.asset,
@@ -95,7 +81,6 @@ class GameWindow(Window):
 
         def global_screen_pos_to_map_screen_pos(x, y):
             return x - game_data.constants.right_panel_size.width, y
-            # return x, y
 
         def map_screen_pos_to_tile(x, y):
             rx, ry = x // CELL_WIDTH, y // CELL_HEIGHT
@@ -107,7 +92,6 @@ class GameWindow(Window):
             return tx * CELL_WIDTH, ty * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT
 
         def draw_rect_boundary(surface, colour, rect, draw_cross):
-            #pygame.draw.rect(surface, colour, rect)
             x1 = rect[0]
             x2 = rect[0] + rect[2]
             y1 = rect[1]
@@ -229,7 +213,7 @@ class GameWindow(Window):
             px, py = gfx_data.camera.map_to_screen(px, py)
             px, py = px * CELL_WIDTH + 40, py * CELL_HEIGHT
 
-            if game_data.player.pos == game_data.map.orig_player_pos:
+            if game_data.player.pos == game_data.map.orig_player_pos and game_data.stats.monsters_killed_level == 0:
                 # show general help and move help
                 welcome_px, welcome_py = px, py - 80
                 display_text(help_surface, "Welcome to formula!", assets.font_message, (welcome_px, welcome_py),
@@ -263,17 +247,18 @@ class GameWindow(Window):
                     display_text(help_surface, "This is your experience bar", assets.font_message, (20, 105),
                                  text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
-                cast_px, cast_py = px, py + 40
-                display_text(help_surface, "Use 1,2,3,... to select vial", assets.font_message, (cast_px, cast_py),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                if game_data.stats.num_moves < 5:
+                    cast_px, cast_py = px, py + 40
+                    display_text(help_surface, "Use 1,2,3,... to select vial", assets.font_message, (cast_px, cast_py),
+                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
-                display_text(help_surface, "FFR is Fire, Fire, Range. Short range, high damage", assets.font_message, (20, 220),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                display_text(help_surface, "FRR is Fire, Range, Range. Longer range, low damage", assets.font_message, (20, 260),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                    display_text(help_surface, "FFR is Fire, Fire, Range. Short range, high damage", assets.font_message, (20, 220),
+                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                    display_text(help_surface, "FRR is Fire, Range, Range. Longer range, low damage", assets.font_message, (20, 260),
+                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
             elif game_data.state == GameStates.PLAY and game_data.stats.monsters_killed_level == 1 and \
-                    game_data.stats.num_looted_monsters == 0:
+                    game_data.stats.num_looted_monsters == 0 and game_data.stats.num_moves < 10:
                 monster = game_data.stats.monsters_killed_per_level[0][0]
                 mx, my = gfx_data.camera.map_to_screen(monster.pos.x, monster.pos.y)
                 mx, my = mx * CELL_WIDTH + 40, my * CELL_HEIGHT
@@ -299,6 +284,12 @@ class GameWindow(Window):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
                     display_text(help_surface, "Stairs, press E to ascend",
+                                 assets.font_message, (sx, sy),
+                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                if e.name == "Remains of Arina" and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                    sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
+                    sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
+                    display_text(help_surface, "The witch is dead, press E here to verify",
                                  assets.font_message, (sx, sy),
                                  text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 

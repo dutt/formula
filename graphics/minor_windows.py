@@ -1,7 +1,9 @@
+import textwrap
+
 import pygame
 
 from events import Event
-from graphics.display_helpers import display_text, display_lines
+from graphics.display_helpers import display_text, display_lines, display_menu
 from graphics.window import TextWindow, Window
 from util import resource_path
 
@@ -51,6 +53,39 @@ class DeadWindow(Window):
 
         display_text(surface, "Press Escape again to quit, press Space to keep playing",
                      gfx_data.assets.font_message, (120, 500))
+        gfx_data.main.blit(surface, self.pos.tuple())
+
+    def handle_key(self, game_data, gfx_data, key_action):
+        keep_playing = key_action.get(Event.keep_playing)
+        if keep_playing:
+            return None  # propagate exit, restart
+
+        do_exit = key_action.get(Event.exit)
+        if do_exit:
+            return None  # propagate quit event
+
+
+class VictoryWindow(TextWindow):
+    PATH = resource_path("data/story/floor.10.txt")
+
+    def __init__(self, constants, visible=False):
+        super().__init__(constants, visible, path=VictoryWindow.PATH, next_window=None)
+
+    def draw(self, game_data, gfx_data):
+        surface = pygame.Surface(self.size.tuple())
+
+        all_lines = []
+        for current in self.lines:
+            if current.strip() == "":
+                all_lines.append(current)
+            else:
+                split_lines = textwrap.wrap(current, 60)
+                all_lines.extend(split_lines)
+        show_lines = all_lines[self.offset:self.offset + self.num_lines]
+        display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface)
+
+        display_text(surface, "Press Escape to quit, press Space to play again", gfx_data.assets.font_message, (150, 500))
+
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
