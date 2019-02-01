@@ -1,3 +1,5 @@
+import datetime
+
 import pygame
 import tcod
 
@@ -18,10 +20,11 @@ from util import Pos
 from graphics.level_up_window import LevelUpWindow
 import config
 
+
 class Player(Entity):
     def __init__(self):
         caster_component = Caster(num_slots=3, num_formulas=3)
-        fighter_component = Fighter(hp=1, defense=60, power=300)
+        fighter_component = Fighter(hp=10, defense=0, power=3)
         level_component = Level()
         drawable_component = Drawable(Assets.get().player)
         super(Player, self).__init__(0, 0, "You", speed=100, blocks=True,
@@ -45,6 +48,8 @@ class Player(Entity):
                 self.last_num_explored = game_data.map.num_explored
 
     def take_turn(self, game_data, gfx_data):
+        if game_data.stats.start_time is None:
+            game_data.stats.start_time = datetime.datetime.now()
 
         if self.action_points < 100:
             return None
@@ -113,6 +118,7 @@ class Player(Entity):
                                 game_data.state = GameStates.VICTORY
                                 game_data.story.next_story()
                                 gfx_data.windows.activate_wnd_for_state(game_data.state)
+                                game_data.stats.end_time = datetime.datetime.now()
                             else:
                                 player_action = LootAction(self)
                                 e.name = "Looted r" + e.name[1:]

@@ -9,12 +9,24 @@ class Statistics:
         self.xp_gathered_this_level = 0
         self.looted_monsters = []
         self.moves = []
+        self.start_time = None
+        self.end_time = None
 
     def next_level(self):
         self.level_reached += 1
         self.monsters_killed_total += self.monsters_killed_level
         self.monsters_killed_level = 0
         self.xp_gathered_total += self.xp_gathered_this_level
+
+    @property
+    def total_play_time(self):
+        playtime = self.end_time - self.start_time
+        seconds = int(playtime.total_seconds())
+        minutes = seconds // 60
+        seconds = seconds % 60
+        hours = minutes // 60
+        minutes = minutes % 60
+        return hours, minutes, seconds
 
     def monster_killed(self, monster):
         self.monsters_killed_level += 1

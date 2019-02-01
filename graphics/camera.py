@@ -1,5 +1,6 @@
 from util import Size
 
+
 class Camera:
     def __init__(self, width, height, game_data):
         self.x1 = 0

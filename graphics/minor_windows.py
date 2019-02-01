@@ -41,7 +41,10 @@ class DeadWindow(Window):
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(self.size.tuple())
-        display_text(surface, "You died", gfx_data.assets.font_message, (300, 100))
+
+        hours, minutes, seconds = game_data.stats.total_play_time
+        playtime_text = "{}h {}m {}s".format(hours, minutes, seconds)
+        display_text(surface, "You died after {}".format(playtime_text), gfx_data.assets.font_message, (300, 100))
         display_text(surface, "Killed by a {} after killing...".format(game_data.player.fighter.killed_by.name),
                      gfx_data.assets.font_message, (120, 150))
 
@@ -84,6 +87,10 @@ class VictoryWindow(TextWindow):
         show_lines = all_lines[self.offset:self.offset + self.num_lines]
         display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface)
 
+        hours, minutes, seconds = game_data.stats.total_play_time
+        playtime_text = "{}h {}m {}s".format(hours, minutes, seconds)
+        display_text(surface, "This took you {}".format(playtime_text), gfx_data.assets.font_message,
+                     (150, 500))
         display_text(surface, "Press Escape to quit, press Space to play again", gfx_data.assets.font_message, (150, 500))
 
         gfx_data.main.blit(surface, self.pos.tuple())

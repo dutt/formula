@@ -1,3 +1,5 @@
+import datetime
+
 import tcod
 
 from components.drawable import Drawable
@@ -11,6 +13,7 @@ def kill_player(game_state, assets):
     game_state.player.render_order = RenderOrder.CORPSE
     game_state.player.name = "Your corpse"
     game_state.state = GameStates.PLAYER_DEAD
+    game_state.stats.end_time = datetime.datetime.now()
     return Message("You died", tcod.red), game_state
 
 
