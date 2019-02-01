@@ -96,6 +96,8 @@ class DescendStairsAction(Action):
             game_data.map.entities = game_data.map.entities
             game_data.fov_map = initialize_fov(game_data.map)
             game_data.fov_recompute = True
+            from graphics.camera import Camera
+            gfx_data.camera = Camera(game_data.map.width, game_data.map.height, game_data)
             gfx_data.windows.activate_wnd_for_state(game_data.state)
             game_data.stats.next_level()
             result = [{"descended": True}]

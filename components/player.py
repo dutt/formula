@@ -106,6 +106,7 @@ class Player(Entity):
                             self.last_num_explored = None
                             game_data.story.next_story()
                             # TODO clear cooldowns?
+                            break
                         elif e.name.startswith("Remains of"): # monster
                             if e.orig_name == "Arina":
                                 game_data.prev_state.append(game_data.state)

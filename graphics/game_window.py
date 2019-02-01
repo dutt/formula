@@ -205,10 +205,20 @@ class GameWindow(Window):
             main.blit(info_surface, (0, 0))
 
         def draw_help():
-            if game_data.run_planner.current_level_index > 0:
-                return #only show tutorial on the first level
-
             help_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+
+            if game_data.run_planner.current_level_index > 0:
+                if not game_data.run_planner.has_next: # last level
+                    for e in game_data.map.entities:
+                        if e.name == "Remains of Arina" and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                            sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
+                            sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
+                            display_text(help_surface, "The witch is dead, press E here to verify",
+                                         assets.font_message, (sx, sy),
+                                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                else:
+                    return # only show tutorial on the first or last level
+
             px, py = game_data.player.pos.tuple()
             px, py = gfx_data.camera.map_to_screen(px, py)
             px, py = px * CELL_WIDTH + 40, py * CELL_HEIGHT
@@ -284,12 +294,6 @@ class GameWindow(Window):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
                     display_text(help_surface, "Stairs, press E to ascend",
-                                 assets.font_message, (sx, sy),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                if e.name == "Remains of Arina" and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
-                    sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
-                    sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
-                    display_text(help_surface, "The witch is dead, press E here to verify",
                                  assets.font_message, (sx, sy),
                                  text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
