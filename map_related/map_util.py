@@ -23,6 +23,7 @@ def load_map(path, level):
                 retr.tiles[x][y].blocked = False
                 retr.tiles[x][y].block_sight = False
                 retr.player_pos = Pos(x, y)
+                retr.orig_player_pos = Pos(x, y)
             elif lines[y][x] == ' ':
                 retr.tiles[x][y].blocked = False
                 retr.tiles[x][y].block_sight = False

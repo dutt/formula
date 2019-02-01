@@ -22,6 +22,7 @@ class StoryData:
     def current_content(self):
         return self.section.content
 
+
 class StorySection:
     def __init__(self, floor, content):
         self.floor = floor

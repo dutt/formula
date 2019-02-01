@@ -143,7 +143,7 @@ def main():
         print(tb)
         try:
             with open("crash.log", 'w') as writer:
-                writer.write("Seed {}".format(seed))
+                writer.write("Seed {}\n".format(seed))
                 writer.write(tb)
         except:
             print("Failed to write crashlog:")

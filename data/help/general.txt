@@ -7,6 +7,8 @@ Number keys, 1,2,3...: Throw that vial
 You select targets using the mouse
     Throw with left click, cancel with right click
 
+After throwing a formula it will be on cooldown, you reduce cooldown whenever you explore new tiles.
+
 ESCAPE: Close current screen, or quit the game
 
 Space: Interact or next screen
