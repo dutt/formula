@@ -5,7 +5,7 @@ pwd=`pwd`
 
 build_win=1
 build_u18=1
-build_u16=1
+build_u16=0
 #cleanup
 find . -name "*.pyc" -delete
 
@@ -64,11 +64,12 @@ dirname="formula"
 ssh $ssh_name "mkdir -p $dirname"
 scp -rq *.py pyinstaller.spec dependencies.txt graphics components data loader_functions map_related $ssh_name:$dirname
 ssh $ssh_name << HERE
-    mkdir -p $dirname/build
-    python3.6 -m virtualenv ~/venv
-    source ~/venv/bin/activate
-    pip install -r $dirname/dependencies.txt
-    cd $dirname/build
+    mkdir -p $dirname/build &&
+    python3.6 -m virtualenv ~/venv &&
+    source ~/venv/bin/activate &&
+    pip install wheel &&
+    pip install -r $dirname/dependencies.txt &&
+    cd $dirname/build &&
     pyinstaller --clean ../pyinstaller.spec
 HERE
 scp $ssh_name:$dirname/build/dist/formula build/formula.linux16

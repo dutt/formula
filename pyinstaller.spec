@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['engine.py'],
+a = Analysis(['main.py'],
              pathex=['/home/mikael/workspace/spellmaker/build'],
              binaries=[],
              datas=[('data', 'data')],
