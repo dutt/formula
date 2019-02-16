@@ -1,4 +1,4 @@
-from entity import Entity
+from components.entity import Entity
 from graphics.render_order import RenderOrder
 
 

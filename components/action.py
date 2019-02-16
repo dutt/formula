@@ -1,8 +1,8 @@
 from attrdict import AttrDict as attrdict
 
-from fov import initialize_fov
-from game_states import GameStates
-from messages import Message
+from systems.fov import initialize_fov
+from components.game_states import GameStates
+from systems.messages import Message
 
 
 class Action:

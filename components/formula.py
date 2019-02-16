@@ -1,7 +1,7 @@
 import tcod
 
 from components.effects import EffectType
-from messages import Message
+from systems.messages import Message
 
 
 class Formula:

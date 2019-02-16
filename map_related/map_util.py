@@ -1,6 +1,6 @@
 import random
 
-from components.ai import MeleeMonsterAI, RangedMonsterAI
+from components.ai import DummyMonsterAI, MeleeMonsterAI, RangedMonsterAI
 from components.drawable import Drawable
 from components.fighter import Fighter
 from components.monster import Monster
@@ -88,8 +88,18 @@ def get_monster(x, y, game_map, room, monster_choice, assets, entities):
         return retr
 
     monsters = []
+
+    #tutorial
+    if monster_choice == "idiot":
+        fighter_component = Fighter(hp=20, defense=0, power=3, xp=0)
+        ai = DummyMonsterAI()
+        drawable_component = Drawable(assets.thug)
+        monster = Monster(x, y, "Thug", speed=100,
+                          fighter=fighter_component, ai=ai, drawable=drawable_component)
+        monsters.append(monster)
+
     #easy
-    if monster_choice == "thug":
+    elif monster_choice == "thug":
         fighter_component = Fighter(hp=20, defense=0, power=3, xp=40)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.thug)

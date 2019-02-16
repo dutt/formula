@@ -1,8 +1,7 @@
 import tcod
-import pygame
 
 from components.damage_type import DamageType
-from messages import Message
+from systems.messages import Message
 
 
 from graphics.visual_effect import VisualEffectSystem
@@ -47,6 +46,7 @@ class Fighter:
 
     def take_damage(self, source, dmg, dmg_type):
         assert dmg > 0
+        assert source
         results = []
         if self.shield:
             shield_results, actual_dmg = self.shield.on_hit(source, dmg, dmg_type)

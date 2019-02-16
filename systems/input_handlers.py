@@ -1,11 +1,9 @@
-import datetime
-
 import pygame
 from attrdict import AttrDict
 
 from components.ingredients import Ingredient
-from events import Event
-from game_states import GameStates
+from components.events import Event
+from components.game_states import GameStates
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 
 

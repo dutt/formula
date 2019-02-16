@@ -90,6 +90,7 @@ class GameMap:
         self.dungeon_level = dungeon_level
         self.entities = []
         self.player_pos = None
+        self.tutorial = False
         # self.load_map(resource_path("data/maps/test.map_related"))
         # self.tiles = self.set_tile_info(self.tiles)
         # for y in range(self.height):

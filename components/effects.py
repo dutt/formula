@@ -43,6 +43,11 @@ class EffectBuilder:
             amount = kwargs["amount"]
             dmg_type = kwargs["dmg_type"]
             rounds = kwargs["rounds"]
+            caster = kwargs["caster"]
+            assert amount
+            assert dmg_type
+            assert rounds
+            assert caster
 
             def apply(target):
                 dmg_amount = amount
@@ -59,7 +64,7 @@ class EffectBuilder:
                     color = (base, base, main)
                 VisualEffectSystem.get().add_temporary(target.pos, target.pos, lifespan=0.2,
                                                        asset=Assets.get().spark_effect, color=color, wait=0.2)
-                return target.fighter.take_damage(source=None, dmg=dmg_amount, dmg_type=dmg_type)
+                return target.fighter.take_damage(source=caster, dmg=dmg_amount, dmg_type=dmg_type)
 
             def stats_func():
                 return AttrDict({
@@ -74,6 +79,8 @@ class EffectBuilder:
         def create_healing(**kwargs):
             amount = kwargs["amount"]
             rounds = kwargs["rounds"]
+            assert amount
+            assert rounds
 
             def apply(target):
                 heal_amount = amount
@@ -94,6 +101,7 @@ class EffectBuilder:
 
         def create_slow(**kwargs):
             rounds = kwargs["rounds"]
+            assert rounds
 
             def apply(target):
                 target.round_speed = target.round_speed // 2
@@ -115,6 +123,9 @@ class EffectBuilder:
             level = kwargs["level"]
             strikebacks = kwargs["strikebacks"]
             distance = kwargs["distance"]
+            assert level
+            assert strikebacks is not None
+            assert distance is not None
 
             def apply(target):
                 target.fighter.shield = Shield(level, strikebacks, target, distance)

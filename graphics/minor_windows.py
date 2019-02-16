@@ -2,7 +2,7 @@ import textwrap
 
 import pygame
 
-from events import Event
+from components.events import Event
 from graphics.display_helpers import display_text, display_lines, display_menu
 from graphics.window import TextWindow, Window
 from util import resource_path

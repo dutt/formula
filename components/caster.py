@@ -1,4 +1,4 @@
-from messages import Message
+from systems.messages import Message
 from components.ingredients import Ingredient
 from components.formula import Formula
 
@@ -7,7 +7,7 @@ class Caster:
     def __init__(self, num_slots, num_formulas):
         self.num_slots = num_slots
         self.num_formulas = num_formulas
-        self.formulas = Formula.DEFAULT
+        self.formulas = None
         self.slots = [Ingredient.FIRE for _ in range(num_slots)]
         self.cooldowns = {}
 

@@ -1,10 +1,9 @@
 import pygame
 
-from game_states import GameStates
 from graphics.display_helpers import display_text
 #from graphics.minor_windows import WelcomeWindow
 from graphics.window import Window
-from input_handlers import Event
+from systems.input_handlers import Event
 
 
 class SetupWindow(Window):

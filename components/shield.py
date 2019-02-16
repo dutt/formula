@@ -1,6 +1,6 @@
 from components.damage_type import DamageType
 from components.effect_type import EffectType
-from messages import Message
+from systems.messages import Message
 from graphics.visual_effect import VisualEffectSystem
 
 class Shield:

@@ -5,7 +5,7 @@ import pygame
 from graphics.assets import Assets
 from graphics.display_helpers import display_text, display_bar, display_menu
 from graphics.constants import colors
-from input_handlers import Event
+from systems.input_handlers import Event
 from util import Size
 
 

@@ -1,17 +1,17 @@
 import math
-import textwrap
 
 import pygame
 import tcod
 
 from components.drawable import Drawable
-from game_states import GameStates
+from components.game_states import GameStates
 from graphics.constants import colors, CELL_WIDTH, CELL_HEIGHT
 from graphics.display_helpers import display_bar, display_text, display_lines
 from graphics.minor_windows import GeneralHelpWindow
 from graphics.window import Window
-from input_handlers import Event
+from systems.input_handlers import Event
 from util import Pos, distance
+from systems.tutorial import Tutorial
 
 
 class GameWindow(Window):
@@ -205,97 +205,25 @@ class GameWindow(Window):
             main.blit(info_surface, (0, 0))
 
         def draw_help():
+
             help_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
 
-            if game_data.run_planner.current_level_index > 0:
-                if not game_data.run_planner.has_next: # last level
-                    for e in game_data.map.entities:
-                        if e.name == "Remains of Arina" and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
-                            sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
-                            sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
-                            display_text(help_surface, "The witch is dead, press E here to verify",
-                                         assets.font_message, (sx, sy),
-                                         text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                else:
-                    return # only show tutorial on the first or last level
+            if not game_data.run_planner.has_next:  # last level
+                for e in game_data.map.entities:
+                    if e.name == "Remains of Arina" and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                        sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
+                        sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
+                        display_text(help_surface, "The witch is dead, press E here to verify",
+                                     assets.font_message, (sx, sy),
+                                     text_color=colors.WHITE, bg_color=colors.BACKGROUND)
+                        return
+            elif not game_data.run_planner.current_map.tutorial:
+                return
 
-            px, py = game_data.player.pos.tuple()
-            px, py = gfx_data.camera.map_to_screen(px, py)
-            px, py = px * CELL_WIDTH + 40, py * CELL_HEIGHT
-
-            if game_data.player.pos == game_data.map.orig_player_pos and game_data.stats.monsters_killed_level == 0:
-                # show general help and move help
-                welcome_px, welcome_py = px, py - 80
-                display_text(help_surface, "Welcome to formula!", assets.font_message, (welcome_px, welcome_py),
+            messages = Tutorial.get_messages(game_data, gfx_data)
+            for msg in messages:
+                display_text(help_surface, msg.text, assets.font_message, msg.pos.tuple(),
                              text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                display_text(help_surface, "Press Tab for help", assets.font_message, (20, 400),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                display_text(help_surface, "Press Escape to quit", assets.font_message, (20, 430),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                display_text(help_surface, "Press Alt-Enter for fullscreen", assets.font_message, (20, 460),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                pygame.draw.rect(help_surface, colors.BACKGROUND, pygame.rect.Rect(20, 200, 200, 150))
-                text = "These are your formulas. You will gain more formulas, slots and ingredients as you level up"
-
-                lines = textwrap.wrap(text, 20)
-                display_lines(help_surface, assets.font_message, lines, 25, 205)
-
-                move_px, move_py = px, py - 40
-                display_text(help_surface, "Use W,A,S,D to move", assets.font_message, (move_px, move_py),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-            elif game_data.state == GameStates.PLAY and game_data.stats.monsters_killed_level == 0:
-                if game_data.stats.num_moves == 1:
-                    display_text(help_surface, "This is your health bar", assets.font_message, (20, 20),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                    display_text(help_surface, "This will be is your shield bar", assets.font_message, (20, 70),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                    display_text(help_surface, "This is your experience bar", assets.font_message, (20, 105),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                if game_data.stats.num_moves < 5:
-                    cast_px, cast_py = px, py + 40
-                    display_text(help_surface, "Use 1,2,3,... to select vial", assets.font_message, (cast_px, cast_py),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                    display_text(help_surface, "FFR is Fire, Fire, Range. Short range, high damage", assets.font_message, (20, 220),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                    display_text(help_surface, "FRR is Fire, Range, Range. Longer range, low damage", assets.font_message, (20, 260),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-            elif game_data.state == GameStates.PLAY and game_data.stats.monsters_killed_level == 1 and \
-                    game_data.stats.num_looted_monsters == 0 and game_data.stats.num_moves < 10:
-                monster = game_data.stats.monsters_killed_per_level[0][0]
-                mx, my = gfx_data.camera.map_to_screen(monster.pos.x, monster.pos.y)
-                mx, my = mx * CELL_WIDTH + 40, my * CELL_HEIGHT
-                display_text(help_surface, "Go to the corpse and press space to loot",
-                             assets.font_message, (mx, my),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-                display_text(help_surface, "Now your formula is on cooldown", assets.font_message,
-                             (20, 220),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-                display_text(help_surface, "Cooldown reduce when you explore new tiles", assets.font_message,
-                             (20, 260),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-            elif game_data.state == GameStates.TARGETING and game_data.stats.monsters_killed_total == 0:
-                target_px, target_py = px, py + 40
-                display_text(help_surface, "Left click target to throw vial", assets.font_message,
-                             (target_px, target_py),
-                             text_color=colors.WHITE, bg_color=colors.BACKGROUND)
-
-            for e in game_data.map.entities:
-                if e.stairs and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
-                    sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
-                    sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
-                    display_text(help_surface, "Stairs, press E to ascend",
-                                 assets.font_message, (sx, sy),
-                                 text_color=colors.WHITE, bg_color=colors.BACKGROUND)
 
             main.blit(help_surface, (0, 0))
 

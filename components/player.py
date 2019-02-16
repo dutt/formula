@@ -9,13 +9,13 @@ from components.caster import Caster
 from components.drawable import Drawable
 from components.fighter import Fighter
 from components.level import Level
-from entity import Entity, get_blocking_entites_at_location
-from fov import recompute_fov
-from game_states import GameStates
+from components.entity import Entity, get_blocking_entites_at_location
+from systems.fov import recompute_fov
+from components.game_states import GameStates
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
-from input_handlers import Event, handle_keys, handle_mouse
-from messages import Message
+from systems.input_handlers import Event, handle_keys, handle_mouse
+from systems.messages import Message
 from util import Pos
 from graphics.level_up_window import LevelUpWindow
 import config

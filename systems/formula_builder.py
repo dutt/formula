@@ -88,7 +88,7 @@ class FormulaBuilder:
     def slots_for_formula(self, formula_index):
         return self.slots[formula_index]
 
-    def evaluate(self):
+    def evaluate(self, caster):
         retr = []
         fire_dmg_per_step = 10
         cold_dmg_per_step = 5
@@ -158,10 +158,10 @@ class FormulaBuilder:
                 strikebacks = []
                 if fire_dmg > 0:
                     strikebacks.append(
-                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
                 if cold_dmg > 0:
                     strikebacks.append(
-                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
                 if slow_rounds > 0:
                     strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
                 effects.append(
@@ -169,10 +169,10 @@ class FormulaBuilder:
             else:
                 if fire_dmg > 0:
                     effects.append(
-                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
+                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
                 if cold_dmg > 0:
                     effects.append(
-                        EffectBuilder.create(EffectType.DAMAGE, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
                 if slow_rounds > 0:
                     effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
                 if healing > 0:
@@ -182,11 +182,3 @@ class FormulaBuilder:
                                 distance=distance, area=area, effects=effects, targeted=targeted,
                                 suboptimal=suboptimal))
         return retr
-
-
-builder = FormulaBuilder(num_slots=3, num_formula=3)
-# builder.slots = [[Ingredient.EMPTY for i in range(3)]]
-#builder.slots = [[Ingredient.FIRE for i in range(3)] for i in range(3)]
-#builder.slots = [[Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE] for i in range(3)]
-Formula.EMPTY = builder.evaluate()[0]
-Formula.DEFAULT = builder.evaluate()

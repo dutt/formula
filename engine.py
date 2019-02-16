@@ -5,10 +5,10 @@ import os
 with contextlib.redirect_stdout(None):
     import pygame
 
-from death import kill_player, kill_monster
+from systems.death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, setup_data_state
-from messages import Message
-from game_states import GameStates
+from systems.messages import Message
+from components.game_states import GameStates
 import config
 
 

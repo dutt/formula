@@ -4,7 +4,7 @@ from graphics.assets import Assets
 from graphics.constants import colors
 from graphics.display_helpers import display_text
 from graphics.window import Window
-from input_handlers import Event
+from systems.input_handlers import Event
 from util import Pos
 
 

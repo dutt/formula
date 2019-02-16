@@ -1,7 +1,7 @@
 import pygame
 from attrdict import AttrDict
 
-from game_states import GameStates
+from components.game_states import GameStates
 from graphics.camera import Camera
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
@@ -75,16 +75,16 @@ class GfxState:
         self.windows = windows
 
 
-from time_system import TimeSystem
-from state_data import StateData
-from messages import MessageLog
+from systems.time_system import TimeSystem
+from components.state_data import StateData
+from systems.messages import MessageLog
 from components.player import Player
-from story import StoryLoader, StoryData
-from run_planner import RunPlanner
+from systems.story import StoryLoader, StoryData
+from systems.run_planner import RunPlanner
 from graphics.font import get_width
 from graphics.assets import Assets
-from formula_builder import FormulaBuilder
-
+from systems.formula_builder import FormulaBuilder
+from components.formula import Formula
 
 def setup_data_state(constants):
     #state = GameStates.SETUP
@@ -171,5 +171,10 @@ def setup_data_state(constants):
             clock=clock,
             windows=windows
     )
+
+    builder = FormulaBuilder(num_slots=3, num_formula=3)
+    Formula.EMPTY = builder.evaluate(caster=player)[0]
+    Formula.DEFAULT = builder.evaluate(caster=player)
+    player.caster.set_formulas(Formula.DEFAULT)
 
     return game_data, gfx_data, state

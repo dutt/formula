@@ -5,7 +5,7 @@ import pygame
 import config
 from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window
-from input_handlers import Event
+from systems.input_handlers import Event
 from graphics.formula_window import FormulaWindow
 from components.ingredients import Ingredient
 

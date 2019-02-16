@@ -1,4 +1,4 @@
-from fov import initialize_fov
+from systems.fov import initialize_fov
 from graphics.assets import Assets
 from map_related.map_file_loader import MapFileLoader
 from map_related.tower_map_gen import TowerMapGenerator
@@ -19,8 +19,11 @@ class RunPlanner:
         self.gen_level_idx = 0
 
     def generate(self, game_state):
+        self.levels.append(self.make_tutorial_map())
+        self.gen_level_idx += 1
+
         for i in range(self.parts):
-            self.levels.append(self.make_easy_map(self.gen_level_idx + 1))
+            self.levels.append(self.make_easy_map(self.gen_level_idx))
             self.gen_level_idx += 1
 
         for i in range(self.parts):
@@ -67,6 +70,11 @@ class RunPlanner:
             self.timesystem.register(e)
         return self.current_map
 
+    def make_tutorial_map(self):
+        m = MapFileLoader.make_map(self.constants, 0, resource_path("data/maps/tutorial"))
+        m.tutorial = True
+        return m
+
     def make_easy_map(self, current_level):
         monster_chances = {"any": 100,
                            "thug": 40,
@@ -75,14 +83,14 @@ class RunPlanner:
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_medium_map(self, current_level):
-        monster_chances = {"any": 90,
+        monster_chances = {"any": 100,
                            "mercenary": 40,
                            "boar_group": 30,
                            "rifleman": 30}
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances)
 
     def make_hard_map(self, current_level):
-        monster_chances = {"any": 95,
+        monster_chances = {"any": 100,
                            "stalker": 40,
                            "armored_bear_group": 30,
                            "zapper": 30}

@@ -3,7 +3,7 @@ import textwrap
 from graphics.display_helpers import display_menu, display_text
 from graphics.game_window import GameWindow
 from graphics.window import Window, TextWindow
-from input_handlers import Event
+from systems.input_handlers import Event
 from graphics.assets import Assets
 
 

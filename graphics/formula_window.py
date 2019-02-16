@@ -5,8 +5,8 @@ import pygame
 from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window, TextWindow
 from graphics.story_window import StoryWindow
-from input_handlers import Event
-from game_states import GameStates
+from systems.input_handlers import Event
+from components.game_states import GameStates
 from util import resource_path
 
 
@@ -45,7 +45,7 @@ class FormulaWindow(Window):
             ])
             display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=14)
 
-        formulas = game_data.formula_builder.evaluate()
+        formulas = game_data.formula_builder.evaluate(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
 
         surface = pygame.Surface(self.size.tuple())

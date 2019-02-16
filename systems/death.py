@@ -3,9 +3,9 @@ import datetime
 import tcod
 
 from components.drawable import Drawable
-from game_states import GameStates
+from components.game_states import GameStates
 from graphics.render_order import RenderOrder
-from messages import Message
+from systems.messages import Message
 
 
 def kill_player(game_state, assets):

@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 from components.drawable import Drawable
 from components.stairs import Stairs
-from entity import Entity
+from components.entity import Entity
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
 from map_related.gamemap import GameMap

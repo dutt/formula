@@ -2,6 +2,12 @@ from components.action import MoveToTargetAction, AttackAction, WaitAction
 from components.verbs import can_attack_player, can_move_towards_player
 
 
+class DummyMonsterAI:
+    def take_turn(self, game_data, gfx_data):
+        monster = self.owner
+        return WaitAction(monster).execute(game_data, gfx_data)
+
+
 class MeleeMonsterAI:
     def take_turn(self, game_data, gfx_data):
         monster = self.owner
