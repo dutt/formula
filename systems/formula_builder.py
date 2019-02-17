@@ -139,7 +139,7 @@ class FormulaBuilder:
                     fire_dmg += 2 * fire_dmg_per_step
                     attack_ingredient = True
                 elif slot == Ingredient.FIREBOLT:
-                    fire_dmg_per_step += fire_dmg_per_step
+                    fire_dmg += fire_dmg_per_step
                     distance += distance_per_step
                     attack_ingredient = True
                 elif slot == Ingredient.FIRESPRAY:

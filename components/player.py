@@ -82,7 +82,7 @@ class Player(Entity):
                 player_action = ExitAction()
 
             if config.conf.is_replaying and input_recorder.events:
-                time.sleep(0.5)
+                time.sleep(0.2)
                 next_event = input_recorder.events.pop(0)
                 if input_recorder.events:
                     print("Replaying event {}".format(next_event))
@@ -173,11 +173,9 @@ class Player(Entity):
             if left_click and game_data.state == GameStates.PLAY:
                 # click to move
                 self.moving_towards = Pos(left_click.cx, left_click.cy)
-                print("click to move to {}".format(self.moving_towards))
 
             if self.moving_towards:
                 if self.pos == self.moving_towards:
-                    print("click to move done")
                     self.moving_towards = None
                 else:
                     self.move_astar(self.moving_towards, game_data.map.entities, game_data.map)

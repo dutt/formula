@@ -119,7 +119,7 @@ class FormulaWindow(Window):
                 gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
                 return self.close(game_data, StoryWindow)
             else: #after level up
-                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
                 return self.close(game_data)
 
         slot = key_action.get("slot")

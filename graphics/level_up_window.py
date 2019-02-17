@@ -121,7 +121,7 @@ class LevelUpWindow(Window):
         level_up = key_action.get(EventType.level_up)
         if level_up:
             self.apply_choice(game_data.menu_data.currchoice, game_data)
-            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
             self.choices = []
             return self.close(game_data, next_window=FormulaWindow)
 
