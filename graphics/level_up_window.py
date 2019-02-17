@@ -23,7 +23,7 @@ class LevelUpWindow(Window):
             "You have expanded your skills and equipment, please choose:",
             ""
         ]
-        linediff = 15
+        linediff = gfx_data.assets.font_message_height
         y = 3 * linediff
         display_lines(surface, gfx_data.assets.font_message, header, starty=y)
 
@@ -71,7 +71,7 @@ class LevelUpWindow(Window):
                 text += " <--"
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
-        display_text(surface, "W/S to change selection, space to choose", gfx_data.assets.font_message, (50, 300))
+        display_text(surface, "W/S to change selection, space to choose", gfx_data.assets.font_message, (50, 400))
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def apply_choice(self, choice, game_data):

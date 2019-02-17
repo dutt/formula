@@ -47,7 +47,7 @@ class StoryWindow(Window):
         show_lines = self.current_lines[self.offset:self.offset + self.num_lines]
         display_menu(gfx_data, show_lines, self.size.tuple(), x=20, starty=20)
 
-        display_text(gfx_data.main, "Press Space to continue", Assets.get().font_message, (350, 600))
+        display_text(gfx_data.main, "Press Space to continue", Assets.get().font_message, (350, 750))
 
     def scroll_up(self):
         if self.num_lines > len(self.current_lines):

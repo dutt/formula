@@ -1,6 +1,7 @@
 import pygame
 
 from graphics.constants import colors
+from graphics.font import get_height
 
 
 def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=None, center=False):
@@ -18,7 +19,8 @@ def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=
     surface.blit(text_surface, rect)
 
 
-def display_lines(surface, font, lines, x=50, starty=50, ydiff=20):
+def display_lines(surface, font, lines, x=50, starty=50):
+    ydiff = get_height(font)
     y = starty
     for line in lines:
         display_text(surface, line, font, (x, y))

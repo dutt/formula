@@ -3,7 +3,7 @@ import pygame
 import util
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from graphics.spritesheet import Spritesheet
-
+from graphics import font
 
 class Assets:
     _assets = None
@@ -127,4 +127,8 @@ class Assets:
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 20)
         #self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 14)
-        self.font_message = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 16)
+        #self.font_message = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 16)
+
+        self.font_message = pygame.font.Font(util.resource_path("data/font/rm_typerighter_old.ttf"), 38)
+        self.font_message_height = font.get_height(self.font_message)
+        #self.font_message = pygame.font.Font(util.resource_path("data/font/primer print.ttf"), 30)

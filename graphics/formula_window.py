@@ -49,7 +49,8 @@ class FormulaWindow(Window):
         formula = formulas[game_data.formula_builder.currformula]
 
         surface = pygame.Surface(self.size.tuple())
-        linediff = 14
+        linediff = gfx_data.assets.font_message_height
+
         y = 5 * linediff
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
@@ -80,7 +81,7 @@ class FormulaWindow(Window):
 
         y += linediff * 2
         lines = textwrap.wrap(formulas[game_data.formula_builder.currformula].text_stats, 60)
-        display_lines(surface, gfx_data.assets.font_message, lines, 50, y, ydiff=13)
+        display_lines(surface, gfx_data.assets.font_message, lines, 50, y)
         y += len(lines) * linediff
 
         y += 6 * linediff
