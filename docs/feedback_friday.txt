@@ -1,16 +1,21 @@
-Formula is a kind of scaled back roguelite game about mixing ingredients and throwing the resulting vials at monsters in your hunt to get through ten levels.
+Formula is a kind of scaled back roguelike game about mixing ingredients and throwing the resulting vials at monsters in your hunt to get through ten levels.
 
-The setting:
+**The setting**
+
 You're part of the Tsars police for supernatural ...situations, The Black Hounds. Feared by some, respected by all. If they're using magic to do nasty things you will find them and they will learn that actions have consequences. Some far, far worse than others.
 
 Your first solo mission is Arina Danisinya, a respected scientist who has has grown increasingly erratic of late. Now she's shut herself in her tower and strange things are happening.
 
 Good luck lieutenant.
 
-The game:
+**The game**
+
 There are no items, no races, no NPC:s and no classes. This might lead you to the question, well what are there then? You have a formula cookbook where you combine ingredients into formulas. To give you an idea here's an example:
+
 Fire + Fire + Fire gives you a vial with short range, no splash but high damage.
+
 Fire + Fire + Range give you lower damage, but can be thrown further.
+
 Fire + Area + Range gives you even lower damage, but can be thrown further and does splash when it hits.
 
 For each slot you use up the cooldown for that formula increases. On the default setting you only tick cooldown when you explore new tiles which means each level only has a certain amount of cooldown, giving you a balancing act between heavy rare use formulas, or lighter frequent use ones, and when to use them.
@@ -20,43 +25,59 @@ As you level up you can enable bigger formulas, more formulas, unlock new ingred
 I've designed the game to primarily be played with keyboard+mouse with scroll, then you can keep your hands on WASD-area and the mouse. I have expanded the control scheme somewhat to support laptop users too. I think the one change is in the cookbook screen, use the arrow keys to switch slot/formula instead of mouse left/right/scroll. There is currently no keyboard only scheme.
 
 Things I'd like feedback on:
-- What parts of the game are fun?
-- What parts of the game are not so fun? Do you have an idea how they could be made more fun?
-- How's the learning curve, this has been a challenge. I've added a small in-game tutorial but would appreciate what you think is lacking.
-- Which modes do you prefer? My defaults or some other combination?
-- Hows' the UI/UX?
+
+* What parts of the game are fun?
+* What parts of the game are not so fun? Do you have an idea how they could be made more fun?
+* How's the learning curve, this has been a challenge. I've added a small in-game tutorial but would appreciate what you think is lacking.
+* Which modes do you prefer? My defaults or some other combination?
+* Hows' the UI/UX?
+
 But other things are of course appreciated, I appreciate bug reports and other forms of constructive feedback.
 
 If you get a crash you hopefully get a crash.log file, if you attach it with your report it'll make my life so much easier.
 
-Balancing is a problem for the next build, but if you have thoughts please post them anyway.
+Balancing is a problem for the next build, but if you have any thoughts on the matter please post them anyway.
+
+**Where do I get it?**
+
+A Windows build can be fetched at [https://web.tresorit.com/l#k1ik\_Y59e9QWs8KjkmXM1A](https://web.tresorit.com/l#k1ik_Y59e9QWs8KjkmXM1A)
+
+An Ubuntu 18.04 compatible build can be fetched at [https://web.tresorit.com/l#KV0tySqeljJiVHsJmvP5AQ](https://web.tresorit.com/l#KV0tySqeljJiVHsJmvP5AQ)
+
+If you have a mac or trouble running the provided binaries the code is available at [https://gitlab.com/duttish/formula](https://gitlab.com/duttish/formula)
+
+**Other notes**
 
 I'm not 100% sure about some parts of the design, so some parts are modified by command line arguments. I've set the default to my current preferences but the help is shown by -h on linux, windows refuse to print it for some reason so I'm adding it here too:
 
-$ ./build/formula.linux -h
-usage: formula.linux [-h] [--unlocking UNLOCKING] [--cooldown COOLDOWN]
-                       [--seed SEED] [--starting_mode STARTING_MODE]
+    $ ./build/formula.linux -h
+    usage: formula.linux [-h] [--unlocking UNLOCKING] [--cooldown COOLDOWN]
+                           [--seed SEED] [--starting_mode STARTING_MODE]
 
-Formula, a roguelite game about blending stuff and throwing them at monsters
+    Formula, a roguelite game about blending stuff and throwing them at monsters
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --unlocking UNLOCKING
-                        Are ingredients unlocked?
-                        Allowed choices:
-                          none - no unlocking, start with all ingredients
-                          level_2random - unlock ingredient on level up, choose between 2 random on level up
-                          level_all - unlock ingredients on level up, choose between all
-  --cooldown COOLDOWN   How does cooldown work?
-                        Allowed choices:
-                         always - always tick cooldowns 1 per round
-                         unary - tick 1 cooldown if you explore new tiles
-                         counting - tick 1 cooldown per newly explored tile
-  --seed SEED           Random seed, defaults to current timestamp. Can be any value
-  --starting_mode STARTING_MODE
-                        What formulas do you start with?
-                        Allowed choices:
-                         choose - start with showing the formula screen
-                         fire - FFR, FFR, FFR
+    optional arguments:
+      -h, --help            show this help message and exit
+      --unlocking UNLOCKING
+                            Are ingredients unlocked?
+                            Allowed choices:
+                              none - no unlocking, start with all ingredients
+                              level_2random - unlock ingredient on level up, choose between 2 random on level up
+                              level_all - unlock ingredients on level up, choose between all
+      --cooldown COOLDOWN   How does cooldown work?
+                            Allowed choices:
+                             always - always tick cooldowns 1 per round
+                             unary - tick 1 cooldown if you explore new tiles
+                             counting - tick 1 cooldown per newly explored tile
+      --seed SEED           Random seed, defaults to current timestamp. Can be any value
+      --starting_mode STARTING_MODE
+                            What formulas do you start with?
+                            Allowed choices:
+                             choose - start with showing the formula screen
+                             fire - FFR, FFR, FFR
 
-Of course I have various plans for improvements and so on, but before I add too much on top I'm curious what people think of the core game, so I can make the foundations of the game nice and solid. Your help would be much appreciated :)
+
+
+
+
+https://docs.google.com/forms/d/e/1FAIpQLSetLKKsh5vM__F2p5BorbsbB87377Bl88J59-wY0u2oQ19Oag/formResponse
