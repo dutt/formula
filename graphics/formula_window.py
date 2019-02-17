@@ -114,7 +114,7 @@ class FormulaWindow(Window):
         do_quit = key_action.get(EventType.exit)
         if do_quit:
             if GameStates.STORY_SCREEN in game_data.prev_state: # between levels
-                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
+                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
                 gfx_data.camera.initialize_map()
                 gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
                 return self.close(game_data, StoryWindow)

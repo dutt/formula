@@ -79,11 +79,14 @@ class Player(Entity):
             if quit_events:
                 player_action = ExitAction()
 
-            if config.conf.is_replaying:
+            if config.conf.is_replaying and input_recorder.events:
                 import time
                 time.sleep(1)
                 next_event = input_recorder.events.pop(0)
-                print("Replaying event {}".format(next_event))
+                if input_recorder.events:
+                    print("Replaying event {}".format(next_event))
+                else:
+                    print("Replaying last event {}".format(next_event))
                 if next_event.event_type == InputType.KEY:
                     key_events = [next_event]
                     mouse_events = []

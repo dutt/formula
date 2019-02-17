@@ -6,14 +6,15 @@ from components.events import EventType
 from components.game_states import GameStates
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 import systems.input_recorder
-
+import config
 
 def handle_keys(events, state):
     pressed_keys = pygame.key.get_pressed()
     modifiers = [key for key in [pygame.K_LALT, pygame.K_RALT] if pressed_keys[key]]
 
     for e in events:
-        systems.input_recorder.add_key_event(e)
+        if not config.conf.is_replaying:
+            systems.input_recorder.add_key_event(e)
         if state == GameStates.PLAY:
             return handle_player_turn_keys(e.key, modifiers)
         elif state == GameStates.LEVEL_UP:
@@ -124,8 +125,9 @@ def handle_level_up_keys(key, modifiers):
 
 def handle_mouse(events, constants, camera):
     for e in events:
+        if not config.conf.is_replaying:
+            systems.input_recorder.add_mouse_event(e)
         pos = e.pos
-        systems.input_recorder.add_mouse_event(e)
         cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
         cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
