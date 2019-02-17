@@ -106,6 +106,7 @@ class Entity:
         return util.distance(x, y, self.pos.x, self.pos.y)
 
     def move_astar(self, target, entities, game_map):
+        assert type(target) == util.Pos
         # Create a FOV map that has the dimensions of the map
         fov = tcod.map_new(game_map.width, game_map.height)
 
@@ -119,7 +120,7 @@ class Entity:
         # Check also that the object isn't self or the target (so that the start and the end points are free)
         # The AI class handles the situation if self is next to the target so it will not use this A* function anyway
         for entity in entities:
-            if entity.blocks and entity != self and entity != target:
+            if entity.blocks and entity != self and entity.pos != target:
                 # Set the tile as a wall so it must be navigated around
                 tcod.map_set_properties(fov, entity.pos.x, entity.pos.y, True, False)
 
@@ -128,7 +129,7 @@ class Entity:
         my_path = tcod.path_new_using_map(fov, 0.0)
 
         # Compute the path between self's coordinates and the target's coordinates
-        tcod.path_compute(my_path, self.pos.x, self.pos.y, target.pos.x, target.pos.y)
+        tcod.path_compute(my_path, self.pos.x, self.pos.y, target.x, target.y)
 
         # Check if the path exists, and in this case, also the path is shorter than 25 tiles
         # The path size matters if you want the monster to use alternative longer paths (for example through other

@@ -131,7 +131,7 @@ class MoveToTargetAction(Action):
         self.target = target
 
     def execute(self, game_data, _):
-        self.actor.move_astar(self.target, game_data.map.entities, game_data.map)
+        self.actor.move_astar(self.target.pos, game_data.map.entities, game_data.map)
         result = [{"moved": True}]
         return self.package(result)
 

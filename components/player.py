@@ -1,4 +1,5 @@
 import datetime
+import time
 
 import pygame
 import tcod
@@ -34,6 +35,7 @@ class Player(Entity):
                                      fighter=fighter_component, level=level_component, caster=caster_component,
                                      drawable=drawable_component)
         self.last_num_explored = None
+        self.moving_towards = None
 
     def handle_tick_cooldowns(self, game_data):
         if config.conf.cooldown_mode == "always":
@@ -80,8 +82,7 @@ class Player(Entity):
                 player_action = ExitAction()
 
             if config.conf.is_replaying and input_recorder.events:
-                import time
-                time.sleep(1)
+                time.sleep(0.5)
                 next_event = input_recorder.events.pop(0)
                 if input_recorder.events:
                     print("Replaying event {}".format(next_event))
@@ -169,10 +170,23 @@ class Player(Entity):
                         gfx_data.camera.center_on(destx, desty)
                         game_data.stats.move_player(Pos(destx, desty))
 
+            if left_click and game_data.state == GameStates.PLAY:
+                # click to move
+                self.moving_towards = Pos(left_click.cx, left_click.cy)
+                print("click to move to {}".format(self.moving_towards))
+
+            if self.moving_towards:
+                if self.pos == self.moving_towards:
+                    print("click to move done")
+                    self.moving_towards = None
+                else:
+                    self.move_astar(self.moving_towards, game_data.map.entities, game_data.map)
+                    time.sleep(0.2)
+
             if game_data.state == GameStates.LEVEL_UP:
                 gfx_data.windows.get(LevelUpWindow).visible = True
 
-            if game_data.state == GameStates.TARGETING:
+            elif game_data.state == GameStates.TARGETING:
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
                     from util import Vec
