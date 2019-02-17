@@ -125,24 +125,29 @@ def do_setup(constants):
     return game_data, gfx_data
 
 
-def write_logs(game_data, seed, start_time):
+def write_logs(game_data, seed, start_time, crashed):
     timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
     logname = "formula_run.{}.log".format(timestamp)
     data = {"seed": seed,
             "messages": [msg.text for msg in game_data.log.messages],
             "input_events": input_recorder.serialize_input(input_recorder.events),
+            "crashed" : crashed,
             "game_modes": {
                 "unlock_mode": config.conf.unlock_mode,
                 "cooldown_mode": config.conf.cooldown_mode,
                 "starting_mode": config.conf.starting_mode
             }
             }
+    if crashed:
+        data["traceback"] = str(traceback.format_exc())
     dirname = "formula_logs"
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
-    path = os.path.join(dirname, logname)
+    path = os.path.abspath((os.path.join(dirname, logname)))
     with open(path, 'w') as writer:
         writer.write(json.dumps(data, indent=2))
+
+    print("Log file {} written".format(path))
 
 
 def load_replay_log(path):
@@ -161,8 +166,11 @@ def load_replay_log(path):
 
 
 def main():
+    game_data = None
+    now = datetime.datetime.now()
     if config.conf.is_replaying:
         load_replay_log(config.conf.replay_log_path)
+        seed = config.conf.random_seed
     else:
         seed = set_seed()
 
@@ -177,14 +185,12 @@ def main():
         pygame.quit()
 
         if not config.conf.is_replaying:
-            write_logs(game_data, seed, now)
+            write_logs(game_data, seed, now, crashed=False)
     except:
         tb = traceback.format_exc()
         print(tb)
         try:
-            with open("crash.log", 'w') as writer:
-                writer.write("Seed {}\n".format(seed))
-                writer.write(tb)
+            write_logs(game_data, seed, now, crashed=True)
         except:
             print("Failed to write crashlog:")
             traceback.print_exc()
