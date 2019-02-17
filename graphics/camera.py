@@ -9,6 +9,8 @@ class Camera:
         self.y2 = height
         self.width = width
         self.height = height
+        self.orig_width = width
+        self.orig_height = height
         self.game_data = game_data
         self.map_size = None
 
