@@ -80,15 +80,16 @@ class Player(Entity):
                 player_action = ExitAction()
 
             if config.conf.is_replaying:
+                import time
+                time.sleep(1)
                 next_event = input_recorder.events.pop(0)
+                print("Replaying event {}".format(next_event))
                 if next_event.event_type == InputType.KEY:
                     key_events = [next_event]
                     mouse_events = []
                 else:
                     key_events = []
-                    mouse_events = []
-                import time
-                time.sleep(1)
+                    mouse_events = [next_event]
             else:
                 key_events = [KeyEvent(e) for e in events if e.type == pygame.KEYDOWN]
                 mouse_events = [MouseEvent(e) for e in events if e.type == pygame.MOUSEBUTTONDOWN]

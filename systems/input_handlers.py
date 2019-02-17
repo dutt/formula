@@ -123,15 +123,15 @@ def handle_level_up_keys(key, modifiers):
 
 
 def handle_mouse(events, constants, camera):
-    pos = pygame.mouse.get_pos()
     for e in events:
+        pos = e.pos
         systems.input_recorder.add_mouse_event(e)
-        cx = (pos[0] - constants.right_panel_size.width) // CELL_WIDTH
-        cy = pos[1] // CELL_HEIGHT
+        cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
+        cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
         data = AttrDict({
-            "x": pos[0],
-            "y": pos[1],
+            "x": pos.x,
+            "y": pos.y,
             "cx": cx,
             "cy": cy,
         })

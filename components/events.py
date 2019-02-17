@@ -60,6 +60,12 @@ class KeyEvent(Event):
         retr.data = attrdict.AttrDict({"key": data["key"]})
         return retr
 
+    def __str__(self):
+        return "<KeyEvent key={}>".format(self.key)
+
+    def __repr__(self):
+        return str(self)
+
 
 class MouseEvent(Event):
     def __init__(self, raw_event):
@@ -72,17 +78,28 @@ class MouseEvent(Event):
                                   "button": raw_event.button})
 
     def serialize(self):
-        return {"pos": (self.data.pos.x, self.data.pos.y),
+        return {"type": InputType.MOUSE.name,
+                "pos": (self.data.pos.x, self.data.pos.y),
                 "button": self.data.button}
 
     @property
     def button(self):
         return self.data.button
 
+    @property
+    def pos(self):
+        return self.data.pos
+
     @staticmethod
     def deserialize(data):
         retr = MouseEvent(raw_event=None)
         retr.event_type = InputType.MOUSE
-        retr.data = attrdict.AttrDict({"pos": Pos(data["pos"]["x"], data["pos"]["y"]),
+        retr.data = attrdict.AttrDict({"pos": Pos(data["pos"][0], data["pos"][1]),
                                        "button": data["button"]})
         return retr
+
+    def __str__(self):
+        return "<MouseEvent pos={} button={}>".format(self.pos, self.button)
+
+    def __repr__(self):
+        return str(self)
