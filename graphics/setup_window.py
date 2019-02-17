@@ -3,7 +3,7 @@ import pygame
 from graphics.display_helpers import display_text
 #from graphics.minor_windows import WelcomeWindow
 from graphics.window import Window
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 
 
 class SetupWindow(Window):
@@ -22,7 +22,7 @@ class SetupWindow(Window):
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
-        do_quit = key_action.get(Event.exit)
+        do_quit = key_action.get(EventType.exit)
         if do_quit:
             #return self.close(game_data, WelcomeWindow)
             return self.close(game_data, None)

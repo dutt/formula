@@ -9,7 +9,7 @@ from graphics.constants import colors, CELL_WIDTH, CELL_HEIGHT
 from graphics.display_helpers import display_bar, display_text, display_lines
 from graphics.minor_windows import GeneralHelpWindow
 from graphics.window import Window
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from util import Pos, distance
 from systems.tutorial import Tutorial
 
@@ -241,6 +241,6 @@ class GameWindow(Window):
         gfx_data.main.blit(main, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
-        show_help = key_action.get(Event.show_help)
+        show_help = key_action.get(EventType.show_help)
         if show_help:
-            return {Event.show_window: GeneralHelpWindow}
+            return {EventType.show_window: GeneralHelpWindow}

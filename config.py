@@ -1,4 +1,6 @@
 import argparse
+import os
+import sys
 
 unlocking_help="""Are ingredients unlocked?
 Allowed choices: 
@@ -16,12 +18,18 @@ Allowed choices:
  choose - start with showing the formula screen
  fire - FFR, FFR, FFR
 """
+replay_help="""Replay a game log, log values override all other settings. 
+Argument is the path to the log file
+"""
+replay_off="off"
 formula_description="Formula, a roguelite game about blending stuff and throwing them at monsters"
+
 parser = argparse.ArgumentParser(description=formula_description, formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument("--unlocking", type=str, default="level_all", action="store", help=unlocking_help)
 parser.add_argument("--cooldown", type=str, default="unary", action="store", help=cooldown_help)
 parser.add_argument("--seed", type=str, default="now", action="store", help=seed_help)
 parser.add_argument("--starting_mode", type=str, default="fire", action="store", help=starting_mode_help)
+parser.add_argument("--replay_log_path", type=str, action="store", default=replay_off, help=replay_help)
 args = parser.parse_args()
 
 
@@ -34,7 +42,16 @@ class Config:
         self.random_seed = args.seed
         self.starting_mode = args.starting_mode
         assert self.starting_mode in ["choose", "fire"]
-        text = "Config: unlock mode {}, cooldown mode {}, seed {}, starting mode {}"
+        self.replay_log_path = args.replay_log_path
+        if not os.path.exists(self.replay_log_path) and self.replay_log_path != replay_off:
+            print("Invalid file to reply log path: {}".format(os.path.abspath(self.replay_log_path)))
+            sys.exit(1)
+        self.is_replaying = self.replay_log_path != replay_off
+        if self.is_replaying:
+            text = "Replaying log file {}".format(self.replay_log_path)
+        else:
+            text = "Config: unlock mode {}, cooldown mode {}, seed {}, starting mode {}"
         print(text.format(self.unlock_mode, self.cooldown_mode, self.random_seed, self.starting_mode))
+
 
 conf = Config()

@@ -1,4 +1,4 @@
-from components.events import Event
+from components.events import EventType
 from components.game_states import GameStates
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.level_up_window import LevelUpWindow
@@ -44,7 +44,7 @@ class WindowManager:
             res = wnd.handle_key(game_data, gfx_data, key_action)
             if res is None:
                 return False, key_action  # not handled, game can handle it
-            show_window = res.get(Event.show_window)
+            show_window = res.get(EventType.show_window)
             if show_window:
                 wnd = self.get(show_window)
                 if wnd:
@@ -69,7 +69,7 @@ class WindowManager:
             res = wnd.draw(game_data, gfx_data)
             if not res:
                 return
-            show_window = res.get(Event.show_window)
+            show_window = res.get(EventType.show_window)
             if not show_window:
                 return
             wnd = self.get(show_window)

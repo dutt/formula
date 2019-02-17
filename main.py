@@ -1,14 +1,19 @@
 import contextlib
-import traceback
+import datetime
+import json
 import os
+import traceback
 
 with contextlib.redirect_stdout(None):
     import pygame
+
+from attrdict import AttrDict
 
 from systems.death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, setup_data_state
 from systems.messages import Message
 from components.game_states import GameStates
+from systems import input_recorder
 import config
 
 
@@ -37,14 +42,14 @@ def play_game(game_data, gfx_data):
                         game_data.stats.throw_vial(formula)
                         if config.conf.cooldown_mode == "always":
                             game_data.player.caster.add_cooldown(formula.formula_idx,
-                                                                 formula.cooldown+1)
+                                                                 formula.cooldown + 1)
                         else:
                             game_data.player.caster.add_cooldown(formula.formula_idx,
                                                                  formula.cooldown)
                 do_quit = res.get("quit")
                 if do_quit:
                     keep_playing = res.get("keep_playing")
-                    return keep_playing == True # handle False and None
+                    return keep_playing == True  # handle False and None
 
                 xp = res.get("xp")
                 if xp:
@@ -53,8 +58,9 @@ def play_game(game_data, gfx_data):
                     if leveled_up:
                         game_data.log.add_message(
                                 Message(
-                                    "You grow stronger, reached level {}".format(game_data.player.level.current_level),
-                                    (0, 255, 0)))
+                                        "You grow stronger, reached level {}".format(
+                                                game_data.player.level.current_level),
+                                        (0, 255, 0)))
                         game_data.prev_state.append(game_data.state)
                         game_data.prev_state.append(GameStates.FORMULA_SCREEN)
                         game_data.state = GameStates.LEVEL_UP
@@ -98,8 +104,8 @@ def set_seed():
         seed = config.conf.random_seed
     # debugging seeds
     # original seed
-    #seed = "2018-12-30 09:38:04.303108"
-    #seed = "2019-01-25 22:19:22.597013"
+    # seed = "2018-12-30 09:38:04.303108"
+    # seed = "2019-01-25 22:19:22.597013"
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
     return seed
@@ -119,26 +125,59 @@ def do_setup(constants):
     return game_data, gfx_data
 
 
+def write_logs(game_data, seed, start_time):
+    timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
+    logname = "formula_run.{}.log".format(timestamp)
+    data = {"seed": seed,
+            "messages": [msg.text for msg in game_data.log.messages],
+            "input_events": input_recorder.serialize_input(input_recorder.events),
+            "game_modes": {
+                "unlock_mode": config.conf.unlock_mode,
+                "cooldown_mode": config.conf.cooldown_mode,
+                "starting_mode": config.conf.starting_mode
+            }
+            }
+    dirname = "formula_logs"
+    if not os.path.isdir(dirname):
+        os.mkdir(dirname)
+    path = os.path.join(dirname, logname)
+    with open(path, 'w') as writer:
+        writer.write(json.dumps(data, indent=2))
+
+
+def load_replay_log(path):
+    with open(path, 'r') as reader:
+        content = reader.read()
+    data = AttrDict(json.loads(content))
+    data.game_modes = AttrDict(data.game_modes)
+
+    config.conf.starting_mode = data.game_modes.starting_mode
+    config.conf.unlock_mode = data.game_modes.unlock_mode
+    config.conf.cooldown_mode = data.game_modes.cooldown_mode
+
+    events = data.input_events
+    deserialized = input_recorder.deserialize_input(events)
+    input_recorder.events.extend(deserialized)
+
+
 def main():
-    seed = set_seed()
+    if config.conf.is_replaying:
+        load_replay_log(config.conf.replay_log_path)
+    else:
+        seed = set_seed()
+
     try:
         constants = get_constants()
         game_data, gfx_data = do_setup(constants)
 
+        now = datetime.datetime.now()
         while play_game(game_data, gfx_data):
             game_data, gfx_data = do_setup(constants)
 
         pygame.quit()
 
-        mode = 'w'
-        logname = "formula.log"
-        if os.path.exists(logname):
-            mode = 'a'
-        with open(logname, mode) as writer:
-            writer.write("Seed {}\n".format(seed))
-            for msg in game_data.log.messages:
-                writer.write(msg.text + "\n")
-            writer.write("\n")
+        if not config.conf.is_replaying:
+            write_logs(game_data, seed, now)
     except:
         tb = traceback.format_exc()
         print(tb)
@@ -149,6 +188,7 @@ def main():
         except:
             print("Failed to write crashlog:")
             traceback.print_exc()
+
 
 if __name__ == '__main__':
     main()

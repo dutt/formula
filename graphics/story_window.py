@@ -3,7 +3,7 @@ import textwrap
 from graphics.display_helpers import display_menu, display_text
 from graphics.game_window import GameWindow
 from graphics.window import Window, TextWindow
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from graphics.assets import Assets
 
 
@@ -62,7 +62,7 @@ class StoryWindow(Window):
             self.offset = min(len(self.current_lines) - self.num_lines, self.offset + self.offset_jump)
 
     def handle_key(self, game_data, gfx_data, key_action):
-        do_quit = key_action.get(Event.exit)
+        do_quit = key_action.get(EventType.exit)
         if do_quit:
             return self.close(game_data, GameWindow)
 
@@ -70,19 +70,19 @@ class StoryWindow(Window):
         if next:
             return self.close(game_data, GameWindow)
 
-        scroll_up = key_action.get(Event.scroll_up)
+        scroll_up = key_action.get(EventType.scroll_up)
         if scroll_up:
             self.scroll_up()
 
-        scroll_down = key_action.get(Event.scroll_down)
+        scroll_down = key_action.get(EventType.scroll_down)
         if scroll_down:
             self.scroll_down()
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        scroll_up = mouse_action.get(Event.scroll_up)
+        scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
             self.scroll_up()
 
-        scroll_down = mouse_action.get(Event.scroll_down)
+        scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.scroll_down()

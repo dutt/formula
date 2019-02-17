@@ -4,7 +4,7 @@ from graphics.assets import Assets
 from graphics.constants import colors
 from graphics.display_helpers import display_text
 from graphics.window import Window
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from util import Pos
 
 
@@ -27,9 +27,9 @@ class MessageLogWindow(Window):
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        scroll_up = mouse_action.get(Event.scroll_up)
+        scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
             self.offset = max(-len(game_data.log.messages) + self.num_messages, self.offset - 2, 0)
-        scroll_down = mouse_action.get(Event.scroll_down)
+        scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.offset = min(len(game_data.log.messages) - self.num_messages, self.offset + 2)

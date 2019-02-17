@@ -5,7 +5,7 @@ import pygame
 from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window, TextWindow
 from graphics.story_window import StoryWindow
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from components.game_states import GameStates
 from util import resource_path
 
@@ -111,7 +111,7 @@ class FormulaWindow(Window):
         game_data.formula_builder.currslot = 0
 
     def handle_key(self, game_data, gfx_data, key_action):
-        do_quit = key_action.get(Event.exit)
+        do_quit = key_action.get(EventType.exit)
         if do_quit:
             if GameStates.STORY_SCREEN in game_data.prev_state: # between levels
                 game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
@@ -144,18 +144,18 @@ class FormulaWindow(Window):
             return {}
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        scroll_up = mouse_action.get(Event.scroll_up)
+        scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
             self.change_slot(game_data, -1)
 
-        scroll_down = mouse_action.get(Event.scroll_down)
+        scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.change_slot(game_data, 1)
 
-        right_clicked = mouse_action.get(Event.right_click)
+        right_clicked = mouse_action.get(EventType.right_click)
         if right_clicked:
             self.change_formula(game_data, 1)
 
-        left_clicked = mouse_action.get(Event.left_click)
+        left_clicked = mouse_action.get(EventType.left_click)
         if left_clicked:
             self.change_formula(game_data, -1)

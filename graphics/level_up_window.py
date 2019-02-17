@@ -5,7 +5,7 @@ import pygame
 import config
 from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from graphics.formula_window import FormulaWindow
 from components.ingredients import Ingredient
 
@@ -118,7 +118,7 @@ class LevelUpWindow(Window):
             else:
                 self.next_choice(game_data)
 
-        level_up = key_action.get(Event.level_up)
+        level_up = key_action.get(EventType.level_up)
         if level_up:
             self.apply_choice(game_data.menu_data.currchoice, game_data)
             game_data.player.caster.set_formulas(game_data.formula_builder.evaluate())
@@ -126,9 +126,9 @@ class LevelUpWindow(Window):
             return self.close(game_data, next_window=FormulaWindow)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        scroll_up = mouse_action.get(Event.scroll_up)
+        scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
             self.prev_choice(game_data)
-        scroll_down = mouse_action.get(Event.scroll_down)
+        scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.next_choice(game_data)

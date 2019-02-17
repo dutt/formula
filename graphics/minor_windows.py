@@ -2,7 +2,7 @@ import textwrap
 
 import pygame
 
-from components.events import Event
+from components.events import EventType
 from graphics.display_helpers import display_text, display_lines, display_menu
 from graphics.window import TextWindow, Window
 from util import resource_path
@@ -26,11 +26,11 @@ class AskQuitWindow(Window):
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
-        keep_playing = key_action.get(Event.keep_playing)
+        keep_playing = key_action.get(EventType.keep_playing)
         if keep_playing:
             self.close(game_data)
 
-        do_exit = key_action.get(Event.exit)
+        do_exit = key_action.get(EventType.exit)
         if do_exit:
             return None  # propagate quit event
 
@@ -59,11 +59,11 @@ class DeadWindow(Window):
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
-        keep_playing = key_action.get(Event.keep_playing)
+        keep_playing = key_action.get(EventType.keep_playing)
         if keep_playing:
             return None  # propagate exit, restart
 
-        do_exit = key_action.get(Event.exit)
+        do_exit = key_action.get(EventType.exit)
         if do_exit:
             return None  # propagate quit event
 
@@ -96,10 +96,10 @@ class VictoryWindow(TextWindow):
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_key(self, game_data, gfx_data, key_action):
-        keep_playing = key_action.get(Event.keep_playing)
+        keep_playing = key_action.get(EventType.keep_playing)
         if keep_playing:
             return None  # propagate exit, restart
 
-        do_exit = key_action.get(Event.exit)
+        do_exit = key_action.get(EventType.exit)
         if do_exit:
             return None  # propagate quit event

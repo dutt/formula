@@ -14,8 +14,10 @@ from systems.fov import recompute_fov
 from components.game_states import GameStates
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
-from systems.input_handlers import Event, handle_keys, handle_mouse
+from systems.input_handlers import EventType, handle_keys, handle_mouse
 from systems.messages import Message
+from systems import input_recorder
+from components.events import InputType, KeyEvent, MouseEvent
 from util import Pos
 from graphics.level_up_window import LevelUpWindow
 import config
@@ -77,8 +79,19 @@ class Player(Entity):
             if quit_events:
                 player_action = ExitAction()
 
-            key_events = [e for e in events if e.type == pygame.KEYDOWN]
-            mouse_events = [e for e in events if e.type == pygame.MOUSEBUTTONDOWN]
+            if config.conf.is_replaying:
+                next_event = input_recorder.events.pop(0)
+                if next_event.event_type == InputType.KEY:
+                    key_events = [next_event]
+                    mouse_events = []
+                else:
+                    key_events = []
+                    mouse_events = []
+                import time
+                time.sleep(1)
+            else:
+                key_events = [KeyEvent(e) for e in events if e.type == pygame.KEYDOWN]
+                mouse_events = [MouseEvent(e) for e in events if e.type == pygame.MOUSEBUTTONDOWN]
 
             key_action = handle_keys(key_events, game_data.state)
             mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera)
@@ -93,15 +106,15 @@ class Player(Entity):
                 if handled:
                     key_action = gui_action
 
-            fullscreen = key_action.get(Event.fullscreen)
-            move = key_action.get(Event.move)
-            do_exit = key_action.get(Event.exit)
-            left_click = mouse_action.get(Event.left_click)
-            right_click = mouse_action.get(Event.right_click)
-            level_up = key_action.get(Event.level_up)
-            start_throwing_vial = key_action.get(Event.start_throwing_vial)
-            show_help = key_action.get(Event.show_help)
-            interact = key_action.get(Event.interact)
+            fullscreen = key_action.get(EventType.fullscreen)
+            move = key_action.get(EventType.move)
+            do_exit = key_action.get(EventType.exit)
+            left_click = mouse_action.get(EventType.left_click)
+            right_click = mouse_action.get(EventType.right_click)
+            level_up = key_action.get(EventType.level_up)
+            start_throwing_vial = key_action.get(EventType.start_throwing_vial)
+            show_help = key_action.get(EventType.show_help)
+            interact = key_action.get(EventType.interact)
 
             if interact:
                 for e in game_data.map.entities:
@@ -191,7 +204,7 @@ class Player(Entity):
                 if game_data.state == GameStates.TARGETING:
                     turn_results.append({"targeting_cancelled": True})
                 else:
-                    keep_playing = key_action.get(Event.keep_playing)
+                    keep_playing = key_action.get(EventType.keep_playing)
                     player_action = ExitAction(keep_playing)
 
             if fullscreen:

@@ -5,7 +5,7 @@ import pygame
 from graphics.assets import Assets
 from graphics.display_helpers import display_text, display_bar, display_menu
 from graphics.constants import colors
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from util import Size
 
 
@@ -45,7 +45,7 @@ class Window(Clickable):
     def close(self, game_data, next_window=None):
         game_data.state = game_data.prev_state.pop()
         self.visible = False
-        return {Event.show_window: next_window}
+        return {EventType.show_window: next_window}
 
     @property
     def visible(self):
@@ -128,24 +128,24 @@ class TextWindow(Window):
             self.offset = min(len(self.lines) - self.num_lines, self.offset + self.offset_jump)
 
     def handle_key(self, game_data, gfx_data, key_action):
-        do_quit = key_action.get(Event.exit)
+        do_quit = key_action.get(EventType.exit)
         if do_quit:
             return self.close(game_data, self.next_window)
 
-        scroll_up = key_action.get(Event.scroll_up)
+        scroll_up = key_action.get(EventType.scroll_up)
         if scroll_up:
             self.scroll_up()
 
-        scroll_down = key_action.get(Event.scroll_down)
+        scroll_down = key_action.get(EventType.scroll_down)
         if scroll_down:
             self.scroll_down()
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        scroll_up = mouse_action.get(Event.scroll_up)
+        scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
             self.scroll_up()
 
-        scroll_down = mouse_action.get(Event.scroll_down)
+        scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.scroll_down()
 

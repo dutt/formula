@@ -4,7 +4,7 @@ from graphics.assets import Assets
 from graphics.constants import colors
 from graphics.display_helpers import display_text
 from graphics.window import Window, Bar, Label, Clickable
-from systems.input_handlers import Event
+from systems.input_handlers import EventType
 from util import Pos, Size
 
 
@@ -29,10 +29,10 @@ class FormulaMarker(Clickable):
             display_text(surface, msg, Assets.get().font_message, self.pos.tuple())
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        left_click = mouse_action.get(Event.left_click)
+        left_click = mouse_action.get(EventType.left_click)
         if left_click:
             print("Formula {} clicked".format(self.formula_idx))
-            return {Event.start_throwing_vial: self.formula_idx}
+            return {EventType.start_throwing_vial: self.formula_idx}
 
 
 class RightPanelWindow(Window):
