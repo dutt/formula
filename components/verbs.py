@@ -41,5 +41,7 @@ def can_see_player(monster, game_data, visibility=10):
 def can_attack_player(monster, game_data, min_dist=0, max_dist=1.5):
     if not can_see_player(monster, game_data):
         return False
+    if game_data.player.fighter.hp <= 0:
+        return False
     vec = monster.pos - game_data.player.pos
     return min_dist <= vec.length() <= max_dist

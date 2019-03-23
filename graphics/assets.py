@@ -28,11 +28,13 @@ class Assets:
         self.floor_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Floor.png"))
         self.potion_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Potion.png"))
         self.medium_weapons_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/MedWep.png"))
-        self.effect0_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Effect"))
+        self.effect_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Effect"))
         self.ammo_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Ammo.png"))
         self.humanoid_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Humanoid"))
         self.quadraped_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Quadraped"))
         self.player_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Player"))
+        self.money_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Money.png"))
+        self.key_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Key.png"))
 
         if graphics_file_tile_size.width != CELL_WIDTH or graphics_file_tile_size.height != CELL_HEIGHT:
             scale = (CELL_WIDTH, CELL_HEIGHT)
@@ -122,8 +124,11 @@ class Assets:
         self.sword = get_img(self.medium_weapons_sheet, 0, 0)
         self.arrow = get_img(self.ammo_sheet, 0, 2)
 
-        self.shield_effect = get_img(self.effect0_sheet, 4, 23)
-        self.spark_effect = get_img(self.effect0_sheet, 3, 24)
+        self.shield_effect = get_animation(self.effect_sheet, 4, 23)
+        self.spark_effect = get_animation(self.effect_sheet, 3, 24)
+
+        self.crystal = get_img(self.money_sheet, 1, 3)
+        self.key = get_img(self.key_sheet, 0, 0)
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 20)
         #self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 14)

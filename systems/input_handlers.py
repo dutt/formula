@@ -81,11 +81,11 @@ def handle_formula_screen_keys(key, modifiers):
     elif key == pygame.K_r:
         return {"ingredient": Ingredient.AREA}
     elif key == pygame.K_a:
-        return {'ingredient': Ingredient.COLD}
+        return {'ingredient': Ingredient.WATER}
     elif key == pygame.K_s:
         return {'ingredient': Ingredient.LIFE}
     elif key == pygame.K_d:
-        return {'ingredient': Ingredient.SHIELD}
+        return {'ingredient': Ingredient.EARTH}
     elif key == pygame.K_LEFT:
         return {"next_formula": -1}
     elif key == pygame.K_RIGHT:

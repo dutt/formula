@@ -8,6 +8,8 @@ from graphics.visual_effect import VisualEffectSystem
 from util import Pos
 from graphics.assets import Assets
 from graphics.constants import colors
+import config
+
 
 class Fighter:
     def __init__(self, hp, defense, power, xp=0, dmg_type=DamageType.PHYSICAL, resistances=None, immunities=None,
@@ -62,7 +64,10 @@ class Fighter:
 
         if self.hp <= 0:
             self.killed_by = source
-            results.append({"dead": self.owner, "xp": self.xp})
+            if config.conf.keys:
+                results.append({"dead": self.owner})
+            else:
+                results.append({"dead": self.owner, "xp": self.xp})
         return results
 
     def heal(self, amount):

@@ -6,6 +6,7 @@ from graphics.display_helpers import display_text
 from graphics.window import Window, Bar, Label, Clickable
 from systems.input_handlers import EventType
 from util import Pos, Size
+import config
 
 
 class FormulaMarker(Clickable):
@@ -72,8 +73,10 @@ class RightPanelWindow(Window):
         if game_data.player.fighter.shield:
             self.shield_bar.draw(surface, game_data.player.fighter.shield.level,
                                  game_data.player.fighter.shield.max_level)
-        display_text(surface, "Level {}".format(game_data.player.level.current_level), Assets.get().font_message, (10, 105))
-        self.xp_bar.draw(surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level)
+
+        if not config.conf.keys:
+            display_text(surface, "Level {}".format(game_data.player.level.current_level), Assets.get().font_message, (10, 105))
+            self.xp_bar.draw(surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level)
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):

@@ -52,7 +52,7 @@ class DeadWindow(Window):
         lines = []
         for k in kills:
             lines.append("{} {}".format(kills[k], k))
-        display_lines(surface, gfx_data.assets.font_message, lines, x=120, starty=180, ydiff=14)
+        display_lines(surface, gfx_data.assets.font_message, lines, x=120, starty=180)
 
         display_text(surface, "Press Escape again to quit, press Space to keep playing",
                      gfx_data.assets.font_message, (120, 500))

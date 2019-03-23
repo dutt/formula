@@ -2,11 +2,11 @@ import textwrap
 
 import pygame
 
-from graphics.display_helpers import display_text, display_lines
-from graphics.window import Window, TextWindow
-from graphics.story_window import StoryWindow
-from systems.input_handlers import EventType
 from components.game_states import GameStates
+from graphics.display_helpers import display_text, display_lines
+from graphics.story_window import StoryWindow
+from graphics.window import Window, TextWindow
+from systems.input_handlers import EventType
 from util import resource_path
 
 
@@ -36,14 +36,40 @@ class FormulaWindow(Window):
                     ingredient_lines.append("W: Firespray")
                 else:
                     ingredient_lines.append("W: Fire")
+            if game_data.formula_builder.ingredient_unlocked(Ingredient.WATER):
+                if game_data.formula_builder.ingredient_unlocked(Ingredient.SLEET):
+                    ingredient_lines.append("A: Slush")
+                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICE):
+                    ingredient_lines.append("A: Ice")
+                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICE_VORTEX):
+                    ingredient_lines.append("A: Icespray")
+                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICEBOLT):
+                    ingredient_lines.append("A: Icebolt")
+                else:
+                    ingredient_lines.append("A: Water")
+
             ingredient_lines.extend([
                 "E: Range" if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
                 "R: Area" if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
-                "A: Cold" if game_data.formula_builder.ingredient_unlocked(Ingredient.COLD) else "",
                 "S: Life" if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
-                "D: Shield" if game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD) else ""
+                "D: Earth" if game_data.formula_builder.ingredient_unlocked(Ingredient.EARTH) else ""
             ])
-            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65, ydiff=14)
+            ingredient_lines = [i for i in ingredient_lines if i != ""]
+
+            def get_ingredient_list_key(item):
+                mapping = {
+                    'Q': 0,
+                    'W': 1,
+                    'E': 2,
+                    'R': 3,
+                    'A': 4,
+                    'S': 5,
+                    'D': 6,
+                }
+                return mapping[item[0]]
+
+            ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
+            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65)
 
         formulas = game_data.formula_builder.evaluate(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
@@ -62,7 +88,7 @@ class FormulaWindow(Window):
         display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
         y += linediff
         for idx, form in enumerate(game_data.formula_builder.current_slots):
-            text = "Slot {}: {}".format(idx+1, form.name)
+            text = "Slot {}: {}".format(idx + 1, form.name)
             if idx == game_data.formula_builder.currslot:
                 text += "<-- "
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
@@ -73,7 +99,8 @@ class FormulaWindow(Window):
 
         if formula.suboptimal:
             y += linediff
-            display_text(surface, "INFO: Combined heal/attack or attack modifier but no attack", gfx_data.assets.font_message, (50, y))
+            display_text(surface, "INFO: Combined heal/attack or attack modifier but no attack",
+                         gfx_data.assets.font_message, (50, y))
 
         y += linediff * 2
         cooldown_text = "Cooldown: {} rounds".format(formula.cooldown)
@@ -92,7 +119,7 @@ class FormulaWindow(Window):
         display_text(surface, "Arrow up/down or Mouse scroll: select slot",
                      gfx_data.assets.font_message,
                      (50, y))
-        y += 2* linediff
+        y += 2 * linediff
         display_text(surface, "Press Tab for help, or Space to confirm selection",
                      gfx_data.assets.font_message,
                      (50, y))
@@ -114,12 +141,12 @@ class FormulaWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)
         if do_quit:
-            if GameStates.STORY_SCREEN in game_data.prev_state: # between levels
+            if GameStates.STORY_SCREEN in game_data.prev_state:  # between levels
                 game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
                 gfx_data.camera.initialize_map()
                 gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
                 return self.close(game_data, StoryWindow)
-            else: #after level up
+            else:  # after level up
                 game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
                 return self.close(game_data)
 

@@ -5,7 +5,7 @@ import pygame
 import tcod
 
 from components.action import MoveToPositionAction, AttackAction, ExitAction, ThrowVialAction, WaitAction, \
-    DescendStairsAction, LootAction
+    DescendStairsAction, LootAction, PickupCrystalAction
 from components.caster import Caster
 from components.drawable import Drawable
 from components.fighter import Fighter
@@ -79,7 +79,7 @@ class Player(Entity):
             events = pygame.event.get()
             quit_events = [e for e in events if e.type == pygame.QUIT]
             if quit_events:
-                player_action = ExitAction()
+                player_action = ExitAction(keep_playing=False, ask=False)
 
             if config.conf.is_replaying and input_recorder.events:
                 time.sleep(0.2)
@@ -142,6 +142,9 @@ class Player(Entity):
                                 e.name = "Looted r" + e.name[1:]
                                 game_data.stats.loot_monster(e)
                             break
+                        elif e.crystal:
+                            player_action = PickupCrystalAction(self, e)
+                            break
                 else:
                     if config.conf.cooldown_mode != "always":
                         player_action = WaitAction(self)
@@ -171,15 +174,28 @@ class Player(Entity):
                         game_data.stats.move_player(Pos(destx, desty))
 
             if left_click and game_data.state == GameStates.PLAY:
-                # click to move
-                self.moving_towards = Pos(left_click.cx, left_click.cy)
+                monster_there = False
+                for e in game_data.map.entities:
+                    if e.pos.x == left_click.cx and e.pos.y == left_click.cy:
+                        if e.ai:
+                            monster_there = True
+                if not monster_there:
+                    # click to move
+                    self.moving_towards = Pos(left_click.cx, left_click.cy)
 
             if self.moving_towards:
                 if self.pos == self.moving_towards:
                     self.moving_towards = None
                 else:
+                    last_moving_towards_pos = Pos(self.pos.x, self.pos.y)
                     self.move_astar(self.moving_towards, game_data.map.entities, game_data.map)
-                    time.sleep(0.2)
+                    if last_moving_towards_pos == self.pos:
+                        self.moving_towards = None
+                    else:
+                        gfx_data.camera.center_on(self.pos.x, self.pos.y)
+                        game_data.stats.move_player(self.pos)
+                        time.sleep(0.15)
+                        player_action = MoveToPositionAction(self, targetpos=Pos(self.pos.x, self.pos.y))
 
             if game_data.state == GameStates.LEVEL_UP:
                 gfx_data.windows.get(LevelUpWindow).visible = True

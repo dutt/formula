@@ -3,11 +3,11 @@ import random
 import pygame
 
 import config
+from components.ingredients import Ingredient
 from graphics.display_helpers import display_text, display_lines
+from graphics.formula_window import FormulaWindow
 from graphics.window import Window
 from systems.input_handlers import EventType
-from graphics.formula_window import FormulaWindow
-from components.ingredients import Ingredient
 
 
 class LevelUpWindow(Window):
@@ -43,16 +43,28 @@ class LevelUpWindow(Window):
                         all_choices.extend([Ingredient.INFERNO.description,
                                             Ingredient.FIREBOLT.description,
                                             Ingredient.FIRESPRAY.description])
+
+                if not game_data.formula_builder.ingredient_unlocked(Ingredient.WATER):
+                    all_choices.append(Ingredient.WATER.description)
+                else:
+                    if not any([game_data.formula_builder.ingredient_unlocked(Ingredient.SLEET),
+                                game_data.formula_builder.ingredient_unlocked(Ingredient.ICE),
+                                game_data.formula_builder.ingredient_unlocked(Ingredient.ICEBOLT),
+                                game_data.formula_builder.ingredient_unlocked(Ingredient.ICE_VORTEX)]):
+                        all_choices.extend([Ingredient.SLEET.description,
+                                            Ingredient.ICE.description,
+                                            Ingredient.ICEBOLT.description,
+                                            Ingredient.ICE_VORTEX.description])
+
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE):
                     all_choices.append(Ingredient.RANGE.description)
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.AREA):
                     all_choices.append(Ingredient.AREA.description)
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.COLD):
-                    all_choices.append(Ingredient.COLD.description)
                 if not game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE):
                     all_choices.append(Ingredient.LIFE.description)
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.SHIELD):
-                    all_choices.append(Ingredient.SHIELD.description)
+                if not game_data.formula_builder.ingredient_unlocked(Ingredient.EARTH):
+                    all_choices.append(Ingredient.EARTH.description)
+
                 if config.conf.unlock_mode == "level_2random":
                     while len(self.choices) < 2:
                         self.choices = set(random.choices(all_choices, k=2))
@@ -86,12 +98,12 @@ class LevelUpWindow(Window):
             game_data.formula_builder.unlock_ingredient(Ingredient.RANGE)
         elif chosen == Ingredient.AREA.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.AREA)
-        elif chosen == Ingredient.COLD.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.COLD)
+        elif chosen == Ingredient.WATER.description:
+            game_data.formula_builder.unlock_ingredient(Ingredient.WATER)
         elif chosen == Ingredient.LIFE.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.LIFE)
-        elif chosen == Ingredient.SHIELD.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.SHIELD)
+        elif chosen == Ingredient.EARTH.description:
+            game_data.formula_builder.unlock_ingredient(Ingredient.EARTH)
         elif chosen == Ingredient.INFERNO.description:
             game_data.formula_builder.unlock_ingredient(Ingredient.INFERNO)
             game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.INFERNO)

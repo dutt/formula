@@ -1,8 +1,8 @@
+import config
 from components.damage_type import DamageType
 from components.effects import EffectType, EffectBuilder
 from components.formula import Formula
 from components.ingredients import Ingredient
-import config
 
 
 class FormulaBuilder:
@@ -23,7 +23,12 @@ class FormulaBuilder:
         upgrades_locked = {
             Ingredient.INFERNO: False,
             Ingredient.FIREBOLT: False,
-            Ingredient.FIRESPRAY: False
+            Ingredient.FIRESPRAY: False,
+
+            Ingredient.SLEET: False,
+            Ingredient.ICE: False,
+            Ingredient.ICEBOLT: False,
+            Ingredient.ICE_VORTEX: False
         }
         if config.conf.unlock_mode == "none":
             basics = {
@@ -31,9 +36,9 @@ class FormulaBuilder:
                 Ingredient.FIRE: True,
                 Ingredient.RANGE: True,
                 Ingredient.AREA: True,
-                Ingredient.COLD: True,
+                Ingredient.WATER: True,
                 Ingredient.LIFE: True,
-                Ingredient.SHIELD: True
+                Ingredient.EARTH: True
             }
         else:
             basics = {
@@ -41,9 +46,9 @@ class FormulaBuilder:
                 Ingredient.FIRE: True,
                 Ingredient.RANGE: True,
                 Ingredient.AREA: False,
-                Ingredient.COLD: False,
+                Ingredient.WATER: False,
                 Ingredient.LIFE: False,
-                Ingredient.SHIELD: False,
+                Ingredient.EARTH: False,
             }
         return {**upgrades_locked, **basics}
 
@@ -89,19 +94,24 @@ class FormulaBuilder:
         return self.slots[formula_index]
 
     def evaluate(self, caster):
+        def scale_ingredient(value):
+            if config.conf.ingredient_scaling:
+                return value * 0.8
+            return value
+
         retr = []
         fire_dmg_per_step = 10
-        cold_dmg_per_step = 5
+        water_dmg_per_step = 5
         distance_per_step = 2
         area_per_step = 0.5
         cooldown_per_slot = 3
-        slow_per_step = 2
+        slow_per_step = 3
         heal_per_step = 3
         shield_per_step = 4
         for idx, formula in enumerate(range(self.num_formula)):
             slots = self.slots_for_formula(formula)
             fire_dmg = 0
-            cold_dmg = 0
+            water_dmg = 0
             distance = 1
             area = 0.5
             cooldown = len(slots) * cooldown_per_slot
@@ -119,33 +129,58 @@ class FormulaBuilder:
                 elif slot == Ingredient.FIRE:
                     fire_dmg += fire_dmg_per_step
                     attack_ingredient = True
+                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
                 elif slot == Ingredient.RANGE:
                     attack_modifier = True
                     distance += distance_per_step
                 elif slot == Ingredient.AREA:
-                    attack_modifier  = True
+                    attack_modifier = True
                     area += area_per_step
-                elif slot == Ingredient.COLD:
+                elif slot == Ingredient.WATER:
                     slow_rounds += slow_per_step
                     attack_ingredient = True
-                    cold_dmg += cold_dmg_per_step // 2
+                    water_dmg += water_dmg_per_step
+                    water_dmg_per_step = scale_ingredient(water_dmg_per_step)
                 elif slot == Ingredient.LIFE:
                     healing += heal_per_step
-                elif slot == Ingredient.SHIELD:
+                elif slot == Ingredient.EARTH:
                     shield += shield_per_step
 
-                # upgrades
+                # fire upgrades
                 elif slot == Ingredient.INFERNO:
                     fire_dmg += 2 * fire_dmg_per_step
                     attack_ingredient = True
+                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
                 elif slot == Ingredient.FIREBOLT:
                     fire_dmg += fire_dmg_per_step
                     distance += distance_per_step
                     attack_ingredient = True
+                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
                 elif slot == Ingredient.FIRESPRAY:
                     fire_dmg += fire_dmg_per_step
                     area += area_per_step
                     attack_ingredient = True
+                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
+
+                # water upgrades
+                elif slot == Ingredient.SLEET:
+                    water_dmg += water_dmg_per_step
+                    slow_rounds += slow_per_step * 2
+                    water_dmg = scale_ingredient(water_dmg)
+                elif slot == Ingredient.ICE:
+                    water_dmg += water_dmg_per_step * 2
+                    slow_rounds += slow_per_step
+                    water_dmg = scale_ingredient(water_dmg)
+                elif slot == Ingredient.ICE_VORTEX:
+                    water_dmg += water_dmg_per_step
+                    slow_rounds += slow_per_step
+                    area += area_per_step
+                    water_dmg = scale_ingredient(water_dmg)
+                elif slot == Ingredient.ICEBOLT:
+                    water_dmg += water_dmg_per_step
+                    slow_rounds += slow_per_step
+                    distance += distance_per_step
+                    water_dmg = scale_ingredient(water_dmg)
 
             if attack_modifier and not attack_ingredient:
                 suboptimal = True
@@ -158,21 +193,26 @@ class FormulaBuilder:
                 strikebacks = []
                 if fire_dmg > 0:
                     strikebacks.append(
-                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
-                if cold_dmg > 0:
+                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg,
+                                                 dmg_type=DamageType.FIRE))
+                if water_dmg > 0:
                     strikebacks.append(
-                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg,
+                                                 dmg_type=DamageType.COLD))
                 if slow_rounds > 0:
                     strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
                 effects.append(
-                    EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks, distance=distance))
+                        EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks,
+                                             distance=distance))
             else:
                 if fire_dmg > 0:
                     effects.append(
-                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE))
-                if cold_dmg > 0:
+                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg,
+                                                 dmg_type=DamageType.FIRE))
+                if water_dmg > 0:
                     effects.append(
-                        EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=cold_dmg, dmg_type=DamageType.COLD))
+                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg,
+                                                 dmg_type=DamageType.COLD))
                 if slow_rounds > 0:
                     effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
                 if healing > 0:

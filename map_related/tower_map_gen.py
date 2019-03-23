@@ -1,15 +1,18 @@
+import math
 import random
 from enum import Enum, auto
 
+from components.crystal import Crystal
 from components.drawable import Drawable
-from components.stairs import Stairs
 from components.entity import Entity
+from components.stairs import Stairs
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
 from map_related.gamemap import GameMap
 from map_related.map_util import get_monster
 from random_utils import random_choice_from_dict, from_dungeon_level
 from util import Pos, Rect
+import config
 
 
 class WallDirection(Enum):
@@ -23,13 +26,14 @@ class DoorDirection(Enum):
     LEFT = auto()
     RIGHT = auto()
 
+
 # a modfiied version of
 # https://gamedev.stackexchange.com/questions/47917/procedural-house-with-rooms-generator
 
 class TowerMapGenerator:
 
     @staticmethod
-    def make_map(constants, level, monster_chances):
+    def make_map(constants, level, monster_chances, crystal_ratio):
         retr = GameMap(constants.map_size, level)
         assets = Assets.get()
         retr.chunks = TowerMapGenerator.chunkify(retr)
@@ -37,6 +41,9 @@ class TowerMapGenerator:
         TowerMapGenerator.make_doors(retr, retr.chunks)
         TowerMapGenerator.place_monsters(retr, retr.chunks, monster_chances, level, assets)
         TowerMapGenerator.place_stairs(retr, retr.chunks, assets)
+
+        if config.conf.keys:
+            TowerMapGenerator.place_keys(retr, retr.chunks, assets, crystal_ratio)
         retr.set_tile_info(retr.tiles)
 
         px = retr.chunks[0].x + retr.chunks[0].width // 2
@@ -229,12 +236,12 @@ class TowerMapGenerator:
         del monster_chances["any"]
         max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], level + 1)
         for idx, c in enumerate(chunks):
-
+            c.monsters = []
             rval = random.randint(0, 100)
             if rval > chance_any:
                 continue
             if idx == 0:
-                num_monsters = 1 # don't overwhelm in the first room
+                num_monsters = 1  # don't overwhelm in the first room
             else:
                 num_monsters = random.randint(1, max_monsters_per_room)
             room_center = Pos(c.x + c.width // 2, c.y + c.height // 2)
@@ -247,8 +254,8 @@ class TowerMapGenerator:
                     # first room, don't spawn right next to player
                     attempts = 0
                     while Pos(x, y).distance_to(room_center) < 4:
-                        x = random.randint(c.x + 1, c.x + c.width - 1)
-                        y = random.randint(c.y + 1, c.y + c.height - 1)
+                        x = random.randint(c.x + 1, c.x + c.width - 2)
+                        y = random.randint(c.y + 1, c.y + c.height - 2)
                         attempts += 1
                         if attempts > 100:
                             skip_room = True
@@ -258,7 +265,9 @@ class TowerMapGenerator:
                 already_there = [entity for entity in entities if entity.pos.x == x and entity.pos.y == y]
                 if not any(already_there) and not m.tiles[x][y].blocked:
                     monster_choice = random_choice_from_dict(monster_chances)
-                    entities.extend(get_monster(x, y, m, c, monster_choice, assets, entities))
+                    monster_data = get_monster(x, y, m, c, monster_choice, assets, entities)
+                    entities.extend(monster_data)
+                    c.monsters.extend(monster_data)
 
         m.entities = entities
 
@@ -271,6 +280,26 @@ class TowerMapGenerator:
         down_stairs = Entity(posx, posy, "Stairs",
                              render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component)
         m.entities.append(down_stairs)
+
+    @staticmethod
+    def place_keys(m, chunks, assets, crystal_ratio):
+        num_rooms_with_crystals = math.ceil((len(chunks) - 1) * crystal_ratio)
+        rooms_with_crystals = random.sample(chunks[1:], k = num_rooms_with_crystals)
+        for idx, c in enumerate(rooms_with_crystals):
+            occupied = True
+            while occupied:
+                x = random.randint(c.x + 1, c.x + c.width - 2)
+                y = random.randint(c.y + 1, c.y + c.height - 2)
+                occupied = False
+                for cm in c.monsters:
+                    if cm.pos == Pos(x, y):
+                        occupied = True
+            drawable_component = Drawable(assets.key)
+            crystal = Entity(x, y, "Key", render_order=RenderOrder.ITEM, crystal=Crystal(),
+                             drawable=drawable_component)
+            m.entities.append(crystal)
+        m.num_crystals_total = num_rooms_with_crystals
+        m.num_crystals_found = 0
 
     @staticmethod
     def free_area(m):

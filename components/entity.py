@@ -12,6 +12,7 @@ class Entity:
     def __init__(self, x, y, name, speed=0,
                  blocks=False, render_order=RenderOrder.CORPSE,
                  fighter=None, ai=None, stairs=None, level=None,
+                 crystal=None,
                  caster=None, drawable=None):
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
@@ -43,6 +44,10 @@ class Entity:
         self.level = level
         if self.level:
             self.level.owner = self
+
+        self.crystal = crystal
+        if self.crystal:
+            self.crystal.owner = self
 
         self.caster = caster
         if self.caster:
@@ -145,7 +150,7 @@ class Entity:
         else:
             # Keep the old move function as a backup so that if there are no paths, for example another monster
             # blocks a corridor- It will still try to move towards the player (closer to the corridor opening)
-            self.move_towards(target.pos.x, target.pos.y, entities, game_map)
+            self.move_towards(target.x, target.y, entities, game_map)
 
             # Delete the path to free memory
         tcod.path_delete(my_path)

@@ -12,7 +12,10 @@ class Spritesheet():
         else: # numbered sheets
             files = glob.glob(path + "*")
             files = sorted(files)
+            if not files:
+                raise FileNotFoundError("{} doesn't exist".format(path))
             self.sheets = [pygame.image.load(f).convert() for f in files]
+
 
     def get_image(self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None, rotate=None, sheet=None):
         if not sheet:
