@@ -58,16 +58,16 @@ class Ingredient(Enum):
 
     @property
     def targeted(self):
-        return self in [Ingredient.FIRE,
-                        Ingredient.RANGE,
-                        Ingredient.AREA,
-                        Ingredient.WATER,
-
-                        Ingredient.INFERNO,
-                        Ingredient.FIREBOLT,
-                        Ingredient.FIRESPRAY,
-
-                        Ingredient.SLEET,
-                        Ingredient.ICE,
-                        Ingredient.ICE_VORTEX,
-                        Ingredient.ICEBOLT]
+        return self in [
+            Ingredient.FIRE,
+            Ingredient.RANGE,
+            Ingredient.AREA,
+            Ingredient.WATER,
+            Ingredient.INFERNO,
+            Ingredient.FIREBOLT,
+            Ingredient.FIRESPRAY,
+            Ingredient.SLEET,
+            Ingredient.ICE,
+            Ingredient.ICE_VORTEX,
+            Ingredient.ICEBOLT,
+        ]

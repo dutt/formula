@@ -27,10 +27,17 @@ class LootAction(Action):
 
     def execute(self, game_data, gfx_data):
         import random
+
         val = random.randint(0, 100)
         if val <= 40:
             game_data.player.fighter.heal(3)
-            result = [{"message": Message("You found a healing potion and has been healed 3 points")}]
+            result = [
+                {
+                    "message": Message(
+                        "You found a healing potion and has been healed 3 points"
+                    )
+                }
+            ]
             return self.package(result=result)
         elif val <= 70:
             shield = game_data.player.fighter.shield
@@ -42,10 +49,17 @@ class LootAction(Action):
                 text = "You found a jewel, when you touch it your shield strengthens"
             else:
                 from components.effects import EffectBuilder, EffectType
-                shield_effect = EffectBuilder.create(EffectType.DEFENSE, level=shield_strength, strikebacks=[],
-                                                     distance=0)
+
+                shield_effect = EffectBuilder.create(
+                    EffectType.DEFENSE,
+                    level=shield_strength,
+                    strikebacks=[],
+                    distance=0,
+                )
                 shield_effect.apply(game_data.player)
-                text = "You found a jewel, when you touch it a shield appears around you"
+                text = (
+                    "You found a jewel, when you touch it a shield appears around you"
+                )
             result = [{"message": Message(text)}]
             return self.package(result=result)
         else:
@@ -53,7 +67,8 @@ class LootAction(Action):
             for _ in range(0, cooldown_reduction):
                 game_data.player.caster.tick_cooldowns()
             text = "You found a jewel, when you touch it you shimmer, cooldowns reduced by {}".format(
-                    cooldown_reduction)
+                cooldown_reduction
+            )
             result = [{"message": Message(text)}]
             return self.package(result=result)
 
@@ -70,7 +85,9 @@ class ExitAction(Action):
             game_data.state = GameStates.ASK_QUIT
             gfx_data.windows.activate_wnd_for_state(game_data.state)
         else:
-            return self.package(result=[{"quit": True, "keep_playing": self.keep_playing}])
+            return self.package(
+                result=[{"quit": True, "keep_playing": self.keep_playing}]
+            )
 
 
 class WaitAction(Action):
@@ -87,13 +104,21 @@ class DescendStairsAction(Action):
     COST = 100
 
     def __init__(self, actor):
-        super(DescendStairsAction, self).__init__(actor=actor, cost=DescendStairsAction.COST)
+        super(DescendStairsAction, self).__init__(
+            actor=actor, cost=DescendStairsAction.COST
+        )
 
     def execute(self, game_data, gfx_data):
-        all_crystals = game_data.map.num_crystals_found == game_data.map.num_crystals_total
+        all_crystals = (
+            game_data.map.num_crystals_found == game_data.map.num_crystals_total
+        )
         if not all_crystals:
-            num_remaining = game_data.map.num_crystals_total - game_data.map.num_crystals_found
-            text = "You haven't found all the keys on this level yet, {} keys left".format(num_remaining)
+            num_remaining = (
+                game_data.map.num_crystals_total - game_data.map.num_crystals_found
+            )
+            text = "You haven't found all the keys on this level yet, {} keys left".format(
+                num_remaining
+            )
             result = [{"message": Message(text)}]
             return self.package(result=result)
 
@@ -109,6 +134,7 @@ class DescendStairsAction(Action):
             game_data.fov_map = initialize_fov(game_data.map)
             game_data.fov_recompute = True
             from graphics.camera import Camera
+
             cam_width = min(game_data.map.width, gfx_data.camera.orig_width)
             cam_height = min(game_data.map.height, gfx_data.camera.orig_height)
             gfx_data.camera = Camera(cam_width, cam_height, game_data)
@@ -131,7 +157,12 @@ class MoveToPositionAction(Action):
 
     def execute(self, game_data, _):
         if game_data.player.pos != self.targetpos:
-            self.actor.move_towards(self.targetpos.x, self.targetpos.y, game_data.map.entities, game_data.map)
+            self.actor.move_towards(
+                self.targetpos.x,
+                self.targetpos.y,
+                game_data.map.entities,
+                game_data.map,
+            )
         result = [{"moved": True}]
         return self.package(result)
 
@@ -170,9 +201,13 @@ class ThrowVialAction(Action):
         self.targetpos = targetpos
 
     def execute(self, game_data, _):
-        result = self.formula.apply(entities=game_data.map.entities,
-                                    fov_map=game_data.fov_map, caster=self.actor,
-                                    target_x=self.targetpos.x, target_y=self.targetpos.y)
+        result = self.formula.apply(
+            entities=game_data.map.entities,
+            fov_map=game_data.fov_map,
+            caster=self.actor,
+            target_x=self.targetpos.x,
+            target_y=self.targetpos.y,
+        )
         return self.package(result)
 
 
@@ -189,7 +224,8 @@ class PickupCrystalAction(Action):
         if game_data.map.num_crystals_found == game_data.map.num_crystals_total:
             text = "All keys found, head to the stairs"
         else:
-            text = "You found a key, {}/{} keys found".format(game_data.map.num_crystals_found,
-                                                                      game_data.map.num_crystals_total)
+            text = "You found a key, {}/{} keys found".format(
+                game_data.map.num_crystals_found, game_data.map.num_crystals_total
+            )
         result = [{"message": Message(text)}]
         return self.package(result=result)

@@ -11,7 +11,7 @@ class tile:
     def __init__(self, wall):
         self.wall = wall
         self.room = -1
-        self.symbol = '#' if wall else ' '
+        self.symbol = "#" if wall else " "
 
 
 class Map:
@@ -74,8 +74,8 @@ def make_improved_recursive_division(map):
 
     p1 = get_point_in_region(region)
     p2 = get_point_in_region(region)
-    map.tiles[p1.x][p1.y].symbol = '1'
-    map.tiles[p2.x][p2.y].symbol = '2'
+    map.tiles[p1.x][p1.y].symbol = "1"
+    map.tiles[p2.x][p2.y].symbol = "2"
     return map
 
 
@@ -319,6 +319,7 @@ import sys
 from collections import defaultdict
 import itertools
 
+
 def get_pairs(origins):
     retr = []
     for o1 in origins:
@@ -336,8 +337,8 @@ def make_doors(m, origins, paths):
     def get_wall(attempted):
         flat = list(itertools.chain.from_iterable(paths))
         while True:
-            #x = random.randint(0, m.width - 1)
-            #y = random.randint(0, m.height - 1)
+            # x = random.randint(0, m.width - 1)
+            # y = random.randint(0, m.height - 1)
             pos = random.choice(flat)
             if m.tiles[pos.x][pos.y].wall and pos not in attempted:
                 return pos
@@ -361,7 +362,9 @@ def make_doors(m, origins, paths):
         print(possible_removed)
         m.tiles[possible_removed.x][possible_removed.y].wall = False
         possible_valid_count = validate()
-        if possible_valid_count == current_failures:  # removing a wall added a valid path
+        if (
+            possible_valid_count == current_failures
+        ):  # removing a wall added a valid path
             m.tiles[possible_removed.x][possible_removed.y].wall = True
         current_failures = possible_valid_count
 
@@ -421,8 +424,8 @@ def main():
     # origins = [Pos(1, 1), Pos(1, 4)]
     # origins = [Pos(1, 0), Pos(1,3)]
     BFS(origins, m)
-    #print("clear")
-    #print_map(m)
+    # print("clear")
+    # print_map(m)
     paths = []
     for p in get_pairs(origins):
         p1, p2 = p

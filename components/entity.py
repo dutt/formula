@@ -9,11 +9,22 @@ from graphics.render_order import RenderOrder
 class Entity:
     LAST_ID = 0
 
-    def __init__(self, x, y, name, speed=0,
-                 blocks=False, render_order=RenderOrder.CORPSE,
-                 fighter=None, ai=None, stairs=None, level=None,
-                 crystal=None,
-                 caster=None, drawable=None):
+    def __init__(
+        self,
+        x,
+        y,
+        name,
+        speed=0,
+        blocks=False,
+        render_order=RenderOrder.CORPSE,
+        fighter=None,
+        ai=None,
+        stairs=None,
+        level=None,
+        crystal=None,
+        caster=None,
+        drawable=None,
+    ):
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
 
@@ -61,7 +72,9 @@ class Entity:
         return str(self)
 
     def __str__(self):
-        return "<entity id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
+        return "<entity id={}, {} at ({},{})>".format(
+            self.id, self.name, self.pos.x, self.pos.y
+        )
 
     def move(self, dx, dy):
         self.pos.x += dx
@@ -100,8 +113,12 @@ class Entity:
         dx = int(round(dx / distance))
         dy = int(round(dy / distance))
 
-        if not (game_map.is_blocked(self.pos.x + dx, self.pos.y + dy) or
-                get_blocking_entites_at_location(entities, self.pos.x + dx, self.pos.y + dy)):
+        if not (
+            game_map.is_blocked(self.pos.x + dx, self.pos.y + dy)
+            or get_blocking_entites_at_location(
+                entities, self.pos.x + dx, self.pos.y + dy
+            )
+        ):
             self.move(dx, dy)
 
     def distance_to(self, other):
@@ -118,8 +135,13 @@ class Entity:
         # Scan the current map each turn and set all the walls as unwalkable
         for y1 in range(game_map.height):
             for x1 in range(game_map.width):
-                tcod.map_set_properties(fov, x1, y1, not game_map.tiles[x1][y1].block_sight,
-                                        not game_map.tiles[x1][y1].blocked)
+                tcod.map_set_properties(
+                    fov,
+                    x1,
+                    y1,
+                    not game_map.tiles[x1][y1].block_sight,
+                    not game_map.tiles[x1][y1].blocked,
+                )
 
         # Scan all the objects to see if there are objects that must be navigated around
         # Check also that the object isn't self or the target (so that the start and the end points are free)
@@ -161,5 +183,3 @@ def get_blocking_entites_at_location(entities, destx, desty):
         if e.blocks and e.pos.x == destx and e.pos.y == desty:
             return e
     return None
-
-

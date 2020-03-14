@@ -29,7 +29,7 @@ class tile:
         self.type = TileType.Room
         self.room = -1
         self.hallway = False
-        self.symbol = '#' if wall else ' '
+        self.symbol = "#" if wall else " "
 
 
 class Map:
@@ -128,14 +128,18 @@ def chunkify(m):
             end = curr.x + curr.width - max(minlength, int(curr.width * 0.2))
             hallway = random.randint(start, end)
             first = Rect(curr.x, curr.y, hallway - curr.x, curr.height)
-            second = Rect(hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height)
+            second = Rect(
+                hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height
+            )
             new_direction = Dir.horizontal
         elif direction == Dir.horizontal and curr.height > minsize:  # horizontal
             start = curr.y + max(minlength, int(curr.height * 0.2))
             end = curr.y + curr.height - max(minlength, int(curr.height * 0.2))
             hallway = random.randint(start, end)
             first = Rect(curr.x, curr.y, curr.width, hallway - curr.y)
-            second = Rect(curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1)
+            second = Rect(
+                curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1
+            )
             new_direction = Dir.vertical
         else:  # chunk too small, done. just re-add the chunk
             chunks.append(curr)
@@ -150,7 +154,7 @@ def chunkify(m):
         mark_hallway(m, curr, hallway, direction)
         direction = new_direction
 
-        #print_map(m)
+        # print_map(m)
 
     return chunks
 
@@ -179,19 +183,19 @@ def make_doors(m, chunks):
                 ypos = c.y + c.height - 1
             else:
                 ypos = c.y
-        elif dir == 1: # right
+        elif dir == 1:  # right
             if c.x + c.width < m.width:
                 xpos = c.x + c.width - 1
             else:
                 xpos = c.x
             ypos = random.randint(c.y + 1, c.y + c.height - 2)
-        elif dir == 2: # down
+        elif dir == 2:  # down
             xpos = random.randint(c.x + 1, c.x + c.width - 2)
             if c.y + c.height < m.height:
                 ypos = c.y + c.height - 1
             else:
                 ypos = c.y
-        elif dir == 3: # left
+        elif dir == 3:  # left
             if c.x > 0:
                 xpos = c.x
             else:
@@ -206,11 +210,13 @@ def make_doors(m, chunks):
 
 def main():
     import datetime
+
     now = datetime.datetime.now()
     txt = str(now)
     txt = "2018-12-30 09:38:04.303108"
     print("Using seed: <{}>".format(txt))
     import random
+
     random.seed(txt)
 
     m = Map(80, 60)
@@ -220,5 +226,5 @@ def main():
     print_map(m)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

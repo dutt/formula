@@ -30,7 +30,9 @@ class Formula:
             applied_msg += e_applied_msg
         postfix = "range={}, area={}".format(self.distance, self.area)
         if text_msg:
-            self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
+            self.targeting_message_text = "Targeting, {}, {}".format(
+                text_msg[:-2], postfix
+            )
             self.text_stats_text = "{}, {}".format(text_msg[:-2], postfix)
             self.applied_text = "The {} " + applied_msg[:-2]
         else:
@@ -91,25 +93,47 @@ class Formula:
         results = []
 
         if caster.distance(target_x, target_y) > self.distance:
-            results.append({"cast": False, "message": Message("Target out of range", tcod.yellow)})
+            results.append(
+                {"cast": False, "message": Message("Target out of range", tcod.yellow)}
+            )
             return results
         elif self.area < 1.5:  # no aoe
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue
                 if e.pos.x == target_x and e.pos.y == target_y:
-                    results.append({"cast": True, "message": Message(get_msg(e)), "targets": [e], "formula": self})
+                    results.append(
+                        {
+                            "cast": True,
+                            "message": Message(get_msg(e)),
+                            "targets": [e],
+                            "formula": self,
+                        }
+                    )
                     for effect in self.effects:
                         results.extend(effect.apply(e))
                         if effect.stats.rounds > 1:
                             e.add_effect(effect, effect.stats.rounds)
                     break
             else:
-                results.append({"cast": False, "message": Message("No target"), "targets": [], "formula": self})
+                results.append(
+                    {
+                        "cast": False,
+                        "message": Message("No target"),
+                        "targets": [],
+                        "formula": self,
+                    }
+                )
         else:  # aoe formula
             targets = []
             results.append(
-                    {"cast": True, "targets": targets, "formula": self, "message": Message("Splash vial thrown")})
+                {
+                    "cast": True,
+                    "targets": targets,
+                    "formula": self,
+                    "message": Message("Splash vial thrown"),
+                }
+            )
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):
                     continue

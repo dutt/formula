@@ -30,8 +30,8 @@ class DoorDirection(Enum):
 # a modfiied version of
 # https://gamedev.stackexchange.com/questions/47917/procedural-house-with-rooms-generator
 
-class TowerMapGenerator:
 
+class TowerMapGenerator:
     @staticmethod
     def make_map(constants, level, monster_chances, crystal_ratio):
         retr = GameMap(constants.map_size, level)
@@ -39,7 +39,9 @@ class TowerMapGenerator:
         retr.chunks = TowerMapGenerator.chunkify(retr)
         TowerMapGenerator.cleanup_walls(retr)
         TowerMapGenerator.make_doors(retr, retr.chunks)
-        TowerMapGenerator.place_monsters(retr, retr.chunks, monster_chances, level, assets)
+        TowerMapGenerator.place_monsters(
+            retr, retr.chunks, monster_chances, level, assets
+        )
         TowerMapGenerator.place_stairs(retr, retr.chunks, assets)
 
         if config.conf.keys:
@@ -110,23 +112,33 @@ class TowerMapGenerator:
                 end = curr.x + curr.width - max(minlength, int(curr.width * 0.2))
                 hallway = random.randint(start, end)
                 first = Rect(curr.x, curr.y, hallway - curr.x, curr.height)
-                second = Rect(hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height)
+                second = Rect(
+                    hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height
+                )
                 new_direction = WallDirection.horizontal
-            elif direction == WallDirection.horizontal and curr.height > minsize:  # horizontal
+            elif (
+                direction == WallDirection.horizontal and curr.height > minsize
+            ):  # horizontal
                 start = curr.y + max(minlength, int(curr.height * 0.2))
                 end = curr.y + curr.height - max(minlength, int(curr.height * 0.2))
                 hallway = random.randint(start, end)
                 first = Rect(curr.x, curr.y, curr.width, hallway - curr.y)
-                second = Rect(curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1)
+                second = Rect(
+                    curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1
+                )
                 new_direction = WallDirection.vertical
             else:  # chunk too small, done. just re-add the chunk
                 chunks.append(curr)
                 break
 
-            TowerMapGenerator.mark_room(m, first, TowerMapGenerator.first_unused_room_id(m))
+            TowerMapGenerator.mark_room(
+                m, first, TowerMapGenerator.first_unused_room_id(m)
+            )
             chunks.append(first)
 
-            TowerMapGenerator.mark_room(m, second, TowerMapGenerator.first_unused_room_id(m))
+            TowerMapGenerator.mark_room(
+                m, second, TowerMapGenerator.first_unused_room_id(m)
+            )
             chunks.append(second)
 
             TowerMapGenerator.mark_hallway(m, curr, hallway, direction)
@@ -262,10 +274,16 @@ class TowerMapGenerator:
                 if skip_room:
                     continue
 
-                already_there = [entity for entity in entities if entity.pos.x == x and entity.pos.y == y]
+                already_there = [
+                    entity
+                    for entity in entities
+                    if entity.pos.x == x and entity.pos.y == y
+                ]
                 if not any(already_there) and not m.tiles[x][y].blocked:
                     monster_choice = random_choice_from_dict(monster_chances)
-                    monster_data = get_monster(x, y, m, c, monster_choice, assets, entities)
+                    monster_data = get_monster(
+                        x, y, m, c, monster_choice, assets, entities
+                    )
                     entities.extend(monster_data)
                     c.monsters.extend(monster_data)
 
@@ -277,14 +295,20 @@ class TowerMapGenerator:
         drawable_component = Drawable(assets.stairs)
         posx = chunks[-1].x + chunks[-1].width // 2
         posy = chunks[-1].y + chunks[-1].height // 2
-        down_stairs = Entity(posx, posy, "Stairs",
-                             render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component)
+        down_stairs = Entity(
+            posx,
+            posy,
+            "Stairs",
+            render_order=RenderOrder.STAIRS,
+            stairs=stairs_component,
+            drawable=drawable_component,
+        )
         m.entities.append(down_stairs)
 
     @staticmethod
     def place_keys(m, chunks, assets, crystal_ratio):
         num_rooms_with_crystals = math.ceil((len(chunks) - 1) * crystal_ratio)
-        rooms_with_crystals = random.sample(chunks[1:], k = num_rooms_with_crystals)
+        rooms_with_crystals = random.sample(chunks[1:], k=num_rooms_with_crystals)
         for idx, c in enumerate(rooms_with_crystals):
             occupied = True
             while occupied:
@@ -295,8 +319,14 @@ class TowerMapGenerator:
                     if cm.pos == Pos(x, y):
                         occupied = True
             drawable_component = Drawable(assets.key)
-            crystal = Entity(x, y, "Key", render_order=RenderOrder.ITEM, crystal=Crystal(),
-                             drawable=drawable_component)
+            crystal = Entity(
+                x,
+                y,
+                "Key",
+                render_order=RenderOrder.ITEM,
+                crystal=Crystal(),
+                drawable=drawable_component,
+            )
             m.entities.append(crystal)
         m.num_crystals_total = num_rooms_with_crystals
         m.num_crystals_found = 0

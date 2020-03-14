@@ -32,7 +32,9 @@ def play_game(game_data, gfx_data):
                         gfx_data.windows.activate_wnd_for_state(game_data.state)
                     else:
                         game_data.stats.monster_killed(dead_entity)
-                        msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
+                        msg, game_data = kill_monster(
+                            dead_entity, game_data, gfx_data.assets
+                        )
                     game_data.log.add_message(msg)
 
                 cast = res.get("cast")
@@ -41,11 +43,13 @@ def play_game(game_data, gfx_data):
                         formula = res.get("formula")
                         game_data.stats.throw_vial(formula)
                         if config.conf.cooldown_mode == "always":
-                            game_data.player.caster.add_cooldown(formula.formula_idx,
-                                                                 formula.cooldown + 1)
+                            game_data.player.caster.add_cooldown(
+                                formula.formula_idx, formula.cooldown + 1
+                            )
                         else:
-                            game_data.player.caster.add_cooldown(formula.formula_idx,
-                                                                 formula.cooldown)
+                            game_data.player.caster.add_cooldown(
+                                formula.formula_idx, formula.cooldown
+                            )
                 do_quit = res.get("quit")
                 if do_quit:
                     keep_playing = res.get("keep_playing")
@@ -57,10 +61,13 @@ def play_game(game_data, gfx_data):
                     game_data.log.add_message(Message("You gain {} xp".format(xp)))
                     if leveled_up:
                         game_data.log.add_message(
-                                Message(
-                                        "You grow stronger, reached level {}".format(
-                                                game_data.player.level.current_level),
-                                        (0, 255, 0)))
+                            Message(
+                                "You grow stronger, reached level {}".format(
+                                    game_data.player.level.current_level
+                                ),
+                                (0, 255, 0),
+                            )
+                        )
                         game_data.prev_state.append(game_data.state)
                         game_data.prev_state.append(GameStates.FORMULA_SCREEN)
                         game_data.state = GameStates.LEVEL_UP
@@ -98,6 +105,7 @@ def set_seed():
 
     if config.conf.random_seed == "now":
         import datetime
+
         now = datetime.datetime.now()
         seed = str(now)
     else:
@@ -128,30 +136,31 @@ def do_setup(constants):
 def write_logs(game_data, seed, start_time, crashed):
     timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
     logname = "formula_run.{}.log".format(timestamp)
-    data = {"seed": seed,
-            "messages": [msg.text for msg in game_data.log.messages],
-            "input_events": input_recorder.serialize_input(input_recorder.events),
-            "crashed" : crashed,
-            "game_modes": {
-                "unlock_mode": config.conf.unlock_mode,
-                "cooldown_mode": config.conf.cooldown_mode,
-                "starting_mode": config.conf.starting_mode
-            }
-            }
+    data = {
+        "seed": seed,
+        "messages": [msg.text for msg in game_data.log.messages],
+        "input_events": input_recorder.serialize_input(input_recorder.events),
+        "crashed": crashed,
+        "game_modes": {
+            "unlock_mode": config.conf.unlock_mode,
+            "cooldown_mode": config.conf.cooldown_mode,
+            "starting_mode": config.conf.starting_mode,
+        },
+    }
     if crashed:
         data["traceback"] = str(traceback.format_exc())
     dirname = "formula_logs"
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
     path = os.path.abspath((os.path.join(dirname, logname)))
-    with open(path, 'w') as writer:
+    with open(path, "w") as writer:
         writer.write(json.dumps(data, indent=2))
 
     print("Log file {} written".format(path))
 
 
 def load_replay_log(path):
-    with open(path, 'r') as reader:
+    with open(path, "r") as reader:
         content = reader.read()
     data = AttrDict(json.loads(content))
     data.game_modes = AttrDict(data.game_modes)
@@ -196,5 +205,5 @@ def main():
             traceback.print_exc()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

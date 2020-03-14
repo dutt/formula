@@ -9,7 +9,6 @@ from map_related.map_util import load_map, get_monster
 
 
 class MapFileLoader:
-
     @staticmethod
     def make_map(constants, level, file_path):
         retr = load_map(file_path + ".map", level)
@@ -18,7 +17,7 @@ class MapFileLoader:
 
     @staticmethod
     def fill_in(game_map, path):
-        with open(path, 'r') as reader:
+        with open(path, "r") as reader:
             content = reader.read()
         data = json.loads(content)
         entities = []
@@ -35,7 +34,9 @@ class MapFileLoader:
         x = monster["x"]
         y = monster["y"]
         assets = Assets.get()
-        return get_monster(x, y, game_map, room=None, monster_choice=type, assets=assets, entities=[])
+        return get_monster(
+            x, y, game_map, room=None, monster_choice=type, assets=assets, entities=[]
+        )
 
     @staticmethod
     def place_stairs(game_map, stairs_data):
@@ -43,6 +44,12 @@ class MapFileLoader:
         y = stairs_data["y"]
         stairs_component = Stairs(game_map.dungeon_level + 1)
         drawable_component = Drawable(Assets.get().stairs)
-        stairs = Entity(x, y, "Stairs",
-                        render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component)
+        stairs = Entity(
+            x,
+            y,
+            "Stairs",
+            render_order=RenderOrder.STAIRS,
+            stairs=stairs_component,
+            drawable=drawable_component,
+        )
         return [stairs]

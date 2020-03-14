@@ -1,2 +1,2 @@
-class Crystal():
+class Crystal:
     pass

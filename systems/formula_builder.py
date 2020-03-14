@@ -13,22 +13,25 @@ class FormulaBuilder:
         self.num_formula = num_formula
         self.unlock_state = self.init_lock_state()
         if config.conf.starting_mode == "choose":
-            self.slots = [[Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)]
+            self.slots = [
+                [Ingredient.EMPTY for i in range(num_slots)] for i in range(num_formula)
+            ]
         elif config.conf.starting_mode == "fire":
-            self.slots = [[Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
-                          [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
-                          [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE]]
+            self.slots = [
+                [Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
+                [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
+                [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
+            ]
 
     def init_lock_state(self):
         upgrades_locked = {
             Ingredient.INFERNO: False,
             Ingredient.FIREBOLT: False,
             Ingredient.FIRESPRAY: False,
-
             Ingredient.SLEET: False,
             Ingredient.ICE: False,
             Ingredient.ICEBOLT: False,
-            Ingredient.ICE_VORTEX: False
+            Ingredient.ICE_VORTEX: False,
         }
         if config.conf.unlock_mode == "none":
             basics = {
@@ -38,7 +41,7 @@ class FormulaBuilder:
                 Ingredient.AREA: True,
                 Ingredient.WATER: True,
                 Ingredient.LIFE: True,
-                Ingredient.EARTH: True
+                Ingredient.EARTH: True,
             }
         else:
             basics = {
@@ -193,32 +196,78 @@ class FormulaBuilder:
                 strikebacks = []
                 if fire_dmg > 0:
                     strikebacks.append(
-                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg,
-                                                 dmg_type=DamageType.FIRE))
+                        EffectBuilder.create(
+                            EffectType.DAMAGE,
+                            caster=caster,
+                            rounds=1,
+                            amount=fire_dmg,
+                            dmg_type=DamageType.FIRE,
+                        )
+                    )
                 if water_dmg > 0:
                     strikebacks.append(
-                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg,
-                                                 dmg_type=DamageType.COLD))
+                        EffectBuilder.create(
+                            EffectType.DAMAGE,
+                            caster=caster,
+                            rounds=1,
+                            amount=water_dmg,
+                            dmg_type=DamageType.COLD,
+                        )
+                    )
                 if slow_rounds > 0:
-                    strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
+                    strikebacks.append(
+                        EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds)
+                    )
                 effects.append(
-                        EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks,
-                                             distance=distance))
+                    EffectBuilder.create(
+                        EffectType.DEFENSE,
+                        level=shield,
+                        strikebacks=strikebacks,
+                        distance=distance,
+                    )
+                )
             else:
                 if fire_dmg > 0:
                     effects.append(
-                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg,
-                                                 dmg_type=DamageType.FIRE))
+                        EffectBuilder.create(
+                            EffectType.DAMAGE,
+                            caster=caster,
+                            rounds=1,
+                            amount=fire_dmg,
+                            dmg_type=DamageType.FIRE,
+                        )
+                    )
                 if water_dmg > 0:
                     effects.append(
-                            EffectBuilder.create(EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg,
-                                                 dmg_type=DamageType.COLD))
+                        EffectBuilder.create(
+                            EffectType.DAMAGE,
+                            caster=caster,
+                            rounds=1,
+                            amount=water_dmg,
+                            dmg_type=DamageType.COLD,
+                        )
+                    )
                 if slow_rounds > 0:
-                    effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
+                    effects.append(
+                        EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds)
+                    )
                 if healing > 0:
-                    effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
+                    effects.append(
+                        EffectBuilder.create(
+                            EffectType.HEALING, rounds=1, amount=healing
+                        )
+                    )
 
-            retr.append(Formula(slots=slots, cooldown=cooldown, formula_idx=idx,
-                                distance=distance, area=area, effects=effects, targeted=targeted,
-                                suboptimal=suboptimal))
+            retr.append(
+                Formula(
+                    slots=slots,
+                    cooldown=cooldown,
+                    formula_idx=idx,
+                    distance=distance,
+                    area=area,
+                    effects=effects,
+                    targeted=targeted,
+                    suboptimal=suboptimal,
+                )
+            )
         return retr

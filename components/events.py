@@ -46,8 +46,7 @@ class KeyEvent(Event):
         return attrdict.AttrDict({"key": raw_event.key})
 
     def serialize(self):
-        return {"type": InputType.KEY.name,
-                "key": self.data.key}
+        return {"type": InputType.KEY.name, "key": self.data.key}
 
     @property
     def key(self):
@@ -73,14 +72,16 @@ class MouseEvent(Event):
 
     def parse_raw(self, raw_event):
         mouse_pos = Pos(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-        return attrdict.AttrDict({"type": InputType.MOUSE.name,
-                                  "pos": mouse_pos,
-                                  "button": raw_event.button})
+        return attrdict.AttrDict(
+            {"type": InputType.MOUSE.name, "pos": mouse_pos, "button": raw_event.button}
+        )
 
     def serialize(self):
-        return {"type": InputType.MOUSE.name,
-                "pos": (self.data.pos.x, self.data.pos.y),
-                "button": self.data.button}
+        return {
+            "type": InputType.MOUSE.name,
+            "pos": (self.data.pos.x, self.data.pos.y),
+            "button": self.data.button,
+        }
 
     @property
     def button(self):
@@ -94,8 +95,9 @@ class MouseEvent(Event):
     def deserialize(data):
         retr = MouseEvent(raw_event=None)
         retr.event_type = InputType.MOUSE
-        retr.data = attrdict.AttrDict({"pos": Pos(data["pos"][0], data["pos"][1]),
-                                       "button": data["button"]})
+        retr.data = attrdict.AttrDict(
+            {"pos": Pos(data["pos"][0], data["pos"][1]), "button": data["button"]}
+        )
         return retr
 
     def __str__(self):

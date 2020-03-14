@@ -14,25 +14,30 @@ class FormulaHelpWindow(TextWindow):
     PATH = resource_path("data/help/formula_window.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(constants, visible, path=FormulaHelpWindow.PATH, next_window=None)
+        super().__init__(
+            constants, visible, path=FormulaHelpWindow.PATH, next_window=None
+        )
 
 
 class FormulaWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
+        super().__init__(
+            constants.helper_window_pos, constants.helper_window_size, visible
+        )
 
     def draw(self, game_data, gfx_data):
         def draw_ingredient_list():
             from components.ingredients import Ingredient
-            ingredient_lines = [
-                "Q: Empty"
-            ]
+
+            ingredient_lines = ["Q: Empty"]
             if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE):
                 if game_data.formula_builder.ingredient_unlocked(Ingredient.INFERNO):
                     ingredient_lines.append("W: Inferno")
                 elif game_data.formula_builder.ingredient_unlocked(Ingredient.FIREBOLT):
                     ingredient_lines.append("W: Firebolt")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.FIRESPRAY):
+                elif game_data.formula_builder.ingredient_unlocked(
+                    Ingredient.FIRESPRAY
+                ):
                     ingredient_lines.append("W: Firespray")
                 else:
                     ingredient_lines.append("W: Fire")
@@ -41,35 +46,49 @@ class FormulaWindow(Window):
                     ingredient_lines.append("A: Slush")
                 elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICE):
                     ingredient_lines.append("A: Ice")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICE_VORTEX):
+                elif game_data.formula_builder.ingredient_unlocked(
+                    Ingredient.ICE_VORTEX
+                ):
                     ingredient_lines.append("A: Icespray")
                 elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICEBOLT):
                     ingredient_lines.append("A: Icebolt")
                 else:
                     ingredient_lines.append("A: Water")
 
-            ingredient_lines.extend([
-                "E: Range" if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
-                "R: Area" if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
-                "S: Life" if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
-                "D: Earth" if game_data.formula_builder.ingredient_unlocked(Ingredient.EARTH) else ""
-            ])
+            ingredient_lines.extend(
+                [
+                    "E: Range"
+                    if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE)
+                    else "",
+                    "R: Area"
+                    if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA)
+                    else "",
+                    "S: Life"
+                    if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE)
+                    else "",
+                    "D: Earth"
+                    if game_data.formula_builder.ingredient_unlocked(Ingredient.EARTH)
+                    else "",
+                ]
+            )
             ingredient_lines = [i for i in ingredient_lines if i != ""]
 
             def get_ingredient_list_key(item):
                 mapping = {
-                    'Q': 0,
-                    'W': 1,
-                    'E': 2,
-                    'R': 3,
-                    'A': 4,
-                    'S': 5,
-                    'D': 6,
+                    "Q": 0,
+                    "W": 1,
+                    "E": 2,
+                    "R": 3,
+                    "A": 4,
+                    "S": 5,
+                    "D": 6,
                 }
                 return mapping[item[0]]
 
             ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
-            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65)
+            display_lines(
+                surface, gfx_data.assets.font_message, ingredient_lines, 400, 65
+            )
 
         formulas = game_data.formula_builder.evaluate(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
@@ -81,7 +100,10 @@ class FormulaWindow(Window):
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
         y += 3 * linediff
-        text = "Formula {}/{}".format(game_data.formula_builder.currformula + 1, game_data.formula_builder.num_formula)
+        text = "Formula {}/{}".format(
+            game_data.formula_builder.currformula + 1,
+            game_data.formula_builder.num_formula,
+        )
         display_text(surface, text, gfx_data.assets.font_message, (50, y))
 
         y += 2 * linediff
@@ -99,41 +121,60 @@ class FormulaWindow(Window):
 
         if formula.suboptimal:
             y += linediff
-            display_text(surface, "INFO: Combined heal/attack or attack modifier but no attack",
-                         gfx_data.assets.font_message, (50, y))
+            display_text(
+                surface,
+                "INFO: Combined heal/attack or attack modifier but no attack",
+                gfx_data.assets.font_message,
+                (50, y),
+            )
 
         y += linediff * 2
         cooldown_text = "Cooldown: {} rounds".format(formula.cooldown)
         display_text(surface, cooldown_text, gfx_data.assets.font_message, (50, y))
 
         y += linediff * 2
-        lines = textwrap.wrap(formulas[game_data.formula_builder.currformula].text_stats, 60)
+        lines = textwrap.wrap(
+            formulas[game_data.formula_builder.currformula].text_stats, 60
+        )
         display_lines(surface, gfx_data.assets.font_message, lines, 50, y)
         y += len(lines) * linediff
 
         y += 6 * linediff
-        display_text(surface, "Arrow left/right or Mouse left/right: select formula",
-                     gfx_data.assets.font_message,
-                     (50, y))
+        display_text(
+            surface,
+            "Arrow left/right or Mouse left/right: select formula",
+            gfx_data.assets.font_message,
+            (50, y),
+        )
         y += linediff
-        display_text(surface, "Arrow up/down or Mouse scroll: select slot",
-                     gfx_data.assets.font_message,
-                     (50, y))
+        display_text(
+            surface,
+            "Arrow up/down or Mouse scroll: select slot",
+            gfx_data.assets.font_message,
+            (50, y),
+        )
         y += 2 * linediff
-        display_text(surface, "Press Tab for help, or Space to confirm selection",
-                     gfx_data.assets.font_message,
-                     (50, y))
+        display_text(
+            surface,
+            "Press Tab for help, or Space to confirm selection",
+            gfx_data.assets.font_message,
+            (50, y),
+        )
 
         draw_ingredient_list()
 
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def change_slot(self, game_data, pos_diff):
-        next_num = (game_data.formula_builder.currslot + pos_diff) % game_data.formula_builder.num_slots
+        next_num = (
+            game_data.formula_builder.currslot + pos_diff
+        ) % game_data.formula_builder.num_slots
         game_data.formula_builder.currslot = next_num
 
     def change_formula(self, game_data, pos_diff):
-        next_num = (game_data.formula_builder.currformula + pos_diff) % game_data.formula_builder.num_formula
+        next_num = (
+            game_data.formula_builder.currformula + pos_diff
+        ) % game_data.formula_builder.num_formula
         game_data.formula_builder.currformula = next_num
         # go to first slot
         game_data.formula_builder.currslot = 0
@@ -142,12 +183,18 @@ class FormulaWindow(Window):
         do_quit = key_action.get(EventType.exit)
         if do_quit:
             if GameStates.STORY_SCREEN in game_data.prev_state:  # between levels
-                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
+                game_data.player.caster.set_formulas(
+                    game_data.formula_builder.evaluate(game_data.player)
+                )
                 gfx_data.camera.initialize_map()
-                gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
+                gfx_data.camera.center_on(
+                    game_data.player.pos.x, game_data.player.pos.y
+                )
                 return self.close(game_data, StoryWindow)
             else:  # after level up
-                game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
+                game_data.player.caster.set_formulas(
+                    game_data.formula_builder.evaluate(game_data.player)
+                )
                 return self.close(game_data)
 
         slot = key_action.get("slot")
@@ -157,7 +204,9 @@ class FormulaWindow(Window):
 
         ingredient = key_action.get("ingredient")
         if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient):
-            game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
+            game_data.formula_builder.set_slot(
+                game_data.formula_builder.currslot, ingredient
+            )
             self.change_slot(game_data, 1)
             return {}
 

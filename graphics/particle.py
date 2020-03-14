@@ -49,7 +49,12 @@ def ascending(speed):
 
 def kill_at(max_x, max_y):
     def _kill_at(particle):
-        if particle.x < -max_x or particle.x > max_x or particle.y < -max_y or particle.y > max_y:
+        if (
+            particle.x < -max_x
+            or particle.x > max_x
+            or particle.y < -max_y
+            or particle.y > max_y
+        ):
             particle.alive = 0
 
     return _kill_at
@@ -102,7 +107,7 @@ def sinus(amount, speed):
     return _sinus
 
 
-class Particle():
+class Particle:
     def __init__(self, col, size, *strategies):
         self.x, self.y = 0, 0
         self.col = col
@@ -118,11 +123,14 @@ class Particle():
 
 
 def rain_machine(total_level_width, total_level_height):
-    cm = ((50, 100, 120),
-          (100, 100, 100))
+    cm = ((50, 100, 120), (100, 100, 100))
 
-    behaviour = ascending(-6), wind(4, 80), translate_x(total_level_width), kill_at(total_level_width,
-                                                                                    total_level_height)
+    behaviour = (
+        ascending(-6),
+        wind(4, 80),
+        translate_x(total_level_width),
+        kill_at(total_level_width, total_level_height),
+    )
 
     def create():
         if numpy.random.randint(100) < 50:
@@ -136,13 +144,18 @@ def rain_machine(total_level_width, total_level_height):
 
 
 def wind_machine(total_level_width, total_level_height):
-    cm = [colors['white']]
+    cm = [colors["white"]]
 
     def create():
         if numpy.random.randint(1000) < 15:
             y = numpy.random.randint(0, total_level_height)
-            behaviour = age(1), sinus(4, 12.0), wind(5, 100), kill_at(total_level_width, total_level_height), ascending(
-                -y)
+            behaviour = (
+                age(1),
+                sinus(4, 12.0),
+                wind(5, 100),
+                kill_at(total_level_width, total_level_height),
+                ascending(-y),
+            )
             for x in range(65):
                 c = cm[numpy.random.choice(range(len(cm)))]
                 p = Particle(c, 2, *behaviour)
@@ -156,12 +169,16 @@ def wind_machine(total_level_width, total_level_height):
 
 
 def smoke_machine(total_level_width, total_level_height):
-    cm = [colors['grey'],
-          colors['darkgrey'],
-          colors['gray52']]
+    cm = [colors["grey"], colors["darkgrey"], colors["gray52"]]
 
-    behaviour = age(1), ascending(1), fan_out(400), wind(1, 15), grow(0.5), kill_at(total_level_width,
-                                                                                    total_level_height / 2)
+    behaviour = (
+        age(1),
+        ascending(1),
+        fan_out(400),
+        wind(1, 15),
+        grow(0.5),
+        kill_at(total_level_width, total_level_height / 2),
+    )
 
     def create():
         for _ in range(numpy.random.choice([0, 0, 0, 0, 0, 0, 0, 1, 2, 3])):

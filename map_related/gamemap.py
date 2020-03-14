@@ -140,6 +140,6 @@ class GameMap:
         for x in range(self.width):
             for y in range(self.height):
                 if self.tiles[x][y].explored:
-                    #print("{},{} is explored".format(x, y))
+                    # print("{},{} is explored".format(x, y))
                     count += 1
         return count

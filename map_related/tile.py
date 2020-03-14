@@ -1,5 +1,6 @@
 from graphics.assets import Assets
 
+
 class Tile:
     def __init__(self, blocked, block_sight=None):
         self.blocked = blocked
@@ -15,17 +16,17 @@ class Tile:
 
     def get_drawable(self, visible):
         if visible:
-            if self.block_sight: # wall
+            if self.block_sight:  # wall
                 return Assets.get().light_wall[self.wall_info]
             else:
                 return Assets.get().light_floor[self.floor_info]
         elif self.explored:
-            if self.block_sight: # wall
+            if self.block_sight:  # wall
                 return Assets.get().dark_wall[self.wall_info]
             else:
                 return Assets.get().dark_floor[self.floor_info]
         else:
-            return None # not in sight nor explored
+            return None  # not in sight nor explored
 
     def __repr__(self):
         return str(self)

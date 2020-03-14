@@ -14,14 +14,24 @@ class FormulaMarker(Clickable):
         super().__init__(pos, size)
         self.formula_idx = formula_idx
         self.player = player
-        self.cooldown_bar = Bar(pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND, show_numbers=False)
+        self.cooldown_bar = Bar(
+            pos,
+            None,
+            colors.COOLDOWN_BAR_FRONT,
+            colors.COOLDOWN_BAR_BACKGROUND,
+            show_numbers=False,
+        )
 
     def draw(self, surface, game_data, formula):
         if self.player.caster.is_on_cooldown(self.formula_idx):
-            self.cooldown_bar.draw(surface, self.player.caster.get_cooldown(self.formula_idx), formula.cooldown)
+            self.cooldown_bar.draw(
+                surface,
+                self.player.caster.get_cooldown(self.formula_idx),
+                formula.cooldown,
+            )
         elif self.formula_idx == game_data.targeting_formula_idx:
             msg = "{}: {}".format(self.formula_idx + 1, formula.text_repr)
-            x, y = self.pos.x-5, self.pos.y-5
+            x, y = self.pos.x - 5, self.pos.y - 5
             w, h = self.size.width, self.size.height
             pygame.draw.rect(surface, (150, 75, 75), (x, y, w, h), 5)
             display_text(surface, msg, Assets.get().font_message, self.pos.tuple())
@@ -38,10 +48,31 @@ class FormulaMarker(Clickable):
 
 class RightPanelWindow(Window):
     def __init__(self, constants, parent):
-        super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent)
-        self.health_bar = Bar(Pos(10, 20), "HP", colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND, size=Size(120, 30))
-        self.shield_bar = Bar(Pos(10, 60), "Shield", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30))
-        self.xp_bar = Bar(Pos(10, 130), text=None, color=colors.XP_BAR_FRONT, bgcolor=colors.XP_BAR_BACKGROUND, size=Size(120, 30), show_numbers=False)
+        super().__init__(
+            Pos(0, 0), constants.right_panel_size, visible=False, parent=parent
+        )
+        self.health_bar = Bar(
+            Pos(10, 20),
+            "HP",
+            colors.HP_BAR_FRONT,
+            colors.HP_BAR_BACKGROUND,
+            size=Size(120, 30),
+        )
+        self.shield_bar = Bar(
+            Pos(10, 60),
+            "Shield",
+            colors.SHIELD_BAR_FRONT,
+            colors.SHIELD_BAR_BACKGROUND,
+            size=Size(120, 30),
+        )
+        self.xp_bar = Bar(
+            Pos(10, 130),
+            text=None,
+            color=colors.XP_BAR_FRONT,
+            bgcolor=colors.XP_BAR_BACKGROUND,
+            size=Size(120, 30),
+            show_numbers=False,
+        )
         self.formula_label = Label(Pos(10, 180), "Formulas")
         self.formula_markers = []
 
@@ -67,22 +98,42 @@ class RightPanelWindow(Window):
         surface.fill(colors.BACKGROUND)
 
         if len(self.formula_markers) != len(game_data.player.caster.formulas):
-            self.update_formula_markers(game_data.player, start_y=self.formula_label.pos.y + 40)
+            self.update_formula_markers(
+                game_data.player, start_y=self.formula_label.pos.y + 40
+            )
 
-        self.health_bar.draw(surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp)
+        self.health_bar.draw(
+            surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp
+        )
         if game_data.player.fighter.shield:
-            self.shield_bar.draw(surface, game_data.player.fighter.shield.level,
-                                 game_data.player.fighter.shield.max_level)
+            self.shield_bar.draw(
+                surface,
+                game_data.player.fighter.shield.level,
+                game_data.player.fighter.shield.max_level,
+            )
 
         if not config.conf.keys:
-            display_text(surface, "Level {}".format(game_data.player.level.current_level), Assets.get().font_message, (10, 105))
-            self.xp_bar.draw(surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level)
+            display_text(
+                surface,
+                "Level {}".format(game_data.player.level.current_level),
+                Assets.get().font_message,
+                (10, 105),
+            )
+            self.xp_bar.draw(
+                surface,
+                game_data.player.level.current_xp,
+                game_data.player.level.xp_to_next_level,
+            )
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):
             fm.draw(surface, game_data, game_data.player.caster.formulas[idx])
 
-        display_text(surface, "Floor {}".format(game_data.run_planner.current_level_index + 1),
-                     Assets.get().font_message, (10, 850))
+        display_text(
+            surface,
+            "Floor {}".format(game_data.run_planner.current_level_index + 1),
+            Assets.get().font_message,
+            (10, 850),
+        )
 
         gfx_data.main.blit(surface, self.pos.tuple())

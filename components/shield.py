@@ -3,6 +3,7 @@ from components.effect_type import EffectType
 from systems.messages import Message
 from graphics.visual_effect import VisualEffectSystem
 
+
 class Shield:
     def __init__(self, level, strikebacks, owner, distance):
         self.level = level
@@ -10,7 +11,7 @@ class Shield:
         self.strikebacks = strikebacks
         self.owner = owner
         self.distance = distance
-        self.visual_effect = None # set by effects
+        self.visual_effect = None  # set by effects
 
     def on_hit(self, source, dmg, dmg_type):
         assert self.visual_effect
@@ -19,8 +20,9 @@ class Shield:
             for sb in self.strikebacks:
                 sb.apply(source)
                 if "amount" in sb.stats:
-                    text = "Shield hits {} for {} {} damage".format(source.name, sb.stats.amount,
-                                                                    sb.stats.dmg_type.name.lower())
+                    text = "Shield hits {} for {} {} damage".format(
+                        source.name, sb.stats.amount, sb.stats.dmg_type.name.lower()
+                    )
                     results.append({"message": Message(text)})
         actual_dmg = max(0, dmg - self.level)
         self.level = max(0, self.level - dmg)

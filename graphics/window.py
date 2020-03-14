@@ -59,7 +59,15 @@ class Window(Clickable):
 
 
 class Bar(Clickable):
-    def __init__(self, pos, text=None, color=colors.WHITE, bgcolor=colors.BACKGROUND, size=Size(100, 30), show_numbers=True):
+    def __init__(
+        self,
+        pos,
+        text=None,
+        color=colors.WHITE,
+        bgcolor=colors.BACKGROUND,
+        size=Size(100, 30),
+        show_numbers=True,
+    ):
         super().__init__(pos, size)
         self.color = color
         self.text = text
@@ -67,8 +75,18 @@ class Bar(Clickable):
         self.show_numbers = show_numbers
 
     def draw(self, surface, current_value, max_value):
-        display_bar(surface, Assets.get(), self.pos, self.size.width, current_value, max_value,
-                    self.color, self.bgcolor, text = self.text, show_numbers=self.show_numbers)
+        display_bar(
+            surface,
+            Assets.get(),
+            self.pos,
+            self.size.width,
+            current_value,
+            max_value,
+            self.color,
+            self.bgcolor,
+            text=self.text,
+            show_numbers=self.show_numbers,
+        )
 
 
 class Label(Widget):
@@ -82,7 +100,9 @@ class Label(Widget):
 
 class TextWindow(Window):
     def __init__(self, constants, visible, lines=None, path=None, next_window=None):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
+        super().__init__(
+            constants.helper_window_pos, constants.helper_window_size, visible
+        )
         self.next_window = next_window
         self.lines = lines
         self.num_lines = 20
@@ -94,7 +114,7 @@ class TextWindow(Window):
             self.lines = self.load_path(path)
 
     def load_path(self, path):
-        with open(path, 'r') as reader:
+        with open(path, "r") as reader:
             return reader.read().split("\n")
 
     def draw(self, game_data, gfx_data):
@@ -107,11 +127,16 @@ class TextWindow(Window):
             else:
                 split_lines = textwrap.wrap(current, 60)
                 all_lines.extend(split_lines)
-        show_lines = all_lines[self.offset:self.offset + self.num_lines]
+        show_lines = all_lines[self.offset : self.offset + self.num_lines]
         display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface)
 
         if len(all_lines) > self.num_lines:
-            display_text(surface, "Use W, S or mouse scroll to see more", gfx_data.assets.font_message, (50, 500))
+            display_text(
+                surface,
+                "Use W, S or mouse scroll to see more",
+                gfx_data.assets.font_message,
+                (50, 500),
+            )
 
         gfx_data.main.blit(surface, self.pos.tuple())
 
@@ -119,13 +144,17 @@ class TextWindow(Window):
         if self.num_lines > len(self.lines):
             self.offset = max(self.offset - self.offset_jump, 0)
         else:
-            self.offset = max(-len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0)
+            self.offset = max(
+                -len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0
+            )
 
     def scroll_down(self):
         if self.num_lines > len(self.lines):
             self.offset = min(self.offset + self.offset_jump, len(self.lines))
         else:
-            self.offset = min(len(self.lines) - self.num_lines, self.offset + self.offset_jump)
+            self.offset = min(
+                len(self.lines) - self.num_lines, self.offset + self.offset_jump
+            )
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)
@@ -148,4 +177,3 @@ class TextWindow(Window):
         scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.scroll_down()
-

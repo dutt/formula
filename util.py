@@ -37,8 +37,12 @@ class Rect:
         return cx, cy
 
     def intersect(self, other):
-        return (self.x1 <= other.x2 and self.x2 >= other.x1 and
-                self.y1 <= other.y2 and self.y2 >= other.y1)
+        return (
+            self.x1 <= other.x2
+            and self.x2 >= other.x1
+            and self.y1 <= other.y2
+            and self.y2 >= other.y1
+        )
 
     def contains(self, x, y):
         return self.x1 <= x <= self.x2 and self.y1 <= y <= self.y2
@@ -47,7 +51,9 @@ class Rect:
         return str(self)
 
     def __str__(self):
-        return "<rect pos={} w={}, h={}>".format((self.x, self.y), self.width, self.height)
+        return "<rect pos={} w={}, h={}>".format(
+            (self.x, self.y), self.width, self.height
+        )
 
 
 class Vec:
@@ -203,8 +209,13 @@ def find_path(source, target, entities, game_map):
     # Scan the current map each turn and set all the walls as unwalkable
     for y1 in range(game_map.height):
         for x1 in range(game_map.width):
-            tcod.map_set_properties(fov, x1, y1, not game_map.tiles[x1][y1].block_sight,
-                                    not game_map.tiles[x1][y1].blocked)
+            tcod.map_set_properties(
+                fov,
+                x1,
+                y1,
+                not game_map.tiles[x1][y1].block_sight,
+                not game_map.tiles[x1][y1].blocked,
+            )
 
     # Scan all the objects to see if there are objects that must be navigated around
     # Check also that the object isn't self or the target (so that the start and the end points are free)

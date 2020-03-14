@@ -8,6 +8,7 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 import systems.input_recorder
 import config
 
+
 def handle_keys(events, state):
     pressed_keys = pygame.key.get_pressed()
     modifiers = [key for key in [pygame.K_LALT, pygame.K_RALT] if pressed_keys[key]]
@@ -19,12 +20,14 @@ def handle_keys(events, state):
             return handle_player_turn_keys(e.key, modifiers)
         elif state == GameStates.LEVEL_UP:
             return handle_level_up_keys(e.key, modifiers)
-        elif state in [GameStates.CHARACTER_SCREEN,
-                       GameStates.WELCOME_SCREEN,
-                       GameStates.TARGETING,
-                       GameStates.GENERAL_HELP_SCREEN,
-                       GameStates.FORMULA_HELP_SCEEN,
-                       GameStates.STORY_HELP_SCREEN]:
+        elif state in [
+            GameStates.CHARACTER_SCREEN,
+            GameStates.WELCOME_SCREEN,
+            GameStates.TARGETING,
+            GameStates.GENERAL_HELP_SCREEN,
+            GameStates.FORMULA_HELP_SCEEN,
+            GameStates.STORY_HELP_SCREEN,
+        ]:
             return handle_general_keys(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
             return handle_formula_screen_keys(e.key, modifiers)
@@ -81,11 +84,11 @@ def handle_formula_screen_keys(key, modifiers):
     elif key == pygame.K_r:
         return {"ingredient": Ingredient.AREA}
     elif key == pygame.K_a:
-        return {'ingredient': Ingredient.WATER}
+        return {"ingredient": Ingredient.WATER}
     elif key == pygame.K_s:
-        return {'ingredient': Ingredient.LIFE}
+        return {"ingredient": Ingredient.LIFE}
     elif key == pygame.K_d:
-        return {'ingredient': Ingredient.EARTH}
+        return {"ingredient": Ingredient.EARTH}
     elif key == pygame.K_LEFT:
         return {"next_formula": -1}
     elif key == pygame.K_RIGHT:
@@ -103,7 +106,9 @@ def handle_formula_screen_keys(key, modifiers):
 def handle_general_keys(key, modifiers):
     if key in [pygame.K_ESCAPE, pygame.K_TAB, pygame.K_SPACE]:
         return {EventType.exit: True}
-    elif key == pygame.K_RETURN and (pygame.K_RALT in modifiers or pygame.K_LALT in modifiers):
+    elif key == pygame.K_RETURN and (
+        pygame.K_RALT in modifiers or pygame.K_LALT in modifiers
+    ):
         return {EventType.fullscreen: True}
     elif key in [pygame.K_UP, pygame.K_w]:
         return {EventType.scroll_up: 1}
@@ -131,12 +136,7 @@ def handle_mouse(events, constants, camera):
         cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
         cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
-        data = AttrDict({
-            "x": pos.x,
-            "y": pos.y,
-            "cx": cx,
-            "cy": cy,
-        })
+        data = AttrDict({"x": pos.x, "y": pos.y, "cx": cx, "cy": cy,})
         if e.button == 1:
             return {EventType.left_click: data}
         elif e.button == 3:
@@ -150,7 +150,7 @@ def handle_mouse(events, constants, camera):
 
 def handle_player_turn_keys(key, modifiers):
     if key == pygame.K_w:
-        return {EventType.move: (0, - 1)}
+        return {EventType.move: (0, -1)}
     elif key == pygame.K_s:
         return {EventType.move: (0, 1)}
     elif key == pygame.K_a:

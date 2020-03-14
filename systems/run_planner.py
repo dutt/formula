@@ -19,8 +19,8 @@ class RunPlanner:
         self.gen_level_idx = 0
 
     def generate(self, game_state):
-        #self.levels.append(self.make_tutorial_map())
-        #self.gen_level_idx += 1
+        # self.levels.append(self.make_tutorial_map())
+        # self.gen_level_idx += 1
 
         for i in range(self.parts):
             self.levels.append(self.make_easy_map(self.gen_level_idx))
@@ -71,33 +71,44 @@ class RunPlanner:
         return self.current_map
 
     def make_tutorial_map(self):
-        m = MapFileLoader.make_map(self.constants, 0, resource_path("data/maps/tutorial"))
+        m = MapFileLoader.make_map(
+            self.constants, 0, resource_path("data/maps/tutorial")
+        )
         m.tutorial = True
         return m
 
     def make_easy_map(self, current_level):
-        monster_chances = {"any": 100,
-                           "thug": 40,
-                           "axe_thrower": 30,
-                           "dog_group": 30}
+        monster_chances = {"any": 100, "thug": 40, "axe_thrower": 30, "dog_group": 30}
         crystal_ratio = 0.5
-        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, crystal_ratio)
+        return TowerMapGenerator.make_map(
+            self.constants, current_level, monster_chances, crystal_ratio
+        )
 
     def make_medium_map(self, current_level):
-        monster_chances = {"any": 100,
-                           "mercenary": 40,
-                           "boar_group": 30,
-                           "rifleman": 30}
+        monster_chances = {
+            "any": 100,
+            "mercenary": 40,
+            "boar_group": 30,
+            "rifleman": 30,
+        }
         crystal_ratio = 0.75
-        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, crystal_ratio)
+        return TowerMapGenerator.make_map(
+            self.constants, current_level, monster_chances, crystal_ratio
+        )
 
     def make_hard_map(self, current_level):
-        monster_chances = {"any": 100,
-                           "stalker": 40,
-                           "armored_bear_group": 30,
-                           "zapper": 30}
+        monster_chances = {
+            "any": 100,
+            "stalker": 40,
+            "armored_bear_group": 30,
+            "zapper": 30,
+        }
         crystal_ratio = 0.95
-        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, crystal_ratio)
+        return TowerMapGenerator.make_map(
+            self.constants, current_level, monster_chances, crystal_ratio
+        )
 
     def make_final_map(self, current_level):
-        return MapFileLoader.make_map(self.constants, current_level, resource_path("data/maps/final"))
+        return MapFileLoader.make_map(
+            self.constants, current_level, resource_path("data/maps/final")
+        )

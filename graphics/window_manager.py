@@ -2,7 +2,12 @@ from components.events import EventType
 from components.game_states import GameStates
 from graphics.formula_window import FormulaWindow, FormulaHelpWindow
 from graphics.level_up_window import LevelUpWindow
-from graphics.minor_windows import GeneralHelpWindow, AskQuitWindow, DeadWindow, VictoryWindow
+from graphics.minor_windows import (
+    GeneralHelpWindow,
+    AskQuitWindow,
+    DeadWindow,
+    VictoryWindow,
+)
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 

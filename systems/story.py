@@ -37,7 +37,7 @@ class StoryLoader:
 
     def load(self, path):
         def get_key(val):
-            return int(val[len("floor."):-4])
+            return int(val[len("floor.") : -4])
 
         files = sorted(os.listdir(path), key=get_key)
         for file in files:
@@ -46,7 +46,7 @@ class StoryLoader:
             self.sections.append(section)
 
     def load_section(self, filepath):
-        with open(filepath, 'r') as reader:
+        with open(filepath, "r") as reader:
             content = reader.read()
         base = os.path.basename(filepath)
         base = os.path.splitext(base)[0]

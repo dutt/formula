@@ -62,17 +62,27 @@ class EffectBuilder:
                     color = (main, base, base)
                 elif dmg_type == DamageType.COLD:
                     color = (base, base, main)
-                VisualEffectSystem.get().add_temporary(target.pos, target.pos, lifespan=0.2,
-                                                       asset=Assets.get().spark_effect, color=color, wait=0.2)
-                return target.fighter.take_damage(source=caster, dmg=dmg_amount, dmg_type=dmg_type)
+                VisualEffectSystem.get().add_temporary(
+                    target.pos,
+                    target.pos,
+                    lifespan=0.2,
+                    asset=Assets.get().spark_effect,
+                    color=color,
+                    wait=0.2,
+                )
+                return target.fighter.take_damage(
+                    source=caster, dmg=dmg_amount, dmg_type=dmg_type
+                )
 
             def stats_func():
-                return AttrDict({
-                    "type": EffectType.DAMAGE,
-                    "amount": amount,
-                    "dmg_type": dmg_type,
-                    "rounds": rounds
-                })
+                return AttrDict(
+                    {
+                        "type": EffectType.DAMAGE,
+                        "amount": amount,
+                        "dmg_type": dmg_type,
+                        "rounds": rounds,
+                    }
+                )
 
             return Effect(rounds, apply, stats_func)
 
@@ -91,11 +101,9 @@ class EffectBuilder:
                 return target.fighter.heal(heal_amount)
 
             def stats_func():
-                return AttrDict({
-                    "type": EffectType.HEALING,
-                    "amount": amount,
-                    "rounds": rounds
-                })
+                return AttrDict(
+                    {"type": EffectType.HEALING, "amount": amount, "rounds": rounds}
+                )
 
             return Effect(rounds, apply, stats_func)
 
@@ -109,10 +117,7 @@ class EffectBuilder:
                 # return [{"message": Message("The {} is slowed".format(target.name))}]
 
             def stats_func():
-                return AttrDict({
-                    "type": EffectType.SLOW,
-                    "rounds": rounds
-                })
+                return AttrDict({"type": EffectType.SLOW, "rounds": rounds})
 
             def colorize_visual(target):
                 target.drawable.colorize((0, 0, 255))
@@ -129,24 +134,33 @@ class EffectBuilder:
 
             def apply(target):
                 target.fighter.shield = Shield(level, strikebacks, target, distance)
-                target.fighter.shield.visual_effect = VisualEffectSystem.get().add_attached(target,
-                                                                                            Assets.get().shield_effect,
-                                                                                            target.fighter.shield.color,
-                                                                                            transform=rotation_transform())
+                target.fighter.shield.visual_effect = VisualEffectSystem.get().add_attached(
+                    target,
+                    Assets.get().shield_effect,
+                    target.fighter.shield.color,
+                    transform=rotation_transform(),
+                )
                 return []
 
             def stats_func():
-                return AttrDict({
-                    "type": EffectType.DEFENSE,
-                    "rounds": 1,
-                    "level": level,
-                    "strikebacks": strikebacks
-                })
+                return AttrDict(
+                    {
+                        "type": EffectType.DEFENSE,
+                        "rounds": 1,
+                        "level": level,
+                        "strikebacks": strikebacks,
+                    }
+                )
 
             def colorize_visual(target):
                 target.drawable.colorize((0, 0, 255))
 
-            return Effect(rounds=None, applicator=apply, stats_func=stats_func, colorize_visual_func=colorize_visual)
+            return Effect(
+                rounds=None,
+                applicator=apply,
+                stats_func=stats_func,
+                colorize_visual_func=colorize_visual,
+            )
 
         if effect_type == EffectType.DAMAGE:
             return create_damage(**kwargs)
