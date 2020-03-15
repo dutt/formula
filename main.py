@@ -13,7 +13,7 @@ from systems.death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, setup_data_state
 from systems.messages import Message
 from components.game_states import GameStates
-from systems import input_recorder
+from systems import input_recorder, tester
 import config
 
 
@@ -114,6 +114,8 @@ def set_seed():
     # original seed
     # seed = "2018-12-30 09:38:04.303108"
     # seed = "2019-01-25 22:19:22.597013"
+
+    # seed = "2020-03-15 08:47:05.439709"
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
     return seed
@@ -177,11 +179,9 @@ def load_replay_log(path):
 def main():
     game_data = None
     now = datetime.datetime.now()
+    seed = set_seed()
     if config.conf.is_replaying:
         load_replay_log(config.conf.replay_log_path)
-        seed = config.conf.random_seed
-    else:
-        seed = set_seed()
 
     try:
         constants = get_constants()
@@ -193,7 +193,9 @@ def main():
 
         pygame.quit()
 
-        if not config.conf.is_replaying:
+        if config.conf.is_testing:
+            tester.validate_state(game_data, config.conf.test_data)
+        elif not config.conf.is_replaying:
             write_logs(game_data, seed, now, crashed=False)
     except:
         tb = traceback.format_exc()

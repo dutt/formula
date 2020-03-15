@@ -307,9 +307,14 @@ class TowerMapGenerator:
 
     @staticmethod
     def place_keys(m, chunks, assets, crystal_ratio):
-        num_rooms_with_crystals = math.ceil((len(chunks) - 1) * crystal_ratio)
-        rooms_with_crystals = random.sample(chunks[1:], k=num_rooms_with_crystals)
-        for idx, c in enumerate(rooms_with_crystals):
+        num_rooms_with_keys = math.floor(len(chunks) * crystal_ratio)
+        if num_rooms_with_keys > len(chunks[1:-1]): #if it's a map with few rooms
+            #print("would have cosen {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
+            num_rooms_with_keys = len(chunks[1:-1])
+        #print("choosing {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
+        # sample random rooms but not in the first room, not in the room with stairs
+        rooms_with_keys = random.sample(chunks[1:-1], k=num_rooms_with_keys)
+        for idx, c in enumerate(rooms_with_keys):
             occupied = True
             while occupied:
                 x = random.randint(c.x + 1, c.x + c.width - 2)
@@ -328,8 +333,8 @@ class TowerMapGenerator:
                 drawable=drawable_component,
             )
             m.entities.append(crystal)
-        m.num_crystals_total = num_rooms_with_crystals
-        m.num_crystals_found = 0
+        m.num_keys_total = num_rooms_with_keys
+        m.num_keys_found = 0
 
     @staticmethod
     def free_area(m):

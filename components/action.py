@@ -109,21 +109,22 @@ class DescendStairsAction(Action):
         )
 
     def execute(self, game_data, gfx_data):
-        all_crystals = (
-            game_data.map.num_crystals_found == game_data.map.num_crystals_total
+        all_keys = (
+            game_data.map.num_keys_found == game_data.map.num_keys_total
         )
-        if not all_crystals:
+        if not all_keys:
             num_remaining = (
-                game_data.map.num_crystals_total - game_data.map.num_crystals_found
+                game_data.map.num_keys_total - game_data.map.num_keys_found
             )
             text = "You haven't found all the keys on this level yet, {} keys left".format(
                 num_remaining
             )
+            game_data.map.stairs_found = True
             result = [{"message": Message(text)}]
             return self.package(result=result)
 
         if game_data.run_planner.has_next:
-            if config.conf.keys == "keys":
+            if config.conf.keys:
                 game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
 
             game_data.prev_state.append(game_data.state)
@@ -220,12 +221,15 @@ class PickupCrystalAction(Action):
 
     def execute(self, game_data, gfx_data):
         game_data.map.entities.remove(self.crystal)
-        game_data.map.num_crystals_found += 1
-        if game_data.map.num_crystals_found == game_data.map.num_crystals_total:
+        game_data.map.num_keys_found += 1
+        if game_data.map.num_keys_found == game_data.map.num_keys_total:
             text = "All keys found, head to the stairs"
-        else:
+        elif game_data.map.stairs_found:
             text = "You found a key, {}/{} keys found".format(
-                game_data.map.num_crystals_found, game_data.map.num_crystals_total
+                game_data.map.num_keys_found, game_data.map.num_keys_total
             )
+        else:
+            text = "You found a key, {} keys found, wonder how many are left?".format(
+                game_data.map.num_keys_found)
         result = [{"message": Message(text)}]
         return self.package(result=result)

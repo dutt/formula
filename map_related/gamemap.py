@@ -91,6 +91,9 @@ class GameMap:
         self.entities = []
         self.player_pos = None
         self.tutorial = False
+        self.num_keys_found = 0
+        self.num_keys_total = 0
+        self.stairs_found = False
         # self.load_map(resource_path("data/maps/test.map_related"))
         # self.tiles = self.set_tile_info(self.tiles)
         # for y in range(self.height):

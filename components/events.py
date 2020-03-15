@@ -79,7 +79,8 @@ class MouseEvent(Event):
     def serialize(self):
         return {
             "type": InputType.MOUSE.name,
-            "pos": (self.data.pos.x, self.data.pos.y),
+            "cursor_pos": (self.data.pos.x, self.data.pos.y),
+            "map_pos" : (self.data.pos.cx, self.data.pos.cy),
             "button": self.data.button,
         }
 
@@ -96,7 +97,11 @@ class MouseEvent(Event):
         retr = MouseEvent(raw_event=None)
         retr.event_type = InputType.MOUSE
         retr.data = attrdict.AttrDict(
-            {"pos": Pos(data["pos"][0], data["pos"][1]), "button": data["button"]}
+            {
+                "pos": Pos(data["cursor_pos"][0], data["cursor_pos"][1]),
+                "map_pos": Pos(data["map_pos"][0], data["map_pos"][1]),
+                "button": data["button"]
+            }
         )
         return retr
 

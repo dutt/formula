@@ -83,7 +83,8 @@ class RightPanelWindow(Window):
         return {}
 
     def handle_key(self, game_data, gfx_data, key_action):
-        print("right panel key")
+        pass
+        #print("right panel key")
 
     def update_formula_markers(self, player, start_y):
         y = start_y
@@ -112,7 +113,18 @@ class RightPanelWindow(Window):
                 game_data.player.fighter.shield.max_level,
             )
 
-        if not config.conf.keys:
+        if config.conf.keys:
+            if game_data.map.stairs_found:
+                text = "Found {}/{} keys".format(game_data.map.num_keys_found, game_data.map.num_keys_total)
+            else:
+                text = "Found {}/? keys".format(game_data.map.num_keys_found)
+            display_text(
+                    surface,
+                    text,
+                    Assets.get().font_message,
+                    (10, 105),
+                )
+        else:
             display_text(
                 surface,
                 "Level {}".format(game_data.player.level.current_level),

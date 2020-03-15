@@ -130,13 +130,15 @@ def handle_level_up_keys(key, modifiers):
 
 def handle_mouse(events, constants, camera):
     for e in events:
-        if not config.conf.is_replaying:
-            systems.input_recorder.add_mouse_event(e)
         pos = e.pos
         cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
         cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
         data = AttrDict({"x": pos.x, "y": pos.y, "cx": cx, "cy": cy,})
+        if not config.conf.is_replaying:
+            e.data.pos.cx = cx
+            e.data.pos.cy = cy
+            systems.input_recorder.add_mouse_event(e)
         if e.button == 1:
             return {EventType.left_click: data}
         elif e.button == 3:

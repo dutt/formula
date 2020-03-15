@@ -1,9 +1,10 @@
 import argparse
 import os
 import sys
+import json
 
 unlocking_help = """Are ingredients unlocked?
-Allowed choices: 
+Allowed choices:
   none - no unlocking, start with all ingredients
   level_2random - unlock ingredient on level up, choose between 2 random on level up
   level_all - unlock ingredients on level up, choose between all"""
@@ -18,7 +19,7 @@ Allowed choices:
  choose - start with showing the formula screen
  fire - FFR, FFR, FFR
 """
-replay_help = """Replay a game log, log values override all other settings. 
+replay_help = """Replay a game log, log values override all other settings.
 Argument is the path to the log file
 """
 replay_off = "off"
@@ -32,6 +33,9 @@ Allowed choices:
    yes - Ingredients become less effective the more you have
    no - Ingredients don't become less effective
 """
+test_help = """Run an automated test
+Usage:
+    --test PATH_TO_FILE"""
 formula_description = (
     "Formula, a roguelite game about blending stuff and throwing them at monsters"
 )
@@ -52,7 +56,7 @@ parser.add_argument(
 parser.add_argument(
     "--replay_log_path", type=str, action="store", default=replay_off, help=replay_help
 )
-parser.add_argument("--keys", type=str, action="store", default="kill", help=keys_help)
+parser.add_argument("--keys", type=str, action="store", default="keys", help=keys_help)
 parser.add_argument(
     "--ingredient_scaling",
     type=str,
@@ -60,6 +64,7 @@ parser.add_argument(
     default="no",
     help=ingredient_scaling_help,
 )
+parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
 args = parser.parse_args()
 
 
@@ -101,6 +106,12 @@ class Config:
         else:
             text = "Config: unlock mode {}, cooldown mode {}, seed {}, starting mode {}, keys {}"
 
+        self.test_file = args.test
+        if self.test_file:
+            self.parse_test(self.test_file)
+        else:
+            self.is_testing = False
+
         print(
             text.format(
                 self.unlock_mode,
@@ -110,6 +121,18 @@ class Config:
                 self.keys,
             )
         )
+
+    def parse_test(self, filepath):
+        self.test_file = os.path.abspath(filepath)
+        testdir, _ = os.path.split(self.test_file)
+        self.test_data = json.load(open(self.test_file, 'r'))
+        self.is_testing = True
+        self.is_replaying = True
+        self.replay_log_path = os.path.join(testdir, self.test_data["logfile"])
+        if not os.path.exists(self.replay_log_path):
+            raise Exception(f"Logfile {self.replay_log_path} used in testcase {self.test_file} doesn't exist")
+        self.log_data = json.load(open(self.replay_log_path, 'r'))
+        self.random_seed = self.log_data["seed"]
 
 
 conf = Config()

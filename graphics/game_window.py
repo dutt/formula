@@ -70,9 +70,11 @@ class GameWindow(Window):
                 game_data.map.entities, key=lambda e: e.render_order.value
             )
             for e in rendering_sorted:
-                if e.drawable and tcod.map_is_in_fov(
+                if not e.drawable:
+                    continue
+                if tcod.map_is_in_fov(
                     game_data.fov_map, e.pos.x, e.pos.y
-                ):
+                ) or (e.stairs and game_data.map.tiles[e.pos.x][e.pos.y].explored):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     main.blit(e.drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
                     for ad in e.attached_effects:

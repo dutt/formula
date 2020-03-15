@@ -108,7 +108,8 @@ class Player(Entity):
                 player_action = ExitAction(keep_playing=False, ask=False)
 
             if config.conf.is_replaying and input_recorder.events:
-                time.sleep(0.2)
+                if not config.conf.is_testing:
+                    time.sleep(0.2)
                 next_event = input_recorder.events.pop(0)
                 if input_recorder.events:
                     print("Replaying event {}".format(next_event))

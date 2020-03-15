@@ -3,3 +3,4 @@ attrdict
 tcod
 pyinstaller
 pygame
+black

@@ -9,7 +9,13 @@ class Caster:
         self.num_formulas = num_formulas
         self.formulas = None
         self.slots = [Ingredient.FIRE for _ in range(num_slots)]
-        self.cooldowns = {}
+        self.cooldowns = self.create_cooldowns()
+
+    def create_cooldowns(self):
+        retr = {}
+        for idx in range(self.num_formulas):
+            retr[idx] = 0
+        return retr
 
     def set_formulas(self, formulas):
         self.formulas = formulas

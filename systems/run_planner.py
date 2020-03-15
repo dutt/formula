@@ -79,7 +79,7 @@ class RunPlanner:
 
     def make_easy_map(self, current_level):
         monster_chances = {"any": 100, "thug": 40, "axe_thrower": 30, "dog_group": 30}
-        crystal_ratio = 0.5
+        crystal_ratio = 0.4
         return TowerMapGenerator.make_map(
             self.constants, current_level, monster_chances, crystal_ratio
         )
@@ -91,7 +91,7 @@ class RunPlanner:
             "boar_group": 30,
             "rifleman": 30,
         }
-        crystal_ratio = 0.75
+        crystal_ratio = 0.6
         return TowerMapGenerator.make_map(
             self.constants, current_level, monster_chances, crystal_ratio
         )
@@ -103,7 +103,7 @@ class RunPlanner:
             "armored_bear_group": 30,
             "zapper": 30,
         }
-        crystal_ratio = 0.95
+        crystal_ratio = 0.8
         return TowerMapGenerator.make_map(
             self.constants, current_level, monster_chances, crystal_ratio
         )
