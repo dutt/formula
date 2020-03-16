@@ -140,6 +140,7 @@ def write_logs(game_data, seed, start_time, crashed):
     logname = "formula_run.{}.log".format(timestamp)
     data = {
         "seed": seed,
+        "config" : config.conf.serialize(),
         "messages": [msg.text for msg in game_data.log.messages],
         "input_events": input_recorder.serialize_input(input_recorder.events),
         "crashed": crashed,

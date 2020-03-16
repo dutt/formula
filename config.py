@@ -102,9 +102,18 @@ class Config:
             sys.exit(1)
         self.is_replaying = self.replay_log_path != replay_off
         if self.is_replaying:
-            text = "Replaying log file {}".format(self.replay_log_path)
+            print(f"Replaying log file {self.replay_log_path}")
         else:
             text = "Config: unlock mode {}, cooldown mode {}, seed {}, starting mode {}, keys {}"
+            print(
+                text.format(
+                    self.unlock_mode,
+                    self.cooldown_mode,
+                    self.random_seed,
+                    self.starting_mode,
+                    self.keys,
+                )
+            )
 
         self.test_file = args.test
         if self.test_file:
@@ -112,26 +121,35 @@ class Config:
         else:
             self.is_testing = False
 
-        print(
-            text.format(
-                self.unlock_mode,
-                self.cooldown_mode,
-                self.random_seed,
-                self.starting_mode,
-                self.keys,
-            )
-        )
+    def serialize(self):
+        return {
+             "unlock_mode" : self.unlock_mode,
+             "cooldown_mode" : self.cooldown_mode,
+             "random_seed" : self.random_seed,
+             "starting_mode" : self.starting_mode,
+             "keys" : self.keys,
+        }
+
+    def deserialize(self, data):
+        self.unlock_mode = data["unlock_mode"]
+        self.cooldown_mode = data["cooldown_mode"]
+        self.random_seed = data["random_seed"]
+        self.starting_mode = data["starting_mode"]
+        self.keys = data["keys"]
 
     def parse_test(self, filepath):
         self.test_file = os.path.abspath(filepath)
+        if not os.path.exists(self.test_file):
+            raise ValueError(f"Testcase file {self.test_file} doesn't exist")
         testdir, _ = os.path.split(self.test_file)
         self.test_data = json.load(open(self.test_file, 'r'))
         self.is_testing = True
         self.is_replaying = True
         self.replay_log_path = os.path.join(testdir, self.test_data["logfile"])
         if not os.path.exists(self.replay_log_path):
-            raise Exception(f"Logfile {self.replay_log_path} used in testcase {self.test_file} doesn't exist")
+            raise ValueError(f"Logfile {self.replay_log_path} used in testcase {self.test_file} doesn't exist")
         self.log_data = json.load(open(self.replay_log_path, 'r'))
+        self.deserialize(self.log_data["config"])
         self.random_seed = self.log_data["seed"]
 
 
