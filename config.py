@@ -51,7 +51,7 @@ parser.add_argument(
 )
 parser.add_argument("--seed", type=str, default="now", action="store", help=seed_help)
 parser.add_argument(
-    "--starting_mode", type=str, default="fire", action="store", help=starting_mode_help
+    "--starting_mode", type=str, default="choose", action="store", help=starting_mode_help
 )
 parser.add_argument(
     "--replay_log_path", type=str, action="store", default=replay_off, help=replay_help

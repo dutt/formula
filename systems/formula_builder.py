@@ -49,9 +49,9 @@ class FormulaBuilder:
                 Ingredient.FIRE: True,
                 Ingredient.RANGE: True,
                 Ingredient.AREA: False,
-                Ingredient.WATER: False,
-                Ingredient.LIFE: False,
-                Ingredient.EARTH: False,
+                Ingredient.WATER: True,
+                Ingredient.LIFE: True,
+                Ingredient.EARTH: True,
             }
         return {**upgrades_locked, **basics}
 

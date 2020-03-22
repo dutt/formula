@@ -21,6 +21,8 @@ class Ingredient(Enum):
     ICEBOLT = auto()
     ICE_VORTEX = auto()
 
+    # leveled up earth
+
     @property
     def shortname(self):
         return self.name[0:1].capitalize()
