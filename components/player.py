@@ -12,7 +12,7 @@ from components.action import (
     WaitAction,
     DescendStairsAction,
     LootAction,
-    PickupCrystalAction,
+    PickupKeyAction,
 )
 from components.caster import Caster
 from components.drawable import Drawable
@@ -172,13 +172,13 @@ class Player(Entity):
                                 game_data.story.next_story()
                                 gfx_data.windows.activate_wnd_for_state(game_data.state)
                                 game_data.stats.end_time = datetime.datetime.now()
-                            else:
+                            elif not config.conf.keys:
                                 player_action = LootAction(self)
                                 e.name = "Looted r" + e.name[1:]
                                 game_data.stats.loot_monster(e)
                             break
-                        elif e.crystal:
-                            player_action = PickupCrystalAction(self, e)
+                        elif e.key:
+                            player_action = PickupKeyAction(self, e)
                             break
                 else:
                     if config.conf.cooldown_mode != "always":

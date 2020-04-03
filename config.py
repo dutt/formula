@@ -61,7 +61,7 @@ parser.add_argument(
     "--ingredient_scaling",
     type=str,
     action="store",
-    default="no",
+    default="yes",
     help=ingredient_scaling_help,
 )
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)

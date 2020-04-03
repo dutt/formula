@@ -8,14 +8,19 @@ class VisualEffectSystem:
     _instance = None
 
     def __init__(self, fps_per_second):
-        assert not VisualEffectSystem._instance
-        VisualEffectSystem._instance = self
         self.fps_per_second = fps_per_second
         self.temporary_effects = []
         self.attached_effects = []
 
     @staticmethod
+    def setup(fps_per_second):
+        assert not VisualEffectSystem._instance
+        VisualEffectSystem._instance = VisualEffectSystem(fps_per_second)
+        return VisualEffectSystem.get()
+
+    @staticmethod
     def get():
+        assert VisualEffectSystem._instance
         return VisualEffectSystem._instance
 
     @property

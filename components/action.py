@@ -1,9 +1,12 @@
+import random
+
 from attrdict import AttrDict as attrdict
 
 from components.game_states import GameStates
 from systems.fov import initialize_fov
 from systems.messages import Message
 import config
+from components.effects import EffectBuilder, EffectType
 
 
 class Action:
@@ -20,57 +23,52 @@ class Action:
         else:
             return None
 
+def do_looting(game_data, gfx_data, prefix):
+    val = random.randint(0, 100)
+    if val <= 40:
+        amount = 3
+        game_data.player.fighter.heal(amount)
+        result = [
+            {
+                "message": Message(
+                    f"{prefix}, and has been healed {amount} points"
+                )
+            }
+        ]
+    elif val <= 70:
+        shield = game_data.player.fighter.shield
+        shield_strength = 3
+        if shield:
+            shield.level += shield_strength
+            if shield.level > shield.max_level:
+                shield.max_level = shield.level
+            text = f"{prefix} your shield strengthens"
+        else:
+            shield_effect = EffectBuilder.create(
+                EffectType.DEFENSE,
+                level=shield_strength,
+                strikebacks=[],
+                distance=0,
+            )
+            shield_effect.apply(game_data.player)
+            text = (
+                f"{prefix} a shield appears around you"
+            )
+        result = [{"message": Message(text)}]
+    else:
+        cooldown_reduction = 5
+        for _ in range(0, cooldown_reduction):
+            game_data.player.caster.tick_cooldowns()
+        text = f"{prefix} you shimmer, cooldowns reduced by {cooldown_reduction}"
+        result = [{"message": Message(text)}]
+    return result
 
 class LootAction(Action):
     def __init__(self, actor):
         super().__init__(actor=actor, cost=100)
 
     def execute(self, game_data, gfx_data):
-        import random
-
-        val = random.randint(0, 100)
-        if val <= 40:
-            game_data.player.fighter.heal(3)
-            result = [
-                {
-                    "message": Message(
-                        "You found a healing potion and has been healed 3 points"
-                    )
-                }
-            ]
-            return self.package(result=result)
-        elif val <= 70:
-            shield = game_data.player.fighter.shield
-            shield_strength = 3
-            if shield:
-                shield.level += shield_strength
-                if shield.level > shield.max_level:
-                    shield.max_level = shield.level
-                text = "You found a jewel, when you touch it your shield strengthens"
-            else:
-                from components.effects import EffectBuilder, EffectType
-
-                shield_effect = EffectBuilder.create(
-                    EffectType.DEFENSE,
-                    level=shield_strength,
-                    strikebacks=[],
-                    distance=0,
-                )
-                shield_effect.apply(game_data.player)
-                text = (
-                    "You found a jewel, when you touch it a shield appears around you"
-                )
-            result = [{"message": Message(text)}]
-            return self.package(result=result)
-        else:
-            cooldown_reduction = 5
-            for _ in range(0, cooldown_reduction):
-                game_data.player.caster.tick_cooldowns()
-            text = "You found a jewel, when you touch it you shimmer, cooldowns reduced by {}".format(
-                cooldown_reduction
-            )
-            result = [{"message": Message(text)}]
-            return self.package(result=result)
+        return self.package(result=do_looting(game_data, gfx_data, prefix="You found a jewel, when you touch it"))
 
 
 class ExitAction(Action):
@@ -212,15 +210,15 @@ class ThrowVialAction(Action):
         return self.package(result)
 
 
-class PickupCrystalAction(Action):
+class PickupKeyAction(Action):
     COST = 100
 
-    def __init__(self, actor, crystal_entity):
-        super(PickupCrystalAction, self).__init__(actor, PickupCrystalAction.COST)
-        self.crystal = crystal_entity
+    def __init__(self, actor, key_entity):
+        super(PickupKeyAction, self).__init__(actor, PickupKeyAction.COST)
+        self.key = key_entity
 
     def execute(self, game_data, gfx_data):
-        game_data.map.entities.remove(self.crystal)
+        game_data.map.entities.remove(self.key)
         game_data.map.num_keys_found += 1
         if game_data.map.num_keys_found == game_data.map.num_keys_total:
             text = "All keys found, head to the stairs"
@@ -232,4 +230,5 @@ class PickupCrystalAction(Action):
             text = "You found a key, {} keys found, wonder how many are left?".format(
                 game_data.map.num_keys_found)
         result = [{"message": Message(text)}]
+        result.extend(do_looting(game_data, gfx_data, prefix="When you pick up the key"))
         return self.package(result=result)

@@ -21,7 +21,7 @@ class Entity:
         ai=None,
         stairs=None,
         level=None,
-        crystal=None,
+        key=None,
         caster=None,
         drawable=None,
     ):
@@ -56,9 +56,9 @@ class Entity:
         if self.level:
             self.level.owner = self
 
-        self.crystal = crystal
-        if self.crystal:
-            self.crystal.owner = self
+        self.key = key
+        if self.key:
+            self.key.owner = self
 
         self.caster = caster
         if self.caster:

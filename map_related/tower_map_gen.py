@@ -2,7 +2,7 @@ import math
 import random
 from enum import Enum, auto
 
-from components.crystal import Crystal
+from components.key import Key
 from components.drawable import Drawable
 from components.entity import Entity
 from components.stairs import Stairs
@@ -33,7 +33,7 @@ class DoorDirection(Enum):
 
 class TowerMapGenerator:
     @staticmethod
-    def make_map(constants, level, monster_chances, crystal_ratio):
+    def make_map(constants, level, monster_chances, key_ratio):
         retr = GameMap(constants.map_size, level)
         assets = Assets.get()
         retr.chunks = TowerMapGenerator.chunkify(retr)
@@ -45,7 +45,7 @@ class TowerMapGenerator:
         TowerMapGenerator.place_stairs(retr, retr.chunks, assets)
 
         if config.conf.keys:
-            TowerMapGenerator.place_keys(retr, retr.chunks, assets, crystal_ratio)
+            TowerMapGenerator.place_keys(retr, retr.chunks, assets, key_ratio)
         retr.set_tile_info(retr.tiles)
 
         px = retr.chunks[0].x + retr.chunks[0].width // 2
@@ -306,8 +306,8 @@ class TowerMapGenerator:
         m.entities.append(down_stairs)
 
     @staticmethod
-    def place_keys(m, chunks, assets, crystal_ratio):
-        num_rooms_with_keys = math.floor(len(chunks) * crystal_ratio)
+    def place_keys(m, chunks, assets, key_ratio):
+        num_rooms_with_keys = math.floor(len(chunks) * key_ratio)
         if num_rooms_with_keys > len(chunks[1:-1]): #if it's a map with few rooms
             #print("would have cosen {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
             num_rooms_with_keys = len(chunks[1:-1])
@@ -324,15 +324,15 @@ class TowerMapGenerator:
                     if cm.pos == Pos(x, y):
                         occupied = True
             drawable_component = Drawable(assets.key)
-            crystal = Entity(
+            key = Entity(
                 x,
                 y,
                 "Key",
                 render_order=RenderOrder.ITEM,
-                crystal=Crystal(),
+                key=Key(),
                 drawable=drawable_component,
             )
-            m.entities.append(crystal)
+            m.entities.append(key)
         m.num_keys_total = num_rooms_with_keys
         m.num_keys_found = 0
 

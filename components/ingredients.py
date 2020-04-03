@@ -21,7 +21,14 @@ class Ingredient(Enum):
     ICEBOLT = auto()
     ICE_VORTEX = auto()
 
+    # level up life
+    VITALITY = auto()
+
     # leveled up earth
+    ROCK = auto()
+    MAGMA = auto()
+    MUD = auto()
+
 
     @property
     def shortname(self):
@@ -55,6 +62,14 @@ class Ingredient(Enum):
             return "Level up water to IceBolt, add range"
         elif self == Ingredient.ICE_VORTEX:
             return "Level up Water to Ice vortex, add area effect"
+        elif self == Ingredient.VITALITY:
+            return "Level up to Vitality, double the healing"
+        elif self == Ingredient.ROCK:
+            return "Level up Earth to Rock, double the protection"
+        elif self == Ingredient.MAGMA:
+            return "Level up Earth to Magma, add fire damage"
+        elif self == Ingredient.MUD:
+            return "Level up Earth to Mud, add slow"
         else:
             return str(self)
 
@@ -70,6 +85,6 @@ class Ingredient(Enum):
             Ingredient.FIRESPRAY,
             Ingredient.SLEET,
             Ingredient.ICE,
-            Ingredient.ICE_VORTEX,
             Ingredient.ICEBOLT,
+            Ingredient.ICE_VORTEX
         ]

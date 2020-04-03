@@ -1,3 +1,5 @@
+import math
+
 import config
 from components.damage_type import DamageType
 from components.effects import EffectType, EffectBuilder
@@ -24,14 +26,22 @@ class FormulaBuilder:
             ]
 
     def init_lock_state(self):
-        upgrades_locked = {
-            Ingredient.INFERNO: False,
-            Ingredient.FIREBOLT: False,
-            Ingredient.FIRESPRAY: False,
-            Ingredient.SLEET: False,
-            Ingredient.ICE: False,
-            Ingredient.ICEBOLT: False,
-            Ingredient.ICE_VORTEX: False,
+        upgrades_unlocked = {
+            # fire
+            Ingredient.INFERNO: False, # damage
+            Ingredient.FIREBOLT: False, # range
+            Ingredient.FIRESPRAY: False, # area
+            # water
+            Ingredient.SLEET: False, # slow
+            Ingredient.ICE: False, # damage
+            Ingredient.ICEBOLT: False, # range
+            Ingredient.ICE_VORTEX: False, # area
+            # earth
+            Ingredient.ROCK : False,
+            Ingredient.MAGMA : False,
+            Ingredient.MUD : False,
+            # life
+            Ingredient.VITALITY : False
         }
         if config.conf.unlock_mode == "none":
             basics = {
@@ -53,7 +63,7 @@ class FormulaBuilder:
                 Ingredient.LIFE: True,
                 Ingredient.EARTH: True,
             }
-        return {**upgrades_locked, **basics}
+        return {**upgrades_unlocked, **basics}
 
     def ingredient_unlocked(self, ingredient):
         return self.unlock_state[ingredient]
@@ -67,18 +77,41 @@ class FormulaBuilder:
                 if formula[idx] == to_replace:
                     formula[idx] = replace_with
 
-    def set_slot(self, slot, ingredient):
+    def get_upgraded(self, ingredient):
         if ingredient == Ingredient.FIRE:
             if self.ingredient_unlocked(Ingredient.INFERNO):
-                self.slots[self.currformula][slot] = Ingredient.INFERNO
+                return Ingredient.INFERNO
             elif self.ingredient_unlocked(Ingredient.FIREBOLT):
-                self.slots[self.currformula][slot] = Ingredient.FIREBOLT
+                return Ingredient.FIREBOLT
             elif self.ingredient_unlocked(Ingredient.FIRESPRAY):
-                self.slots[self.currformula][slot] = Ingredient.FIRESPRAY
-            else:
-                self.slots[self.currformula][slot] = Ingredient.FIRE
-        else:
-            self.slots[self.currformula][slot] = ingredient
+                return Ingredient.FIRESPRAY
+
+        elif ingredient == Ingredient.WATER:
+            if self.ingredient_unlocked(Ingredient.SLEET):
+                return Ingredient.SLEET
+            elif self.ingredient_unlocked(Ingredient.ICE):
+                return Ingredient.ICE
+            elif self.ingredient_unlocked(Ingredient.ICEBOLT):
+                return Ingredient.ICEBOLT
+            elif self.ingredient_unlocked(Ingredient.ICE_VORTEX):
+                return Ingredient.ICE_VORTEX
+
+        elif ingredient == Ingredient.LIFE:
+            if self.ingredient_unlocked(Ingredient.VITALITY):
+                return Ingredient.VITALITY
+
+        elif ingredient == Ingredient.EARTH:
+            if self.ingredient_unlocked(Ingredient.ROCK):
+                return Ingredient.ROCK
+            elif self.ingredient_unlocked(Ingredient.MAGMA):
+                return Ingredient.MAGMA
+            elif self.ingredient_unlocked(Ingredient.MUD):
+                return Ingredient.MUD
+
+        return ingredient
+
+    def set_slot(self, slot, ingredient):
+        self.slots[self.currformula][slot] = self.get_upgraded(ingredient)
 
     def add_slot(self):
         self.num_slots += 1
@@ -99,7 +132,7 @@ class FormulaBuilder:
     def evaluate(self, caster):
         def scale_ingredient(value):
             if config.conf.ingredient_scaling:
-                return value * 0.8
+                return max(1, math.floor(value * 0.9))
             return value
 
         retr = []
@@ -132,7 +165,6 @@ class FormulaBuilder:
                 elif slot == Ingredient.FIRE:
                     fire_dmg += fire_dmg_per_step
                     attack_ingredient = True
-                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
                 elif slot == Ingredient.RANGE:
                     attack_modifier = True
                     distance += distance_per_step
@@ -143,7 +175,6 @@ class FormulaBuilder:
                     slow_rounds += slow_per_step
                     attack_ingredient = True
                     water_dmg += water_dmg_per_step
-                    water_dmg_per_step = scale_ingredient(water_dmg_per_step)
                 elif slot == Ingredient.LIFE:
                     healing += heal_per_step
                 elif slot == Ingredient.EARTH:
@@ -153,37 +184,62 @@ class FormulaBuilder:
                 elif slot == Ingredient.INFERNO:
                     fire_dmg += 2 * fire_dmg_per_step
                     attack_ingredient = True
-                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
                 elif slot == Ingredient.FIREBOLT:
                     fire_dmg += fire_dmg_per_step
                     distance += distance_per_step
                     attack_ingredient = True
-                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
                 elif slot == Ingredient.FIRESPRAY:
                     fire_dmg += fire_dmg_per_step
                     area += area_per_step
                     attack_ingredient = True
-                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
 
                 # water upgrades
                 elif slot == Ingredient.SLEET:
                     water_dmg += water_dmg_per_step
                     slow_rounds += slow_per_step * 2
-                    water_dmg = scale_ingredient(water_dmg)
+                    attack_ingredient = True
                 elif slot == Ingredient.ICE:
                     water_dmg += water_dmg_per_step * 2
                     slow_rounds += slow_per_step
-                    water_dmg = scale_ingredient(water_dmg)
+                    attack_ingredient = True
                 elif slot == Ingredient.ICE_VORTEX:
                     water_dmg += water_dmg_per_step
                     slow_rounds += slow_per_step
                     area += area_per_step
-                    water_dmg = scale_ingredient(water_dmg)
+                    attack_ingredient = True
                 elif slot == Ingredient.ICEBOLT:
                     water_dmg += water_dmg_per_step
                     slow_rounds += slow_per_step
                     distance += distance_per_step
-                    water_dmg = scale_ingredient(water_dmg)
+                    attack_ingredient = True
+
+                # life upgrades
+                elif slot == Ingredient.VITALITY:
+                    healing += 2 * heal_per_step
+
+                # earth upgrades
+                elif slot == Ingredient.ROCK:
+                    shield += 2 * shield_per_step
+                elif slot == Ingredient.MAGMA:
+                    shield += shield_per_step
+                    fire_dmg += math.ceil(fire_dmg_per_step * 0.5)
+                elif slot == Ingredient.MUD:
+                    shield += shield_per_step
+                    fire_dmg += math.ceil(fire_dmg_per_step * 0.5)
+
+                # scale ingredients
+                if fire_dmg:
+                    fire_dmg_per_step = scale_ingredient(fire_dmg_per_step)
+                if water_dmg:
+                    water_dmg_per_step = scale_ingredient(water_dmg_per_step)
+                if healing:
+                    heal_per_step = scale_ingredient(heal_per_step)
+                if shield:
+                    shield_per_step = scale_ingredient(shield_per_step)
+                if distance:
+                    distance_per_step = scale_ingredient(distance_per_step)
+                if area:
+                    area_per_step = scale_ingredient(area_per_step)
 
             if attack_modifier and not attack_ingredient:
                 suboptimal = True

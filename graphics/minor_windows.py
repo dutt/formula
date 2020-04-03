@@ -71,8 +71,11 @@ class DeadWindow(Window):
 
         kills = game_data.stats.monsters_per_type
         lines = []
-        for k in kills:
-            lines.append("{} {}".format(kills[k], k))
+        if not kills:
+            lines.append("...nothing. Well, better luck next time")
+        else:
+            for k in kills:
+                lines.append("{} {}".format(kills[k], k))
         display_lines(surface, gfx_data.assets.font_message, lines, x=120, starty=180)
 
         display_text(

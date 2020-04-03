@@ -129,9 +129,7 @@ def setup_data_state(constants):
         assets = Assets()
 
     fps_per_second = 30
-    visuals = VisualEffectSystem.get()
-    if not visuals:
-        visuals = VisualEffectSystem(fps_per_second)
+    visuals = VisualEffectSystem.setup(fps_per_second)
 
     clock = pygame.time.Clock()
 
