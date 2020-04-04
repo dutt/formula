@@ -3,6 +3,7 @@ on: push
 
 jobs:
   build-osx:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Build for macos-10.15
     runs-on: macos-10.15
     steps:
@@ -19,12 +20,14 @@ jobs:
       - name: package binary
         run: |
           pyinstaller --clean pyinstaller.spec
+          mv dist/formula dist/formula_macosx
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
           name: formula_macosx
-          path: dist/formula
+          path: dist/formula_macosx
   build-windows:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Build for windows-2019
     runs-on: windows-2019
     steps:
@@ -47,6 +50,7 @@ jobs:
           name: formula_windows
           path: dist/formula.exe
   build-ubuntu:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Build for ubuntu-18.04
     runs-on: ubuntu-18.04
     steps:
@@ -67,11 +71,12 @@ jobs:
       - name: package binary
         run: |
           pyinstaller --clean pyinstaller.spec
+          mv dist/formula dist/formula_ubuntu18
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
           name: formula_ubuntu18
-          path: dist/formula
+          path: dist/formula_ubuntu18
   release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Publish release to github
@@ -93,7 +98,7 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          name: Formula
+          name: ${{ github.ref }}
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "formula_macosx/formula,formula_windows/formula.exe,formula_ubuntu18/formula"
