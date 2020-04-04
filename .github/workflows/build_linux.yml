@@ -1,0 +1,14 @@
+name: Build linux
+on: [push]
+
+jobs:
+  build:
+    name: Build for ubuntu-latest
+    runs-on: ubuntu-lates
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
