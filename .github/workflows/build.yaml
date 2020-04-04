@@ -81,7 +81,7 @@ jobs:
       - name: Download osx artifact
         uses: actions/download-artifact@v1
         with:
-          name: formula_osx
+          name: formula_macosx
       - name: Download windows artifact
         uses: actions/download-artifact@v1
         with:
@@ -94,4 +94,4 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Formula
-          artifacts: "formula_osx,formula_windows,formula_ubuntu18"
+          artifacts: "formula_macosx,formula_windows,formula_ubuntu18"
