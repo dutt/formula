@@ -3,7 +3,6 @@ on: push
 
 jobs:
   build-osx:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Build for macos-10.15
     runs-on: macos-10.15
     steps:
@@ -27,7 +26,6 @@ jobs:
           name: formula_macosx
           path: dist/formula_macosx
   build-windows:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Build for windows-2019
     runs-on: windows-2019
     steps:
@@ -50,7 +48,6 @@ jobs:
           name: formula_windows
           path: dist/formula.exe
   build-ubuntu:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Build for ubuntu-18.04
     runs-on: ubuntu-18.04
     steps:
@@ -97,11 +94,11 @@ jobs:
           name: formula_ubuntu18
       - name: Trimming tag
         id: trimmer
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/release}
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/release/}
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
           name: ${{ steps.trimmer.outputs.tag }}
-          draft: true
+          draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "formula_macosx/formula_macosx,formula_windows/formula.exe,formula_ubuntu18/formula_ubuntu18"
