@@ -1,10 +1,7 @@
-# -*- mode: python -*-
-
 block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['/home/mikael/workspace/spellmaker/build'],
              binaries=[],
              datas=[('data', 'data')],
              hiddenimports=['pygame'],
