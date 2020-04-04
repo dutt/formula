@@ -94,4 +94,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Formula
+          token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "formula_macosx,formula_windows,formula_ubuntu18"
