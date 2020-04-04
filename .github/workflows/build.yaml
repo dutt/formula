@@ -97,7 +97,7 @@ jobs:
           name: formula_ubuntu18
       - name: Trimming tag
         id: trimmer
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/release}
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
