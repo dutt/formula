@@ -18,7 +18,7 @@ jobs:
           pip install -r dependencies.txt
       - name: package binary
         run: |
-          pyinstaller --clean pyinstaller.spec
+          python -m PyInstaller --clean pyinstaller.spec
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
