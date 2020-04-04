@@ -1,4 +1,5 @@
 import random
+import datetime
 
 from attrdict import AttrDict as attrdict
 
@@ -141,8 +142,11 @@ class DescendStairsAction(Action):
             game_data.stats.next_level()
             result = [{"descended": True}]
         else:
+            game_data.prev_state.append(game_data.state)
             game_data.state = GameStates.VICTORY
-            gfx_data.windows.activate_wnd_for_state(GameStates.STORY_SCREEN)
+            game_data.story.next_story()
+            gfx_data.windows.activate_wnd_for_state(game_data.state)
+            game_data.stats.end_time = datetime.datetime.now()
             result = [{"victory": True}]
         return self.package(result)
 

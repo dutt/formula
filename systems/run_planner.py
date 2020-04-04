@@ -42,7 +42,7 @@ class RunPlanner:
         # chunk_sum = sum(num_chunks)
         # print("average chunks: {}/{} = {}".format(chunk_sum, len(num_chunks), chunk_sum / len(num_chunks)))
 
-        self.levels.append(self.make_final_map(self.gen_level_idx + 1))
+        #self.levels.append(self.make_final_map(self.gen_level_idx + 1))
         self.gen_level_idx += 1
         game_state.map = self.levels[0]
         game_state.fov_map = initialize_fov(game_state.map)

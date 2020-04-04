@@ -159,7 +159,8 @@ def setup_data_state(constants):
         player.caster.num_slots, player.caster.num_formulas
     )
 
-    planner = RunPlanner(9, player, constants, timesystem)
+    levels = 9
+    planner = RunPlanner(levels, player, constants, timesystem)
     fov_map = None
 
     menu_data = AttrDict({"currchoice": 0})

@@ -6,6 +6,7 @@ import tcod
 from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 from util import Pos, Size
 from components.game_states import GameStates
+import config
 
 
 class MessageType(Enum):
@@ -22,9 +23,14 @@ class Message:
 
 
 class Tutorial:
+    TUTORIAL_SKIPPED = False
     @staticmethod
     def get_messages(game_data, gfx_data):
         messages = []
+
+        if Tutorial.TUTORIAL_SKIPPED:
+            return messages
+
         assets = gfx_data.assets
         px, py = game_data.player.pos.tuple()
         px, py = gfx_data.camera.map_to_screen(px, py)
@@ -34,7 +40,12 @@ class Tutorial:
         second_pos = Pos(first_pos.x + 1, first_pos.y)
         third_pos = Pos(second_pos.x + 1, second_pos.y)
         fourth_pos = Pos(third_pos.x + 1, third_pos.y)
-        if game_data.player.pos == first_pos:
+
+        if len(game_data.stats.moves) == 1 and game_data.player.pos != second_pos:
+            Tutorial.TUTORIAL_SKIPPED = True # player wanted to skip tutorial
+            return messages
+
+        if not game_data.stats.moves:
             # show general help and move help
             welcome_px, welcome_py = px, py
             messages.append(
@@ -146,13 +157,14 @@ class Tutorial:
             monster = game_data.stats.monsters_killed_per_level[0][0]
             mx, my = gfx_data.camera.map_to_screen(monster.pos.x, monster.pos.y)
             mx, my = mx * CELL_WIDTH + 40, my * CELL_HEIGHT
-            messages.append(
-                Message(
-                    "Go to the corpse and press space to loot",
-                    Pos(mx, my),
-                    MessageType.LINE,
+            if not config.conf.keys:
+                messages.append(
+                    Message(
+                        "Go to the corpse and press space to loot",
+                        Pos(mx, my),
+                        MessageType.LINE,
+                    )
                 )
-            )
             messages.append(
                 Message(
                     "Now your formula is on cooldown", Pos(20, 220), MessageType.LINE

@@ -14,9 +14,10 @@ class VisualEffectSystem:
 
     @staticmethod
     def setup(fps_per_second):
-        assert not VisualEffectSystem._instance
-        VisualEffectSystem._instance = VisualEffectSystem(fps_per_second)
-        return VisualEffectSystem.get()
+        if not VisualEffectSystem._instance:
+            VisualEffectSystem._instance = VisualEffectSystem(fps_per_second)
+            return VisualEffectSystem.get()
+        return VisualEffectSystem._instance
 
     @staticmethod
     def get():
