@@ -95,4 +95,3 @@ jobs:
         with:
           name: Formula
           artifacts: "formula_osx,formula_windows,formula_ubuntu18"
-      - name: Publish file to release
