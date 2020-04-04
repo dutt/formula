@@ -4,7 +4,7 @@ on: push
 jobs:
   build:
     name: Build for ubuntu-latest
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up python 3.7
