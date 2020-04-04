@@ -1,5 +1,5 @@
 name: Build linux
-on: [push]
+on: push
 
 jobs:
   build:
