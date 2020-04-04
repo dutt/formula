@@ -23,4 +23,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: formula_windows
-          path: dist/formula
+          path: dist/formula.exe
