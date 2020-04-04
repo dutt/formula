@@ -98,15 +98,10 @@ jobs:
       - name: Trimming tag
         id: trimmer
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-      - name: set release name from trimmed tag
-        env:
-          RELEASE_VERSION: ${{ steps.trimmer.outputs.tag }}
-        run:
-          echo $RELEASE_VERSION
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          name: $RELEASE_VERSION
+          name: ${{ steps.trimmer.outputs.tag }}
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "formula_macosx/formula_macosx,formula_windows/formula.exe,formula_ubuntu18/formula_ubuntu18"
