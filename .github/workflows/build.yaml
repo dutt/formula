@@ -101,6 +101,8 @@ jobs:
       - name: set release name from trimmed tag
         env:
           RELEASE_VERSION: ${{ steps.trimmer.outputs.tag }}
+        run:
+          echo $RELEASE_VERSION
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
