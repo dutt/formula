@@ -1,0 +1,26 @@
+name: Build macos15
+on: push
+
+jobs:
+  build:
+    name: Build for macos-10.15
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: install python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel
+          pip install -r dependencies.txt
+      - name: package binary
+        run: |
+          pyinstaller --clean pyinstaller.spec
+      - name: publish binary
+        uses: actions/upload-artifact@master
+        with:
+          name: formula_ubuntu16
+          path: dist/formula

@@ -1,4 +1,4 @@
-name: Build linux
+name: Build ubuntu-18
 on: push
 
 jobs:
