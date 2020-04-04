@@ -1,4 +1,4 @@
-name: Build macos15
+name: Build and package
 on: push
 
 jobs:
@@ -101,4 +101,4 @@ jobs:
           name: ${{ github.ref }}
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "formula_macosx/formula,formula_windows/formula.exe,formula_ubuntu18/formula"
+          artifacts: "formula_macosx/formula_macosx,formula_windows/formula.exe,formula_ubuntu18/formula_ubuntu18"
