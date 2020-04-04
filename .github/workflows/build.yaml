@@ -73,7 +73,7 @@ jobs:
           name: formula_ubuntu18
           path: dist/formula
   release:
-    #if: github.even_name == 'push' && startsWith(github.ref, 'refs/tags/release')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/release')
     name: Publish release to github
     runs-on: ubuntu-18.04
     needs: [build-osx, build-windows, build-ubuntu]
@@ -96,4 +96,4 @@ jobs:
           name: Formula
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "formula_macosx,formula_windows,formula_ubuntu18"
+          artifacts: "formula_macosx/formula,formula_windows/formula.exe,formula_ubuntu18/formula"
