@@ -22,5 +22,5 @@ jobs:
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
-          name: formula_ubuntu16
+          name: formula_macosx
           path: dist/formula
