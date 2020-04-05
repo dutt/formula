@@ -14,6 +14,7 @@ R: Area, wider area of effect. Targeted.
 A: Cold, less damage than fire, but also slows the enemy. Targeted.
 S: Life, heal the target. Not targeted.
 D: Shield, resists damage. Combine with others for strikebacks. Not targeted.
+Space: Confirm formula selection
 
 The shield ingredient is a special one. A pure shield is only defensive, e.g.
 3*Shield = 12 dmg resisted, but it can also be offensive if combined with
