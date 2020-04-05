@@ -128,6 +128,8 @@ def setup_data_state(constants):
     if not assets:
         assets = Assets()
 
+    run_tutorial = True
+
     fps_per_second = 30
     visuals = VisualEffectSystem.setup(fps_per_second)
 
@@ -156,11 +158,11 @@ def setup_data_state(constants):
 
     player = Player()
     formula_builder = FormulaBuilder(
-        player.caster.num_slots, player.caster.num_formulas
+        player.caster.num_slots, player.caster.num_formulas, run_tutorial
     )
 
     levels = 9
-    planner = RunPlanner(levels, player, constants, timesystem)
+    planner = RunPlanner(levels, player, constants, timesystem, run_tutorial)
     fov_map = None
 
     menu_data = AttrDict({"currchoice": 0})
@@ -194,9 +196,9 @@ def setup_data_state(constants):
         windows=windows,
     )
 
-    builder = FormulaBuilder(num_slots=3, num_formula=3)
-    Formula.EMPTY = builder.evaluate(caster=player)[0]
-    Formula.DEFAULT = builder.evaluate(caster=player)
-    player.caster.set_formulas(Formula.DEFAULT)
+    # create default formulas
+    Formula.EMPTY, _ = formula_builder.get_empty_formula(caster=player)
+    initial_formulas = formula_builder.evaluate_entity(caster=player)
+    player.caster.set_formulas(initial_formulas)
 
     return game_data, gfx_data, state

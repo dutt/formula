@@ -72,7 +72,7 @@ class Tutorial:
                     "Press Alt-Enter for fullscreen", Pos(20, 460), MessageType.LINE
                 )
             )
-            text = "These are your formulas. You will gain more formulas, slots and ingredients as you level up"
+            #text = "These are your formulas. You will gain more formulas, slots and ingredients as you level up"
             # messages.append(Message(text, Pos(20, 200), MessageType.LINE, Size(200, 150)))
 
             # pygame.draw.rect(help_surface, colors.BACKGROUND, pygame.rect.Rect(20, 200, 200, 150))
@@ -80,7 +80,7 @@ class Tutorial:
             # lines = textwrap.wrap(text, 20)
             # display_lines(help_surface, assets.font_message, lines, 25, 205)
 
-            move_px, move_py = px, py + 40
+            # move_px, move_py = px, py + 40
             # messages.append(Message("Use W,A,S,D to move", Pos(move_px, move_py), MessageType.LINE))
 
         elif game_data.player.pos == second_pos:
@@ -89,12 +89,17 @@ class Tutorial:
             )
             messages.append(
                 Message(
-                    "This will be is your shield bar", Pos(20, 80), MessageType.LINE
+                    "This will be is your shield bar", Pos(20, 70), MessageType.LINE
                 )
             )
-            messages.append(
-                Message("This is your experience bar", Pos(20, 140), MessageType.LINE)
-            )
+            if not config.conf.keys:
+                messages.append(
+                    Message("This is your experience bar", Pos(20, 140), MessageType.LINE)
+                )
+            else:
+                messages.append(
+                    Message("On each level there's a number of keys. Find them all to unlock the stairs", Pos(20, 110), MessageType.LINE)
+                )
 
         elif game_data.player.pos == third_pos:
             cast_px, cast_py = px, py + 40
@@ -114,8 +119,15 @@ class Tutorial:
             )
             messages.append(
                 Message(
-                    "FRR is Fire, Range, Range. Longer range, low damage",
+                    "FRR is Fire, Range, Range. Longer range, lower damage",
                     Pos(20, 260),
+                    MessageType.LINE,
+                )
+            )
+            messages.append(
+                Message(
+                    "This is a shield, activate it and it will protect you from damage",
+                    Pos(20, 300),
                     MessageType.LINE,
                 )
             )
@@ -131,21 +143,28 @@ class Tutorial:
             messages.append(
                 Message(
                     "Move closer, then kill it the first Formula, FFR",
-                    Pos(80, 180),
-                    MessageType.LINE,
-                )
-            )
-            messages.append(
-                Message(
-                    "Press 1, or click the formula, to target",
                     Pos(80, 200),
                     MessageType.LINE,
                 )
             )
             messages.append(
                 Message(
-                    "Defensive formulas will always target yourself",
+                    "Press 1, or click the formula, to target",
                     Pos(80, 240),
+                    MessageType.LINE,
+                )
+            )
+            messages.append(
+                Message(
+                    "You can also left-click on explored tiles to move there",
+                    Pos(80, 260),
+                    MessageType.LINE,
+                )
+            )
+            messages.append(
+                Message(
+                    "Defensive formulas will always target yourself",
+                    Pos(80, 300),
                     MessageType.LINE,
                 )
             )

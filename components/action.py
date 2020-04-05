@@ -122,8 +122,14 @@ class DescendStairsAction(Action):
             result = [{"message": Message(text)}]
             return self.package(result=result)
 
+
         if game_data.run_planner.has_next:
-            if config.conf.keys:
+
+            if game_data.map.tutorial:
+                # re-set formulas after tutorial
+                game_data.formula_builder.run_tutorial = False
+                game_data.formula_builder.set_initial_slots()
+            elif config.conf.keys:
                 game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
 
             game_data.prev_state.append(game_data.state)

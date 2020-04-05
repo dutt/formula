@@ -334,7 +334,6 @@ class TowerMapGenerator:
             )
             m.entities.append(key)
         m.num_keys_total = num_rooms_with_keys
-        m.num_keys_found = 0
 
     @staticmethod
     def free_area(m):

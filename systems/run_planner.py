@@ -6,7 +6,7 @@ from util import resource_path
 
 
 class RunPlanner:
-    def __init__(self, levels, player, constants, timesystem):
+    def __init__(self, levels, player, constants, timesystem, run_tutorial):
         self.parts = levels // 3
         self.level_count = levels + 1
         self.levels = []
@@ -17,10 +17,12 @@ class RunPlanner:
         self.timesystem = timesystem
         self.current_level_index = None
         self.gen_level_idx = 0
+        self.run_tutorial = run_tutorial
 
     def generate(self, game_state):
-        self.levels.append(self.make_tutorial_map())
-        self.gen_level_idx += 1
+        if self.run_tutorial:
+            self.levels.append(self.make_tutorial_map())
+            self.gen_level_idx += 1
 
         for i in range(self.parts):
             self.levels.append(self.make_easy_map(self.gen_level_idx))

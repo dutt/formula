@@ -90,7 +90,7 @@ class FormulaWindow(Window):
                 surface, gfx_data.assets.font_message, ingredient_lines, 400, 65
             )
 
-        formulas = game_data.formula_builder.evaluate(caster=game_data.player)
+        formulas = game_data.formula_builder.evaluate_entity(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
 
         surface = pygame.Surface(self.size.tuple())
@@ -139,7 +139,7 @@ class FormulaWindow(Window):
         display_lines(surface, gfx_data.assets.font_message, lines, 50, y)
         y += len(lines) * linediff
 
-        y += 6 * linediff
+        y += 4 * linediff
         display_text(
             surface,
             "Arrow left/right or Mouse left/right: select formula",
@@ -153,7 +153,7 @@ class FormulaWindow(Window):
             gfx_data.assets.font_message,
             (50, y),
         )
-        y += 2 * linediff
+        y += linediff
         display_text(
             surface,
             "Press Tab for help, or Space to confirm selection",
@@ -184,7 +184,7 @@ class FormulaWindow(Window):
         if do_quit:
             if GameStates.STORY_SCREEN in game_data.prev_state:  # between levels
                 game_data.player.caster.set_formulas(
-                    game_data.formula_builder.evaluate(game_data.player)
+                    game_data.formula_builder.evaluate_entity(game_data.player)
                 )
                 gfx_data.camera.initialize_map()
                 gfx_data.camera.center_on(
@@ -193,7 +193,7 @@ class FormulaWindow(Window):
                 return self.close(game_data, StoryWindow)
             else:  # after level up
                 game_data.player.caster.set_formulas(
-                    game_data.formula_builder.evaluate(game_data.player)
+                    game_data.formula_builder.evaluate_entity(game_data.player)
                 )
                 return self.close(game_data)
 

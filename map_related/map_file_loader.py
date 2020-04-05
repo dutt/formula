@@ -3,10 +3,11 @@ import json
 from components.drawable import Drawable
 from components.stairs import Stairs
 from components.entity import Entity
+from components.key import Key
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
 from map_related.map_util import load_map, get_monster
-
+from util import Pos
 
 class MapFileLoader:
     @staticmethod
@@ -21,12 +22,52 @@ class MapFileLoader:
             content = reader.read()
         data = json.loads(content)
         entities = []
-        for m in data["monsters"]:
-            entities.extend(MapFileLoader.place_monster(game_map, m))
-        if "stairs" in data:
-            for s in data["stairs"]:
-                entities.extend(MapFileLoader.place_stairs(game_map, s))
+
+        entities.extend(MapFileLoader.load_monsters(data, game_map))
+        entities.extend(MapFileLoader.load_stairs(data, game_map))
+        entities.extend(MapFileLoader.load_keys(data, game_map))
+
+        MapFileLoader.load_player(data, game_map) # just the position
+
         game_map.entities = entities
+
+    @staticmethod
+    def load_monsters(data, game_map):
+        retr = []
+        for m in data["monsters"]:
+            retr.extend(MapFileLoader.place_monster(game_map, m))
+        return retr
+
+    @staticmethod
+    def load_stairs(data, game_map):
+        retr = []
+        for s in data["stairs"]:
+            retr.extend(MapFileLoader.place_stairs(game_map, s))
+        return retr
+
+    @staticmethod
+    def load_player(data, game_map):
+        p = data["player"]
+        game_map.player_pos = Pos(p["x"], p["y"])
+        game_map.orig_player_pos = Pos(p["x"], p["y"])
+
+    @staticmethod
+    def load_keys(data, game_map):
+        retr = []
+        assets = Assets.get()
+        for key_data in data["keys"]:
+            drawable_component = Drawable(assets.key)
+            key = Entity(
+                key_data["x"],
+                key_data["y"],
+                "Key",
+                render_order=RenderOrder.ITEM,
+                key=Key(),
+                drawable=drawable_component,
+            )
+            retr.append(key)
+        game_map.num_keys_total = len(retr)
+        return retr
 
     @staticmethod
     def place_monster(game_map, monster):
