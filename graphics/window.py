@@ -115,27 +115,29 @@ class TextWindow(Window):
 
     def load_path(self, path):
         with open(path, "r") as reader:
-            return reader.read().split("\n")
+            lines = reader.read().split("\n")
+            all_lines = []
+            for current in lines:
+                if current.strip() == "":
+                    all_lines.append(current)
+                else:
+                    split_lines = textwrap.wrap(current, 60)
+                    all_lines.extend(split_lines)
+            return all_lines
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(self.size.tuple())
 
-        all_lines = []
-        for current in self.lines:
-            if current.strip() == "":
-                all_lines.append(current)
-            else:
-                split_lines = textwrap.wrap(current, 60)
-                all_lines.extend(split_lines)
-        show_lines = all_lines[self.offset : self.offset + self.num_lines]
+        show_lines = self.lines[self.offset : self.offset + self.num_lines]
         display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface)
 
-        if len(all_lines) > self.num_lines:
+        if len(self.lines) > self.num_lines:
+            pygame.draw.line(surface, (255, 255, 255), (100, 520), (500, 520))
             display_text(
                 surface,
                 "Use W, S or mouse scroll to see more",
                 gfx_data.assets.font_message,
-                (50, 500),
+                (130, 530),
             )
 
         gfx_data.main.blit(surface, self.pos.tuple())
