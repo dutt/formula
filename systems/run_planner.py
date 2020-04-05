@@ -19,8 +19,8 @@ class RunPlanner:
         self.gen_level_idx = 0
 
     def generate(self, game_state):
-        # self.levels.append(self.make_tutorial_map())
-        # self.gen_level_idx += 1
+        self.levels.append(self.make_tutorial_map())
+        self.gen_level_idx += 1
 
         for i in range(self.parts):
             self.levels.append(self.make_easy_map(self.gen_level_idx))

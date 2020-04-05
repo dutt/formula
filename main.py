@@ -116,6 +116,7 @@ def set_seed():
     # seed = "2019-01-25 22:19:22.597013"
 
     # seed = "2020-03-15 08:47:05.439709"
+    # seed = "2020-04-04 21:01:02.999223"
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
     return seed
@@ -141,7 +142,7 @@ def write_logs(game_data, seed, start_time, crashed):
     data = {
         "seed": seed,
         "config" : config.conf.serialize(),
-        "messages": [msg.text for msg in game_data.log.messages],
+        "messages": [msg.text for msg in game_data.log.messages] if game_data else ["no game_data"],
         "input_events": input_recorder.serialize_input(input_recorder.events),
         "crashed": crashed,
         "game_modes": {
