@@ -62,17 +62,20 @@ def get_monster(x, y, game_map, room, monster_choice, assets, entities):
         for d in diffs:
             dpos = Pos(x + d[0], y + d[1])
             occupied = False
-            for e in entities:
-                if (
-                    e.pos == dpos
-                    and dpos.x in range(room.x1 + 2, room.x2 - 2)
-                    and dpos.y in range(room.y1 + 2, room.y2 - 2)
-                ):
-                    occupied = True
             if game_map.is_blocked(dpos.x, dpos.y):
                 occupied = True
+            else:
+                for e in entities:
+                    if (
+                        e.pos == dpos
+                        and dpos.x in range(room.x1 + 2, room.x2 - 2)
+                        and dpos.y in range(room.y1 + 2, room.y2 - 2)
+                    ):
+                        occupied = True
             if not occupied:
                 clean_diffs.append(d)
+        if len(clean_diffs) > packsize:
+            packsize = len(clean_diffs)
         assert len(clean_diffs) >= packsize
         for w in range(packsize):
             diff_idx = random.randint(0, len(clean_diffs) - 1)
@@ -101,7 +104,7 @@ def get_monster(x, y, game_map, room, monster_choice, assets, entities):
 
     # tutorial
     if monster_choice == "idiot":
-        fighter_component = Fighter(hp=20, defense=0, power=3, xp=0)
+        fighter_component = Fighter(hp=10, defense=0, power=3, xp=0)
         ai = DummyMonsterAI()
         drawable_component = Drawable(assets.thug)
         monster = Monster(
