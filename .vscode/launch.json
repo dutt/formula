@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "pythonPath": "${workspaceFolder}/.venv/bin/python",
-            "args" : ["--test", "/home/mikael/workspace/formula/tests/basic.test"]
+            "args" : ["--test", "/home/mikael/workspace/formula/tests/do_exit.test"]
         },
         {
             "name": "Formula",

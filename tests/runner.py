@@ -17,11 +17,17 @@ class Tester(unittest.TestCase):
             print(f"stderr: {stderr}")
         return proc.returncode, stdout, stderr
 
+    def test_exit(self):
+        self.run_file("do_exit.test")
+
     def test_basic(self):
         self.run_file("basic.test")
 
-    def test_die(self):
-        self.run_file("die.test")
+    #def test_die(self):
+    #    self.run_file("die.test")
+
+    #def test_tutorial_nokill(self):
+    #    self.run_file("tutorial_nokill.test")
 
 if __name__ == "__main__":
     unittest.main()

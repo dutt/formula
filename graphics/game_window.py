@@ -21,6 +21,7 @@ class GameWindow(Window):
             constants.game_window_size,
             visible,
         )
+        self.show_all = False
 
     def draw(self, game_data, gfx_data):
         main = pygame.Surface(self.size.tuple())
@@ -36,7 +37,7 @@ class GameWindow(Window):
             for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
                 for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
-                    asset = game_data.map.tiles[x][y].get_drawable(visible)
+                    asset = game_data.map.tiles[x][y].get_drawable(self.show_all or visible)
                     if visible:
                         game_data.map.tiles[x][y].explored = True
 
@@ -72,7 +73,7 @@ class GameWindow(Window):
             for e in rendering_sorted:
                 if not e.drawable:
                     continue
-                if tcod.map_is_in_fov(
+                if self.show_all or tcod.map_is_in_fov(
                     game_data.fov_map, e.pos.x, e.pos.y
                 ) or (e.stairs and game_data.map.tiles[e.pos.x][e.pos.y].explored):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)

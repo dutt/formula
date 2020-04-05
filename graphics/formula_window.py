@@ -139,7 +139,7 @@ class FormulaWindow(Window):
         display_lines(surface, gfx_data.assets.font_message, lines, 50, y)
         y += len(lines) * linediff
 
-        y += 4 * linediff
+        y += 2 * linediff
         display_text(
             surface,
             "Arrow left/right or Mouse left/right: select formula",

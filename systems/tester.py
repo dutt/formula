@@ -4,6 +4,9 @@ def validate_state(state, testdata):
 
     assert goal["hp"] == state.player.fighter.hp
 
+    if "shield" in goal:
+        assert goal["shield"] == state.player.fighter.shield.level
+
     for idx, cd in enumerate(goal["cooldown"]):
         assert cd == state.player.caster.cooldowns[idx], state.player.caster.cooldowns
 

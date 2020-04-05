@@ -80,7 +80,7 @@ class RunPlanner:
         return m
 
     def make_easy_map(self, current_level):
-        monster_chances = {"any": 100, "thug": 40, "axe_thrower": 30, "dog_group": 30}
+        monster_chances = {"any": 80, "thug": 40, "axe_thrower": 30, "dog_group": 30}
         key_ratio = 0.4
         return TowerMapGenerator.make_map(
             self.constants, current_level, monster_chances, key_ratio
@@ -88,7 +88,7 @@ class RunPlanner:
 
     def make_medium_map(self, current_level):
         monster_chances = {
-            "any": 100,
+            "any": 80,
             "mercenary": 40,
             "boar_group": 30,
             "rifleman": 30,
@@ -100,7 +100,7 @@ class RunPlanner:
 
     def make_hard_map(self, current_level):
         monster_chances = {
-            "any": 100,
+            "any": 90,
             "stalker": 40,
             "armored_bear_group": 30,
             "zapper": 30,

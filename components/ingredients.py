@@ -32,7 +32,10 @@ class Ingredient(Enum):
 
     @property
     def shortname(self):
-        return self.name[0:1].capitalize()
+        if self == Ingredient.EMPTY:
+            return "-"
+        else:
+            return self.name[0:1].capitalize()
 
     @property
     def description(self):
@@ -48,12 +51,14 @@ class Ingredient(Enum):
             return "Life ingredient, heals the target HP"
         elif self == Ingredient.EARTH:
             return "Earth ingredient, add shield points, makes the formula defensive"
+
         elif self == Ingredient.INFERNO:
             return "Level up Fire to Inferno, twice the damage"
         elif self == Ingredient.FIREBOLT:
             return "Level up Fire to Firebolt, damage and range in one"
         elif self == Ingredient.FIRESPRAY:
             return "Level up Fire to Firespray, damage and area in one"
+
         elif self == Ingredient.SLEET:
             return "Level up Ice to Sleet, slow for twice as long"
         elif self == Ingredient.ICE:
@@ -62,8 +67,10 @@ class Ingredient(Enum):
             return "Level up water to IceBolt, add range"
         elif self == Ingredient.ICE_VORTEX:
             return "Level up Water to Ice vortex, add area effect"
+
         elif self == Ingredient.VITALITY:
             return "Level up to Vitality, double the healing"
+
         elif self == Ingredient.ROCK:
             return "Level up Earth to Rock, double the protection"
         elif self == Ingredient.MAGMA:

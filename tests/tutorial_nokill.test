@@ -1,0 +1,18 @@
+{
+    "logfile" : "basic.log",
+    "goal" : {
+        "hp" : 10,
+        "shield" : 7,
+        "cooldown" : [0,0,0],
+        "messages": [
+           "0: The You is shielded for 9 damage",
+            "1: All keys found, head to the stairs",
+            "2: When you pick up the key, and has been healed 3 points",
+            "3: Axe thrower attacks You for 1",
+            "4: Axe thrower attacks You for 1",
+            "5: Targeting, 19 fire damage, range=3.5, area=1.0",
+            "6: The Axe thrower takes 19 fire damage",
+            "7: Axe thrower is dead"
+        ]
+    }
+}

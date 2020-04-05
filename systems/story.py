@@ -37,7 +37,10 @@ class StoryLoader:
 
     def load(self, path):
         def get_key(val):
-            return int(val[len("floor.") : -4])
+            try:
+                return int(val[len("floor.") : -4]) + 1
+            except ValueError:
+                return 0
 
         files = sorted(os.listdir(path), key=get_key)
         for file in files:

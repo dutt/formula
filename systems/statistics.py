@@ -30,7 +30,7 @@ class Statistics:
 
     def monster_killed(self, monster):
         self.monsters_killed_level += 1
-        if len(self.monsters_killed_per_level) < self.level_reached:
+        while len(self.monsters_killed_per_level) < self.level_reached:
             self.monsters_killed_per_level.append([])
         self.monsters_killed_per_level[self.level_reached - 1].append(monster)
         self.xp_gathered_this_level += monster.fighter.xp

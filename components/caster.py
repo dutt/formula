@@ -8,8 +8,7 @@ class Caster:
         self.num_slots = num_slots
         self.num_formulas = num_formulas
         self.formulas = None
-        self.slots = [Ingredient.FIRE for _ in range(num_slots)]
-        self.cooldowns = self.create_cooldowns()
+        self.clear_cooldowns()
 
     def create_cooldowns(self):
         retr = {}
@@ -41,5 +40,8 @@ class Caster:
                 to_remove.append(formula_idx)
         for r in to_remove:
             del self.cooldowns[r]
+
+    def clear_cooldowns(self):
+        self.cooldowns = self.create_cooldowns()
 
     cooldown_message = Message("That formula is on cooldown")

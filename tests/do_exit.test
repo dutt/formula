@@ -1,0 +1,14 @@
+{
+    "logfile" : "do_exit.log",
+    "goal" : {
+        "hp" : 10,
+        "cooldown" : [9,0,0],
+        "messages": [
+            "0: Targeting, 20 fire damage, range=3.5, area=1.0",
+            "1: Targeting cancelled",
+            "2: Targeting, 20 fire damage, range=3.5, area=1.0",
+            "3: The Thug takes 20 fire damage",
+            "4: Thug is dead"
+        ]
+    }
+}

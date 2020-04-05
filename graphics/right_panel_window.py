@@ -131,11 +131,12 @@ class RightPanelWindow(Window):
                 Assets.get().font_message,
                 (10, 105),
             )
-            self.xp_bar.draw(
-                surface,
-                game_data.player.level.current_xp,
-                game_data.player.level.xp_to_next_level,
-            )
+            if config.conf.keys:
+                self.xp_bar.draw(
+                    surface,
+                    game_data.player.level.current_xp,
+                    game_data.player.level.xp_to_next_level,
+                )
 
         self.formula_label.draw(surface)
         for idx, fm in enumerate(self.formula_markers):

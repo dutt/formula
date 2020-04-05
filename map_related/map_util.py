@@ -74,7 +74,7 @@ def get_monster(x, y, game_map, room, monster_choice, assets, entities):
                         occupied = True
             if not occupied:
                 clean_diffs.append(d)
-        if len(clean_diffs) > packsize:
+        if len(clean_diffs) > packsize and len(clean_diffs) < 3:
             packsize = len(clean_diffs)
         assert len(clean_diffs) >= packsize
         for w in range(packsize):

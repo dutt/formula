@@ -100,6 +100,7 @@ from graphics.font import get_width
 from graphics.assets import Assets
 from systems.formula_builder import FormulaBuilder
 from components.formula import Formula
+import config
 
 
 def setup_data_state(constants):
@@ -107,10 +108,9 @@ def setup_data_state(constants):
     # state = GameStates.FORMULA_SCREEN
     # state = GameStates.PLAY
     state = GameStates.STORY_SCREEN
-    import config
 
-    if config.conf.starting_mode == "choose":
-        state = GameStates.FORMULA_SCREEN
+    #if config.conf.starting_mode == "choose":
+    #    state = GameStates.FORMULA_SCREEN
 
     story_loader = StoryLoader()
     story_data = StoryData(story_loader)

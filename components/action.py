@@ -129,6 +129,7 @@ class DescendStairsAction(Action):
                 # re-set formulas after tutorial
                 game_data.formula_builder.run_tutorial = False
                 game_data.formula_builder.set_initial_slots()
+                game_data.player.caster.clear_cooldowns()
             elif config.conf.keys:
                 game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
 
