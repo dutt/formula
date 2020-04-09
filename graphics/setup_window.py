@@ -9,9 +9,7 @@ from systems.input_handlers import EventType
 
 class SetupWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
-        )
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
         if game_data.run_planner.gen_level_idx >= game_data.run_planner.level_count:
@@ -23,8 +21,7 @@ class SetupWindow(Window):
         display_text(
             surface,
             "Generating level {}/{}".format(
-                game_data.run_planner.gen_level_idx + 1,
-                game_data.run_planner.level_count,
+                game_data.run_planner.gen_level_idx + 1, game_data.run_planner.level_count,
             ),
             gfx_data.assets.font_title,
             (50, 200),

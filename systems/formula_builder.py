@@ -6,7 +6,8 @@ from components.effects import EffectType, EffectBuilder
 from components.formula import Formula
 from components.ingredients import Ingredient
 
-class IngredientState():
+
+class IngredientState:
     def __init__(self):
         self.fire_dmg_per_step = 10
         self.water_dmg_per_step = 5
@@ -16,6 +17,7 @@ class IngredientState():
         self.slow_per_step = 3
         self.heal_per_step = 3
         self.shield_per_step = 4
+
 
 class FormulaBuilder:
     def __init__(self, num_slots, num_formula, run_tutorial):
@@ -35,27 +37,25 @@ class FormulaBuilder:
                 [Ingredient.EARTH, Ingredient.EARTH, Ingredient.EARTH],
             ]
         elif config.conf.starting_mode == "choose":
-            self.slots = [
-                [Ingredient.EMPTY for i in range(self.num_slots)] for i in range(self.num_formula)
-            ]
+            self.slots = [[Ingredient.EMPTY for i in range(self.num_slots)] for i in range(self.num_formula)]
 
     def init_lock_state(self):
         upgrades_unlocked = {
             # fire
-            Ingredient.INFERNO: False, # damage
-            Ingredient.FIREBOLT: False, # range
-            Ingredient.FIRESPRAY: False, # area
+            Ingredient.INFERNO: False,  # damage
+            Ingredient.FIREBOLT: False,  # range
+            Ingredient.FIRESPRAY: False,  # area
             # water
-            Ingredient.SLEET: False, # slow
-            Ingredient.ICE: False, # damage
-            Ingredient.ICEBOLT: False, # range
-            Ingredient.ICE_VORTEX: False, # area
+            Ingredient.SLEET: False,  # slow
+            Ingredient.ICE: False,  # damage
+            Ingredient.ICEBOLT: False,  # range
+            Ingredient.ICE_VORTEX: False,  # area
             # earth
-            Ingredient.ROCK : False,
-            Ingredient.MAGMA : False,
-            Ingredient.MUD : False,
+            Ingredient.ROCK: False,
+            Ingredient.MAGMA: False,
+            Ingredient.MUD: False,
             # life
-            Ingredient.VITALITY : False
+            Ingredient.VITALITY: False,
         }
         if config.conf.unlock_mode == "none":
             basics = {
@@ -144,8 +144,12 @@ class FormulaBuilder:
         return self.slots[formula_index]
 
     def get_empty_formula(self, caster):
-        return self.evaluate_formula(slots=[Ingredient.EMPTY for i in range(self.num_slots)],
-                                     formula_index=0, state=IngredientState(), caster=caster)
+        return self.evaluate_formula(
+            slots=[Ingredient.EMPTY for i in range(self.num_slots)],
+            formula_index=0,
+            state=IngredientState(),
+            caster=caster,
+        )
 
     def evaluate_formula(self, slots, formula_index, state, caster):
         def scale_ingredient(value):
@@ -242,9 +246,9 @@ class FormulaBuilder:
                 state.heal_per_step = scale_ingredient(state.heal_per_step)
             if shield:
                 state.shield_per_step = scale_ingredient(state.shield_per_step)
-            #if distance:
+            # if distance:
             #    state.distance_per_step = scale_ingredient(state.distance_per_step)
-            #if area:
+            # if area:
             #    state.area_per_step = scale_ingredient(state.area_per_step)
 
         if attack_modifier and not attack_ingredient:
@@ -259,68 +263,40 @@ class FormulaBuilder:
             if fire_dmg > 0:
                 strikebacks.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=fire_dmg,
-                        dmg_type=DamageType.FIRE,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE,
                     )
                 )
             if water_dmg > 0:
                 strikebacks.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=water_dmg,
-                        dmg_type=DamageType.COLD,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg, dmg_type=DamageType.COLD,
                     )
                 )
             if slow_rounds > 0:
-                strikebacks.append(
-                    EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds)
-                )
+                strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
             effects.append(
-                EffectBuilder.create(
-                    EffectType.DEFENSE,
-                    level=shield,
-                    strikebacks=strikebacks,
-                    distance=distance,
-                )
+                EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks, distance=distance,)
             )
         else:
             if fire_dmg > 0:
                 effects.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=fire_dmg,
-                        dmg_type=DamageType.FIRE,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE,
                     )
                 )
             if water_dmg > 0:
                 effects.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=water_dmg,
-                        dmg_type=DamageType.COLD,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg, dmg_type=DamageType.COLD,
                     )
                 )
             if slow_rounds > 0:
-                effects.append(
-                    EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds)
-                )
+                effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
             if healing > 0:
-                effects.append(
-                    EffectBuilder.create(
-                        EffectType.HEALING, rounds=1, amount=healing
-                    )
-                )
+                effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
 
-        return Formula(
+        return (
+            Formula(
                 slots=slots,
                 cooldown=cooldown,
                 formula_idx=formula_index,
@@ -329,7 +305,9 @@ class FormulaBuilder:
                 effects=effects,
                 targeted=targeted,
                 suboptimal=suboptimal,
-            ), state
+            ),
+            state,
+        )
 
     def evaluate_entity(self, caster):
         state = IngredientState()

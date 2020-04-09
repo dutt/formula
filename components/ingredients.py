@@ -29,7 +29,6 @@ class Ingredient(Enum):
     MAGMA = auto()
     MUD = auto()
 
-
     @property
     def shortname(self):
         if self == Ingredient.EMPTY:
@@ -93,5 +92,5 @@ class Ingredient(Enum):
             Ingredient.SLEET,
             Ingredient.ICE,
             Ingredient.ICEBOLT,
-            Ingredient.ICE_VORTEX
+            Ingredient.ICE_VORTEX,
         ]

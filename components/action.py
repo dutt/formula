@@ -8,6 +8,7 @@ from systems.fov import initialize_fov
 from systems.messages import Message
 import config
 from components.effects import EffectBuilder, EffectType
+from graphics.camera import Camera
 
 
 class Action:
@@ -24,18 +25,13 @@ class Action:
         else:
             return None
 
+
 def do_looting(game_data, gfx_data, prefix):
     val = random.randint(0, 100)
     if val <= 40:
         amount = 3
         game_data.player.fighter.heal(amount)
-        result = [
-            {
-                "message": Message(
-                    f"{prefix}, and has been healed {amount} points"
-                )
-            }
-        ]
+        result = [{"message": Message(f"{prefix} your wounds close, you've been healed {amount} points")}]
     elif val <= 70:
         shield = game_data.player.fighter.shield
         shield_strength = 3
@@ -45,16 +41,9 @@ def do_looting(game_data, gfx_data, prefix):
                 shield.max_level = shield.level
             text = f"{prefix} your shield strengthens"
         else:
-            shield_effect = EffectBuilder.create(
-                EffectType.DEFENSE,
-                level=shield_strength,
-                strikebacks=[],
-                distance=0,
-            )
+            shield_effect = EffectBuilder.create(EffectType.DEFENSE, level=shield_strength, strikebacks=[], distance=0,)
             shield_effect.apply(game_data.player)
-            text = (
-                f"{prefix} a shield appears around you"
-            )
+            text = f"{prefix} a shield appears around you"
         result = [{"message": Message(text)}]
     else:
         cooldown_reduction = 5
@@ -63,6 +52,7 @@ def do_looting(game_data, gfx_data, prefix):
         text = f"{prefix} you shimmer, cooldowns reduced by {cooldown_reduction}"
         result = [{"message": Message(text)}]
     return result
+
 
 class LootAction(Action):
     def __init__(self, actor):
@@ -84,9 +74,7 @@ class ExitAction(Action):
             game_data.state = GameStates.ASK_QUIT
             gfx_data.windows.activate_wnd_for_state(game_data.state)
         else:
-            return self.package(
-                result=[{"quit": True, "keep_playing": self.keep_playing}]
-            )
+            return self.package(result=[{"quit": True, "keep_playing": self.keep_playing}])
 
 
 class WaitAction(Action):
@@ -103,25 +91,16 @@ class DescendStairsAction(Action):
     COST = 100
 
     def __init__(self, actor):
-        super(DescendStairsAction, self).__init__(
-            actor=actor, cost=DescendStairsAction.COST
-        )
+        super(DescendStairsAction, self).__init__(actor=actor, cost=DescendStairsAction.COST)
 
     def execute(self, game_data, gfx_data):
-        all_keys = (
-            game_data.map.num_keys_found == game_data.map.num_keys_total
-        )
+        all_keys = game_data.map.num_keys_found == game_data.map.num_keys_total
         if not all_keys:
-            num_remaining = (
-                game_data.map.num_keys_total - game_data.map.num_keys_found
-            )
-            text = "You haven't found all the keys on this level yet, {} keys left".format(
-                num_remaining
-            )
+            num_remaining = game_data.map.num_keys_total - game_data.map.num_keys_found
+            text = "You haven't found all the keys on this level yet, {} keys left".format(num_remaining)
             game_data.map.stairs_found = True
             result = [{"message": Message(text)}]
             return self.package(result=result)
-
 
         if game_data.run_planner.has_next:
 
@@ -134,18 +113,19 @@ class DescendStairsAction(Action):
                 game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
 
             game_data.prev_state.append(game_data.state)
-            game_data.prev_state.append(GameStates.STORY_SCREEN)
-            game_data.state = GameStates.FORMULA_SCREEN
+            game_data.prev_state.append(GameStates.FORMULA_SCREEN)
+            game_data.state = GameStates.STORY_SCREEN
             game_data.map = game_data.run_planner.activate_next_level()
             game_data.map.entities = game_data.map.entities
             game_data.fov_map = initialize_fov(game_data.map)
             game_data.fov_recompute = True
-            from graphics.camera import Camera
 
             cam_width = min(game_data.map.width, gfx_data.camera.orig_width)
             cam_height = min(game_data.map.height, gfx_data.camera.orig_height)
             gfx_data.camera = Camera(cam_width, cam_height, game_data)
             gfx_data.windows.activate_wnd_for_state(game_data.state)
+            gfx_data.camera.initialize_map()
+            gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
             game_data.stats.next_level()
             result = [{"descended": True}]
         else:
@@ -168,10 +148,7 @@ class MoveToPositionAction(Action):
     def execute(self, game_data, _):
         if game_data.player.pos != self.targetpos:
             self.actor.move_towards(
-                self.targetpos.x,
-                self.targetpos.y,
-                game_data.map.entities,
-                game_data.map,
+                self.targetpos.x, self.targetpos.y, game_data.map.entities, game_data.map,
             )
         result = [{"moved": True}]
         return self.package(result)
@@ -238,8 +215,7 @@ class PickupKeyAction(Action):
                 game_data.map.num_keys_found, game_data.map.num_keys_total
             )
         else:
-            text = "You found a key, {} keys found, wonder how many are left?".format(
-                game_data.map.num_keys_found)
+            text = "You found a key, {} keys found, wonder how many are left?".format(game_data.map.num_keys_found)
         result = [{"message": Message(text)}]
-        result.extend(do_looting(game_data, gfx_data, prefix="When you pick up the key"))
+        result.extend(do_looting(game_data, gfx_data, prefix="You pick up the key and"))
         return self.package(result=result)

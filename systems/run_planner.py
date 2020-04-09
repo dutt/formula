@@ -44,7 +44,7 @@ class RunPlanner:
         # chunk_sum = sum(num_chunks)
         # print("average chunks: {}/{} = {}".format(chunk_sum, len(num_chunks), chunk_sum / len(num_chunks)))
 
-        #self.levels.append(self.make_final_map(self.gen_level_idx + 1))
+        # self.levels.append(self.make_final_map(self.gen_level_idx + 1))
         self.gen_level_idx += 1
         game_state.map = self.levels[0]
         game_state.fov_map = initialize_fov(game_state.map)
@@ -73,18 +73,14 @@ class RunPlanner:
         return self.current_map
 
     def make_tutorial_map(self):
-        m = MapFileLoader.make_map(
-            self.constants, 0, resource_path("data/maps/tutorial")
-        )
+        m = MapFileLoader.make_map(self.constants, 0, resource_path("data/maps/tutorial"))
         m.tutorial = True
         return m
 
     def make_easy_map(self, current_level):
         monster_chances = {"any": 80, "thug": 40, "axe_thrower": 30, "dog_group": 30}
         key_ratio = 0.4
-        return TowerMapGenerator.make_map(
-            self.constants, current_level, monster_chances, key_ratio
-        )
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio)
 
     def make_medium_map(self, current_level):
         monster_chances = {
@@ -94,9 +90,7 @@ class RunPlanner:
             "rifleman": 30,
         }
         key_ratio = 0.6
-        return TowerMapGenerator.make_map(
-            self.constants, current_level, monster_chances, key_ratio
-        )
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio)
 
     def make_hard_map(self, current_level):
         monster_chances = {
@@ -106,11 +100,7 @@ class RunPlanner:
             "zapper": 30,
         }
         key_ratio = 0.8
-        return TowerMapGenerator.make_map(
-            self.constants, current_level, monster_chances, key_ratio
-        )
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio)
 
     def make_final_map(self, current_level):
-        return MapFileLoader.make_map(
-            self.constants, current_level, resource_path("data/maps/final")
-        )
+        return MapFileLoader.make_map(self.constants, current_level, resource_path("data/maps/final"))

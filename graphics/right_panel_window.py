@@ -15,19 +15,13 @@ class FormulaMarker(Clickable):
         self.formula_idx = formula_idx
         self.player = player
         self.cooldown_bar = Bar(
-            pos,
-            None,
-            colors.COOLDOWN_BAR_FRONT,
-            colors.COOLDOWN_BAR_BACKGROUND,
-            show_numbers=False,
+            pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND, show_numbers=False,
         )
 
     def draw(self, surface, game_data, formula):
         if self.player.caster.is_on_cooldown(self.formula_idx):
             self.cooldown_bar.draw(
-                surface,
-                self.player.caster.get_cooldown(self.formula_idx),
-                formula.cooldown,
+                surface, self.player.caster.get_cooldown(self.formula_idx), formula.cooldown,
             )
         elif self.formula_idx == game_data.targeting_formula_idx:
             msg = "{}: {}".format(self.formula_idx + 1, formula.text_repr)
@@ -48,22 +42,10 @@ class FormulaMarker(Clickable):
 
 class RightPanelWindow(Window):
     def __init__(self, constants, parent):
-        super().__init__(
-            Pos(0, 0), constants.right_panel_size, visible=False, parent=parent
-        )
-        self.health_bar = Bar(
-            Pos(10, 20),
-            "HP",
-            colors.HP_BAR_FRONT,
-            colors.HP_BAR_BACKGROUND,
-            size=Size(120, 30),
-        )
+        super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent)
+        self.health_bar = Bar(Pos(10, 20), "HP", colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND, size=Size(120, 30),)
         self.shield_bar = Bar(
-            Pos(10, 60),
-            "Shield",
-            colors.SHIELD_BAR_FRONT,
-            colors.SHIELD_BAR_BACKGROUND,
-            size=Size(120, 30),
+            Pos(10, 60), "Shield", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30),
         )
         self.xp_bar = Bar(
             Pos(10, 130),
@@ -84,7 +66,7 @@ class RightPanelWindow(Window):
 
     def handle_key(self, game_data, gfx_data, key_action):
         pass
-        #print("right panel key")
+        # print("right panel key")
 
     def update_formula_markers(self, player, start_y):
         y = start_y
@@ -99,18 +81,12 @@ class RightPanelWindow(Window):
         surface.fill(colors.BACKGROUND)
 
         if len(self.formula_markers) != len(game_data.player.caster.formulas):
-            self.update_formula_markers(
-                game_data.player, start_y=self.formula_label.pos.y + 40
-            )
+            self.update_formula_markers(game_data.player, start_y=self.formula_label.pos.y + 40)
 
-        self.health_bar.draw(
-            surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp
-        )
+        self.health_bar.draw(surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp)
         if game_data.player.fighter.shield:
             self.shield_bar.draw(
-                surface,
-                game_data.player.fighter.shield.level,
-                game_data.player.fighter.shield.max_level,
+                surface, game_data.player.fighter.shield.level, game_data.player.fighter.shield.max_level,
             )
 
         if config.conf.keys:
@@ -119,23 +95,15 @@ class RightPanelWindow(Window):
             else:
                 text = "Found {}/? keys".format(game_data.map.num_keys_found)
             display_text(
-                    surface,
-                    text,
-                    Assets.get().font_message,
-                    (10, 105),
-                )
+                surface, text, Assets.get().font_message, (10, 105),
+            )
         else:
             display_text(
-                surface,
-                "Level {}".format(game_data.player.level.current_level),
-                Assets.get().font_message,
-                (10, 105),
+                surface, "Level {}".format(game_data.player.level.current_level), Assets.get().font_message, (10, 105),
             )
             if config.conf.keys:
                 self.xp_bar.draw(
-                    surface,
-                    game_data.player.level.current_xp,
-                    game_data.player.level.xp_to_next_level,
+                    surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level,
                 )
 
         self.formula_label.draw(surface)

@@ -26,20 +26,12 @@ def get_constants():
 
     map_size = Size(40, 30)
     camera_size = Size(25, 20)
-    game_window_size = Size(
-        (camera_size.width + 1) * CELL_WIDTH, (camera_size.height + 1) * CELL_HEIGHT
-    )
+    game_window_size = Size((camera_size.width + 1) * CELL_WIDTH, (camera_size.height + 1) * CELL_HEIGHT)
     window_size = Size(150 + game_window_size.width, 900)
 
     right_panel_size = Size(150, window_size.height)
-    message_log_size = Size(
-        window_size.width - right_panel_size.width,
-        window_size.height - game_window_size.height,
-    )
-    message_log_text_size = Size(
-        message_log_size.width - 2 * CELL_WIDTH,
-        message_log_size.height - 2 * CELL_HEIGHT,
-    )
+    message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height,)
+    message_log_text_size = Size(message_log_size.width - 2 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT,)
 
     helper_window_size = Size(800, 600)
     helper_window_pos = Pos(100, 100)
@@ -77,9 +69,7 @@ def get_constants():
 
 
 class GfxState:
-    def __init__(
-        self, main, assets, camera, fullscreen, visuals, fps_per_second, clock, windows
-    ):
+    def __init__(self, main, assets, camera, fullscreen, visuals, fps_per_second, clock, windows):
         self.main = main
         self.assets = assets
         self.camera = camera
@@ -104,33 +94,26 @@ import config
 
 
 def setup_data_state(constants):
-    # state = GameStates.SETUP
-    # state = GameStates.FORMULA_SCREEN
-    # state = GameStates.PLAY
     state = GameStates.STORY_SCREEN
-
-    #if config.conf.starting_mode == "choose":
-    #    state = GameStates.FORMULA_SCREEN
-
-    story_loader = StoryLoader()
-    story_data = StoryData(story_loader)
-    timesystem = TimeSystem()
 
     pygame.init()
     pygame.display.set_caption("Formulas")
     pygame.mixer.quit()
     pygame.key.set_repeat(200)
-    main = pygame.display.set_mode(
-        (constants.window_size.width, constants.window_size.height)
-    )
+    main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
 
-    assets = Assets.get()
-    if not assets:
-        assets = Assets()
+    assets = Assets.setup()
 
     run_tutorial = True
+    godmode = False
 
     fps_per_second = 30
+
+    story_loader = StoryLoader()
+    story_data = StoryData(story_loader)
+
+    timesystem = TimeSystem()
+
     visuals = VisualEffectSystem.setup(fps_per_second)
 
     clock = pygame.time.Clock()
@@ -141,9 +124,9 @@ def setup_data_state(constants):
     windows.push(RightPanelWindow(constants, parent=gw))
     windows.push(MessageLogWindow(constants, parent=gw))
 
-    windows.push(StoryWindow(constants, story_data, state == GameStates.STORY_SCREEN))
+    windows.push(StoryWindow(constants, story_data, visible=True))
     windows.push(StoryHelpWindow(constants))
-    windows.push(FormulaWindow(constants, state == GameStates.FORMULA_SCREEN))
+    windows.push(FormulaWindow(constants))
     windows.push(FormulaHelpWindow(constants))
     windows.push(GeneralHelpWindow(constants))
     windows.push(LevelUpWindow(constants))
@@ -151,15 +134,11 @@ def setup_data_state(constants):
     windows.push(DeadWindow(constants))
     windows.push(VictoryWindow(constants))
 
-    text_width = constants.message_log_text_size.width / get_width(
-        Assets.get().font_message
-    )
+    text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
 
-    player = Player()
-    formula_builder = FormulaBuilder(
-        player.caster.num_slots, player.caster.num_formulas, run_tutorial
-    )
+    player = Player(godmode)
+    formula_builder = FormulaBuilder(player.caster.num_slots, player.caster.num_formulas, run_tutorial)
 
     levels = 9
     planner = RunPlanner(levels, player, constants, timesystem, run_tutorial)
@@ -178,12 +157,11 @@ def setup_data_state(constants):
         run_planner=planner,
         formula_builder=formula_builder,
         menu_data=menu_data,
-        state=state,
+        initial_state=state,
+        initial_state_history=[GameStates.PLAY],
     )
 
-    camera = Camera(
-        constants.camera_size.width, constants.camera_size.height, game_data
-    )
+    camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)
 
     gfx_data = GfxState(
         main=main,
@@ -195,6 +173,11 @@ def setup_data_state(constants):
         clock=clock,
         windows=windows,
     )
+
+    if not run_tutorial:
+        game_data.prev_state = [GameStates.FORMULA_SCREEN, GameStates.PLAY]
+        windows.activate_wnd_for_state(game_data.state)
+        story_data.next_story()
 
     # create default formulas
     Formula.EMPTY, _ = formula_builder.get_empty_formula(caster=player)

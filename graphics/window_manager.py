@@ -10,6 +10,7 @@ from graphics.minor_windows import (
 )
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
+from graphics.game_window import GameWindow
 
 
 class WindowManager:
@@ -26,6 +27,7 @@ class WindowManager:
             GameStates.ASK_QUIT: AskQuitWindow,
             GameStates.PLAYER_DEAD: DeadWindow,
             GameStates.VICTORY: VictoryWindow,
+            GameStates.PLAY: GameWindow,
         }
 
     def push(self, window):
@@ -54,6 +56,9 @@ class WindowManager:
                 wnd = self.get(show_window)
                 if wnd:
                     wnd.visible = True
+            activate_wnd_for_state = res.get(EventType.activate_for_new_state)
+            if activate_wnd_for_state:
+                self.activate_wnd_for_state(game_data.state)
             return True, {}
         return False, key_action
 

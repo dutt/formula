@@ -33,11 +33,16 @@ import config
 
 
 class Player(Entity):
-    def __init__(self):
+    def __init__(self, godmode):
         caster_component = Caster(num_slots=3, num_formulas=3)
-        fighter_component = Fighter(hp=10, defense=0, power=3)
+        if godmode:
+            fighter_component = Fighter(hp=10, defense=50, power=50)
+        else:
+            fighter_component = Fighter(hp=10, defense=0, power=3)
+
         level_component = Level()
         drawable_component = Drawable(Assets.get().player)
+
         super(Player, self).__init__(
             0,
             0,
@@ -123,26 +128,18 @@ class Player(Entity):
                     mouse_events = [next_event]
             else:
                 key_events = [KeyEvent(e) for e in events if e.type == pygame.KEYDOWN]
-                mouse_events = [
-                    MouseEvent(e) for e in events if e.type == pygame.MOUSEBUTTONDOWN
-                ]
+                mouse_events = [MouseEvent(e) for e in events if e.type == pygame.MOUSEBUTTONDOWN]
 
             key_action = handle_keys(key_events, game_data.state)
-            mouse_action = handle_mouse(
-                mouse_events, game_data.constants, gfx_data.camera
-            )
+            mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera)
 
             if mouse_action:
-                gui_action = gfx_data.windows.handle_click(
-                    game_data, gfx_data, mouse_action
-                )
+                gui_action = gfx_data.windows.handle_click(game_data, gfx_data, mouse_action)
                 if gui_action:
                     key_action = gui_action
 
             if key_action:
-                handled, gui_action = gfx_data.windows.handle_key(
-                    game_data, gfx_data, key_action
-                )
+                handled, gui_action = gfx_data.windows.handle_key(game_data, gfx_data, key_action)
                 if handled:
                     key_action = gui_action
 
@@ -200,15 +197,11 @@ class Player(Entity):
                 desty = self.pos.y + dy
 
                 if not game_data.map.is_blocked(destx, desty):
-                    target = get_blocking_entites_at_location(
-                        game_data.map.entities, destx, desty
-                    )
+                    target = get_blocking_entites_at_location(game_data.map.entities, destx, desty)
                     if target and target.fighter:
                         player_action = AttackAction(self, target=target)
                     else:
-                        player_action = MoveToPositionAction(
-                            self, targetpos=Pos(destx, desty)
-                        )
+                        player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
                         gfx_data.camera.center_on(destx, desty)
                         game_data.stats.move_player(Pos(destx, desty))
 
@@ -228,7 +221,7 @@ class Player(Entity):
                 else:
                     last_moving_towards_pos = Pos(self.pos.x, self.pos.y)
                     self.move_astar(
-                        self.moving_towards, game_data.map.entities, game_data.map
+                        self.moving_towards, game_data.map.entities, game_data.map, length_limit=False,
                     )
                     if last_moving_towards_pos == self.pos:
                         self.moving_towards = None
@@ -236,9 +229,7 @@ class Player(Entity):
                         gfx_data.camera.center_on(self.pos.x, self.pos.y)
                         game_data.stats.move_player(self.pos)
                         time.sleep(0.15)
-                        player_action = MoveToPositionAction(
-                            self, targetpos=Pos(self.pos.x, self.pos.y)
-                        )
+                        player_action = MoveToPositionAction(self, targetpos=Pos(self.pos.x, self.pos.y))
 
             if game_data.state == GameStates.LEVEL_UP:
                 gfx_data.windows.get(LevelUpWindow).visible = True
@@ -251,23 +242,15 @@ class Player(Entity):
                     distance = (self.pos - Vec(targetx, targety)).length()
                     if distance > game_data.targeting_formula.distance:
                         turn_results.append(
-                            {
-                                "target_out_of_range": True,
-                                "targeting_formula": game_data.targeting_formula,
-                            }
+                            {"target_out_of_range": True, "targeting_formula": game_data.targeting_formula,}
                         )
                     else:
                         player_action = ThrowVialAction(
-                            self,
-                            game_data.targeting_formula,
-                            targetpos=(Pos(targetx, targety)),
+                            self, game_data.targeting_formula, targetpos=(Pos(targetx, targety)),
                         )
                         # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
                         gfx_data.visuals.add_temporary(
-                            self.pos,
-                            Pos(targetx, targety),
-                            lifespan=0.2,
-                            asset=gfx_data.assets.throwing_bottle,
+                            self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
                         )
                         game_data.state = game_data.prev_state.pop()
                         game_data.targeting_formula_idx = None
@@ -276,9 +259,7 @@ class Player(Entity):
 
             if start_throwing_vial is not None:
                 if start_throwing_vial >= len(self.caster.formulas):
-                    game_data.log.add_message(
-                        Message("You don't have that formula yet", tcod.yellow)
-                    )
+                    game_data.log.add_message(Message("You don't have that formula yet", tcod.yellow))
                 else:
                     formula = self.caster.formulas[start_throwing_vial]
                     if formula.targeted:
@@ -288,9 +269,7 @@ class Player(Entity):
                         }
                         turn_results.append(start_throwing_vial_results)
                     else:
-                        player_action = ThrowVialAction(
-                            self, formula, targetpos=game_data.player.pos
-                        )
+                        player_action = ThrowVialAction(self, formula, targetpos=game_data.player.pos)
 
             if do_exit:
                 if game_data.state == GameStates.TARGETING:
@@ -311,9 +290,7 @@ class Player(Entity):
                     if fullscreen:
                         gfx_data.main = pygame.display.set_mode(display)
                     else:
-                        gfx_data.main = pygame.display.set_mode(
-                            display, pygame.FULLSCREEN
-                        )
+                        gfx_data.main = pygame.display.set_mode(display, pygame.FULLSCREEN)
                         gfx_data.fullscreen = not gfx_data.fullscreen
                         gfx_data.main.blit(display_copy, (0, 0))
                         pygame.display.update()
@@ -331,9 +308,7 @@ class Player(Entity):
                         game_data.prev_state.append(GameStates.PLAY)
                         game_data.state = GameStates.TARGETING
 
-                        game_data.log.add_message(
-                            game_data.targeting_formula.targeting_message
-                        )
+                        game_data.log.add_message(game_data.targeting_formula.targeting_message)
 
                 targeting_cancelled = res.get("targeting_cancelled")
                 if targeting_cancelled:

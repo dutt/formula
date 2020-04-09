@@ -42,10 +42,13 @@ class Window(Clickable):
     def draw(self, game_data, gfx_data):
         raise NotImplementedError("draw called on Window base class")
 
-    def close(self, game_data, next_window=None):
+    def close(self, game_data, next_window=None, activate_for_new_state=False):
         game_data.state = game_data.prev_state.pop()
         self.visible = False
-        return {EventType.show_window: next_window}
+        return {
+            EventType.show_window: next_window,
+            EventType.activate_for_new_state: activate_for_new_state,
+        }
 
     @property
     def visible(self):
@@ -60,13 +63,7 @@ class Window(Clickable):
 
 class Bar(Clickable):
     def __init__(
-        self,
-        pos,
-        text=None,
-        color=colors.WHITE,
-        bgcolor=colors.BACKGROUND,
-        size=Size(100, 30),
-        show_numbers=True,
+        self, pos, text=None, color=colors.WHITE, bgcolor=colors.BACKGROUND, size=Size(100, 30), show_numbers=True,
     ):
         super().__init__(pos, size)
         self.color = color
@@ -100,9 +97,7 @@ class Label(Widget):
 
 class TextWindow(Window):
     def __init__(self, constants, visible, lines=None, path=None, next_window=None):
-        super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
-        )
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
         self.next_window = next_window
         self.lines = lines
         self.num_lines = 20
@@ -134,10 +129,7 @@ class TextWindow(Window):
         if len(self.lines) > self.num_lines:
             pygame.draw.line(surface, (255, 255, 255), (100, 520), (500, 520))
             display_text(
-                surface,
-                "Use W, S or mouse scroll to see more",
-                gfx_data.assets.font_message,
-                (130, 530),
+                surface, "Use W, S or mouse scroll to see more", gfx_data.assets.font_message, (130, 530),
             )
 
         gfx_data.main.blit(surface, self.pos.tuple())
@@ -146,17 +138,13 @@ class TextWindow(Window):
         if self.num_lines > len(self.lines):
             self.offset = max(self.offset - self.offset_jump, 0)
         else:
-            self.offset = max(
-                -len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0
-            )
+            self.offset = max(-len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0)
 
     def scroll_down(self):
         if self.num_lines > len(self.lines):
             self.offset = min(self.offset + self.offset_jump, len(self.lines))
         else:
-            self.offset = min(
-                len(self.lines) - self.num_lines, self.offset + self.offset_jump
-            )
+            self.offset = min(len(self.lines) - self.num_lines, self.offset + self.offset_jump)
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)

@@ -13,15 +13,7 @@ import config
 
 class Fighter:
     def __init__(
-        self,
-        hp,
-        defense,
-        power,
-        xp=0,
-        dmg_type=DamageType.PHYSICAL,
-        resistances=None,
-        immunities=None,
-        shield=None,
+        self, hp, defense, power, xp=0, dmg_type=DamageType.PHYSICAL, resistances=None, immunities=None, shield=None,
     ):
         self.hp = self.base_max_hp = hp
         self.base_defense = defense
@@ -94,8 +86,6 @@ class Fighter:
             results.append({"message": Message(text, tcod.white)})
             results.extend(target.fighter.take_damage(self.owner, dmg, self.dmg_type))
         else:
-            text = "{} attacks {} but is too weak to hurt".format(
-                self.owner.name, target.name
-            )
+            text = "{} attacks {} but is too weak to hurt".format(self.owner.name, target.name)
             results.append({"message": Message(text, tcod.white)})
         return results

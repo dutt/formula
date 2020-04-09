@@ -22,6 +22,7 @@ class EventType:
     interact = "interact"
     show_window = "show_window"
     keep_playing = "keep_playing"
+    activate_for_new_state = "activate_for_new_state"
 
 
 class InputType(Enum):
@@ -72,15 +73,13 @@ class MouseEvent(Event):
 
     def parse_raw(self, raw_event):
         mouse_pos = Pos(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-        return attrdict.AttrDict(
-            {"type": InputType.MOUSE.name, "pos": mouse_pos, "button": raw_event.button}
-        )
+        return attrdict.AttrDict({"type": InputType.MOUSE.name, "pos": mouse_pos, "button": raw_event.button})
 
     def serialize(self):
         return {
             "type": InputType.MOUSE.name,
             "cursor_pos": (self.data.pos.x, self.data.pos.y),
-            "map_pos" : (self.data.pos.cx, self.data.pos.cy),
+            "map_pos": (self.data.pos.cx, self.data.pos.cy),
             "button": self.data.button,
         }
 
@@ -100,7 +99,7 @@ class MouseEvent(Event):
             {
                 "pos": Pos(data["cursor_pos"][0], data["cursor_pos"][1]),
                 "map_pos": Pos(data["map_pos"][0], data["map_pos"][1]),
-                "button": data["button"]
+                "button": data["button"],
             }
         )
         return retr

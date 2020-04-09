@@ -32,9 +32,8 @@ def play_game(game_data, gfx_data):
                         gfx_data.windows.activate_wnd_for_state(game_data.state)
                     else:
                         game_data.stats.monster_killed(dead_entity)
-                        msg, game_data = kill_monster(
-                            dead_entity, game_data, gfx_data.assets
-                        )
+                        leveled_up = game_data.player.level.add_xp(game_data.player.level.xp_until_next_level)
+                        msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
                     game_data.log.add_message(msg)
 
                 cast = res.get("cast")
@@ -43,13 +42,9 @@ def play_game(game_data, gfx_data):
                         formula = res.get("formula")
                         game_data.stats.throw_vial(formula)
                         if config.conf.cooldown_mode == "always":
-                            game_data.player.caster.add_cooldown(
-                                formula.formula_idx, formula.cooldown + 1
-                            )
+                            game_data.player.caster.add_cooldown(formula.formula_idx, formula.cooldown + 1)
                         else:
-                            game_data.player.caster.add_cooldown(
-                                formula.formula_idx, formula.cooldown
-                            )
+                            game_data.player.caster.add_cooldown(formula.formula_idx, formula.cooldown)
                 do_quit = res.get("quit")
                 if do_quit:
                     keep_playing = res.get("keep_playing")
@@ -62,9 +57,7 @@ def play_game(game_data, gfx_data):
                     if leveled_up:
                         game_data.log.add_message(
                             Message(
-                                "You grow stronger, reached level {}".format(
-                                    game_data.player.level.current_level
-                                ),
+                                "You grow stronger, reached level {}".format(game_data.player.level.current_level),
                                 (0, 255, 0),
                             )
                         )
@@ -84,13 +77,13 @@ def setup_prevstate(state):
         return retr
     retr.append(GameStates.PLAY)
 
-    if state == GameStates.STORY_SCREEN:
-        return retr
-    retr.append(GameStates.STORY_SCREEN)
-
     if state == GameStates.FORMULA_SCREEN:
         return retr
     retr.append(GameStates.FORMULA_SCREEN)
+
+    if state == GameStates.STORY_SCREEN:
+        return retr
+    retr.append(GameStates.STORY_SCREEN)
 
     if state == GameStates.WELCOME_SCREEN:
         return retr
@@ -125,7 +118,6 @@ def set_seed():
 def do_setup(constants):
     game_data, gfx_data, state = setup_data_state(constants)
 
-    game_data.state = state
     game_data.prev_state = setup_prevstate(state)
 
     game_data.run_planner.generate(game_data)
@@ -141,7 +133,7 @@ def write_logs(game_data, seed, start_time, crashed):
     logname = "formula_run.{}.log".format(timestamp)
     data = {
         "seed": seed,
-        "config" : config.conf.serialize(),
+        "config": config.conf.serialize(),
         "messages": [msg.text for msg in game_data.log.messages] if game_data else ["no game_data"],
         "input_events": input_recorder.serialize_input(input_recorder.events),
         "crashed": crashed,

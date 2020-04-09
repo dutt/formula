@@ -20,9 +20,7 @@ class TimeSystem:
             self.travellers.rotate()
             actor.round_init()
             results.extend(actor.apply_effects())
-            actor.action_points = min(
-                actor.action_points + actor.round_speed, actor.round_speed * 1.5
-            )
+            actor.action_points = min(actor.action_points + actor.round_speed, actor.round_speed * 1.5)
             turn_data = actor.take_turn(game_data, gfx_data)
             while turn_data:
                 while not gfx_data.visuals.done:

@@ -4,9 +4,7 @@ from graphics.constants import colors
 from graphics.font import get_height
 
 
-def display_text(
-    surface, text, font, coords, text_color=colors.WHITE, bg_color=None, center=False
-):
+def display_text(surface, text, font, coords, text_color=colors.WHITE, bg_color=None, center=False):
     if bg_color:
         text_surface = font.render(text, False, text_color, bg_color)
     else:
@@ -50,17 +48,7 @@ def display_menu(gfx_data, lines, size, surface=None, font=None, x=None, starty=
 
 
 def display_bar(
-    surface,
-    assets,
-    pos,
-    width,
-    current,
-    maxval,
-    color,
-    bgcolor,
-    height=30,
-    text=None,
-    show_numbers=True,
+    surface, assets, pos, width, current, maxval, color, bgcolor, height=30, text=None, show_numbers=True,
 ):
     current_length = max(0, (current / maxval) * width)
     pygame.draw.rect(surface, bgcolor, pygame.Rect(pos.x, pos.y, width, height))

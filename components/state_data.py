@@ -14,7 +14,8 @@ class StateData:
         run_planner,
         formula_builder,
         menu_data,
-        state,
+        initial_state,
+        initial_state_history=[],
     ):
         self.player = player
         self.log = log
@@ -28,6 +29,15 @@ class StateData:
         self.targeting_formula = (None,)
         self.targeting_formula_idx = (None,)
         self.menu_data = menu_data
-        self.state = state
-        self.prev_state = []
+        self._state = initial_state
+        self.prev_state = initial_state_history
         self.stats = Statistics()
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, new_state):
+        print(f"setting state {new_state}, prev_state {self.prev_state}")
+        self._state = new_state

@@ -9,6 +9,7 @@ from graphics.render_order import RenderOrder
 from map_related.map_util import load_map, get_monster
 from util import Pos
 
+
 class MapFileLoader:
     @staticmethod
     def make_map(constants, level, file_path):
@@ -27,7 +28,7 @@ class MapFileLoader:
         entities.extend(MapFileLoader.load_stairs(data, game_map))
         entities.extend(MapFileLoader.load_keys(data, game_map))
 
-        MapFileLoader.load_player(data, game_map) # just the position
+        MapFileLoader.load_player(data, game_map)  # just the position
 
         game_map.entities = entities
 
@@ -75,9 +76,7 @@ class MapFileLoader:
         x = monster["x"]
         y = monster["y"]
         assets = Assets.get()
-        return get_monster(
-            x, y, game_map, room=None, monster_choice=type, assets=assets, entities=[]
-        )
+        return get_monster(x, y, game_map, room=None, monster_choice=type, assets=assets, entities=[])
 
     @staticmethod
     def place_stairs(game_map, stairs_data):
@@ -86,11 +85,6 @@ class MapFileLoader:
         stairs_component = Stairs(game_map.dungeon_level + 1)
         drawable_component = Drawable(Assets.get().stairs)
         stairs = Entity(
-            x,
-            y,
-            "Stairs",
-            render_order=RenderOrder.STAIRS,
-            stairs=stairs_component,
-            drawable=drawable_component,
+            x, y, "Stairs", render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component,
         )
         return [stairs]

@@ -106,9 +106,7 @@ def handle_formula_screen_keys(key, modifiers):
 def handle_general_keys(key, modifiers):
     if key in [pygame.K_ESCAPE, pygame.K_TAB, pygame.K_SPACE]:
         return {EventType.exit: True}
-    elif key == pygame.K_RETURN and (
-        pygame.K_RALT in modifiers or pygame.K_LALT in modifiers
-    ):
+    elif key == pygame.K_RETURN and (pygame.K_RALT in modifiers or pygame.K_LALT in modifiers):
         return {EventType.fullscreen: True}
     elif key in [pygame.K_UP, pygame.K_w]:
         return {EventType.scroll_up: 1}
