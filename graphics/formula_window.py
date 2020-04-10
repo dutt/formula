@@ -25,37 +25,21 @@ class FormulaWindow(Window):
         def draw_ingredient_list():
             from components.ingredients import Ingredient
 
-            ingredient_lines = ["Q: Empty"]
-            if game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE):
-                if game_data.formula_builder.ingredient_unlocked(Ingredient.INFERNO):
-                    ingredient_lines.append("W: Inferno")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.FIREBOLT):
-                    ingredient_lines.append("W: Firebolt")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.FIRESPRAY):
-                    ingredient_lines.append("W: Firespray")
-                else:
-                    ingredient_lines.append("W: Fire")
-            if game_data.formula_builder.ingredient_unlocked(Ingredient.WATER):
-                if game_data.formula_builder.ingredient_unlocked(Ingredient.SLEET):
-                    ingredient_lines.append("A: Slush")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICE):
-                    ingredient_lines.append("A: Ice")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICE_VORTEX):
-                    ingredient_lines.append("A: Icespray")
-                elif game_data.formula_builder.ingredient_unlocked(Ingredient.ICEBOLT):
-                    ingredient_lines.append("A: Icebolt")
-                else:
-                    ingredient_lines.append("A: Water")
-
-            ingredient_lines.extend(
-                [
-                    "E: Range" if game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE) else "",
-                    "R: Area" if game_data.formula_builder.ingredient_unlocked(Ingredient.AREA) else "",
-                    "S: Life" if game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE) else "",
-                    "D: Earth" if game_data.formula_builder.ingredient_unlocked(Ingredient.EARTH) else "",
-                ]
-            )
-            ingredient_lines = [i for i in ingredient_lines if i != ""]
+            ingredient_lines = []
+            ingredient_to_key_map = [
+                [ [Ingredient.EMPTY], "Q" ],
+                [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
+                [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "A"],
+                [ [Ingredient.RANGE], "E"],
+                [ [Ingredient.AREA], "R"],
+                [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
+                [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
+            ]
+            choices = game_data.formula_builder.current_ingredient_choices()
+            for ing in choices:
+                for group, key in ingredient_to_key_map:
+                    if ing in group:
+                        ingredient_lines.append(f"{key}: {ing.name}")
 
             def get_ingredient_list_key(item):
                 mapping = {

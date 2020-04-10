@@ -72,7 +72,7 @@ class FormulaBuilder:
                 Ingredient.EMPTY: True,
                 Ingredient.FIRE: True,
                 Ingredient.RANGE: True,
-                Ingredient.AREA: False,
+                Ingredient.AREA: True,
                 Ingredient.WATER: True,
                 Ingredient.LIFE: True,
                 Ingredient.EARTH: True,
@@ -101,6 +101,22 @@ class FormulaBuilder:
             retr.append(ing)
         return retr
 
+    def current_ingredient_choices(self):
+        full = [Ingredient.EMPTY]
+        for ing in Ingredient.all():
+            if self.ingredient_unlocked(ing):
+                full.append(ing)
+
+        # now we need to remove Fire if we have Inferno etc
+        skip = []
+        for ing in full:
+            if ing.is_upgraded:
+                base = Ingredient.get_base_form(ing)
+                skip.append(base)
+
+        retr = [ing for ing in full if ing not in skip]
+        return retr
+
     def ingredient_unlocked(self, ingredient):
         return self.unlock_state[ingredient]
 
@@ -114,37 +130,42 @@ class FormulaBuilder:
                     formula[idx] = replace_with
 
     def get_upgraded(self, ingredient):
-        if ingredient == Ingredient.FIRE:
-            if self.ingredient_unlocked(Ingredient.INFERNO):
-                return Ingredient.INFERNO
-            elif self.ingredient_unlocked(Ingredient.FIREBOLT):
-                return Ingredient.FIREBOLT
-            elif self.ingredient_unlocked(Ingredient.FIRESPRAY):
-                return Ingredient.FIRESPRAY
-
-        elif ingredient == Ingredient.WATER:
-            if self.ingredient_unlocked(Ingredient.SLEET):
-                return Ingredient.SLEET
-            elif self.ingredient_unlocked(Ingredient.ICE):
-                return Ingredient.ICE
-            elif self.ingredient_unlocked(Ingredient.ICEBOLT):
-                return Ingredient.ICEBOLT
-            elif self.ingredient_unlocked(Ingredient.ICE_VORTEX):
-                return Ingredient.ICE_VORTEX
-
-        elif ingredient == Ingredient.LIFE:
-            if self.ingredient_unlocked(Ingredient.VITALITY):
-                return Ingredient.VITALITY
-
-        elif ingredient == Ingredient.EARTH:
-            if self.ingredient_unlocked(Ingredient.ROCK):
-                return Ingredient.ROCK
-            elif self.ingredient_unlocked(Ingredient.MAGMA):
-                return Ingredient.MAGMA
-            elif self.ingredient_unlocked(Ingredient.MUD):
-                return Ingredient.MUD
-
+        for ing in Ingredient.all():
+            if self.ingredient_unlocked(ing) and ing.is_upgraded:
+                return ing
         return ingredient
+
+        #if ingredient == Ingredient.FIRE:
+        #    if self.ingredient_unlocked(Ingredient.INFERNO):
+        #        return Ingredient.INFERNO
+        #    elif self.ingredient_unlocked(Ingredient.FIREBOLT):
+        #        return Ingredient.FIREBOLT
+        #    elif self.ingredient_unlocked(Ingredient.FIRESPRAY):
+        #        return Ingredient.FIRESPRAY
+
+        #elif ingredient == Ingredient.WATER:
+        #    if self.ingredient_unlocked(Ingredient.SLEET):
+        #        return Ingredient.SLEET
+        #    elif self.ingredient_unlocked(Ingredient.ICE):
+        #        return Ingredient.ICE
+        #    elif self.ingredient_unlocked(Ingredient.ICEBOLT):
+        #        return Ingredient.ICEBOLT
+        #    elif self.ingredient_unlocked(Ingredient.ICE_VORTEX):
+        #        return Ingredient.ICE_VORTEX
+
+        #elif ingredient == Ingredient.LIFE:
+        #    if self.ingredient_unlocked(Ingredient.VITALITY):
+        #        return Ingredient.VITALITY
+
+        #elif ingredient == Ingredient.EARTH:
+        #    if self.ingredient_unlocked(Ingredient.ROCK):
+        #        return Ingredient.ROCK
+        #    elif self.ingredient_unlocked(Ingredient.MAGMA):
+        #        return Ingredient.MAGMA
+        #    elif self.ingredient_unlocked(Ingredient.MUD):
+        #        return Ingredient.MUD
+
+        #return ingredient
 
     def set_slot(self, slot, ingredient):
         self.slots[self.currformula][slot] = self.get_upgraded(ingredient)

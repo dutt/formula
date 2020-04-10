@@ -59,16 +59,16 @@ class Ingredient(Enum):
             return "Level up Fire to Firespray, damage and area in one"
 
         elif self == Ingredient.SLEET:
-            return "Level up Ice to Sleet, slow for twice as long"
+            return "Level up Water to Sleet, slow for twice as long"
         elif self == Ingredient.ICE:
             return "Level up Water to Ice, double damage"
         elif self == Ingredient.ICEBOLT:
-            return "Level up water to IceBolt, add range"
+            return "Level up Water to IceBolt, add range"
         elif self == Ingredient.ICE_VORTEX:
             return "Level up Water to Ice vortex, add area effect"
 
         elif self == Ingredient.VITALITY:
-            return "Level up to Vitality, double the healing"
+            return "Level up Life to Vitality, double the healing"
 
         elif self == Ingredient.ROCK:
             return "Level up Earth to Rock, double the protection"
