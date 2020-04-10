@@ -79,6 +79,69 @@ class Ingredient(Enum):
         else:
             return str(self)
 
+    @staticmethod
+    def all():
+        return [
+            Ingredient.FIRE,
+            Ingredient.RANGE,
+            Ingredient.AREA,
+            Ingredient.WATER,
+            Ingredient.LIFE,
+            Ingredient.EARTH,
+
+            Ingredient.INFERNO,
+            Ingredient.FIRESPRAY,
+            Ingredient.FIREBOLT,
+
+            Ingredient.SLEET,
+            Ingredient.ICE,
+            Ingredient.ICEBOLT,
+            Ingredient.ICE_VORTEX,
+
+            Ingredient.VITALITY,
+
+            Ingredient.ROCK,
+            Ingredient.MAGMA,
+            Ingredient.MUD
+        ]
+
+    @staticmethod
+    def upgrades():
+        return [
+            Ingredient.INFERNO,
+            Ingredient.FIRESPRAY,
+            Ingredient.FIREBOLT,
+
+            Ingredient.SLEET,
+            Ingredient.ICE,
+            Ingredient.ICEBOLT,
+            Ingredient.ICE_VORTEX,
+
+            Ingredient.VITALITY,
+
+            Ingredient.ROCK,
+            Ingredient.MAGMA,
+            Ingredient.MUD
+        ]
+
+    @staticmethod
+    def get_base_form(upgraded):
+        if upgraded in IngredientMeta.UPGRADE_TO_BASE_MAP:
+            return IngredientMeta.UPGRADE_TO_BASE_MAP[upgraded]
+        else:
+            return upgraded
+
+    @property
+    def is_upgraded(self):
+        return self in IngredientMeta.UPGRADE_TO_BASE_MAP
+
+    @property
+    def associated(self):
+        for group in IngredientMeta.UPGRADE_GROUPS:
+            if self in group:
+                return group
+        return []
+
     @property
     def targeted(self):
         return self in [
@@ -94,3 +157,29 @@ class Ingredient(Enum):
             Ingredient.ICEBOLT,
             Ingredient.ICE_VORTEX,
         ]
+
+
+class IngredientMeta():
+    UPGRADE_TO_BASE_MAP = {
+        Ingredient.INFERNO : Ingredient.FIRE,
+        Ingredient.FIRESPRAY : Ingredient.FIRE,
+        Ingredient.FIREBOLT : Ingredient.FIRE,
+
+        Ingredient.SLEET : Ingredient.WATER,
+        Ingredient.ICE : Ingredient.WATER,
+        Ingredient.ICEBOLT : Ingredient.WATER,
+        Ingredient.ICE_VORTEX : Ingredient.WATER,
+
+        Ingredient.VITALITY : Ingredient.LIFE,
+
+        Ingredient.ROCK : Ingredient.EARTH,
+        Ingredient.MAGMA : Ingredient.EARTH,
+        Ingredient.MUD : Ingredient.EARTH
+    }
+
+    UPGRADE_GROUPS = [
+        [ Ingredient.INFERNO, Ingredient.FIRESPRAY, Ingredient.FIREBOLT ],
+        [ Ingredient.SLEET,  Ingredient.ICE,  Ingredient.ICEBOLT,  Ingredient.ICE_VORTEX ],
+        [ Ingredient.VITALITY ],
+        [ Ingredient.ROCK, Ingredient.MAGMA, Ingredient.MUD ]
+    ]

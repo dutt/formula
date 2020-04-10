@@ -12,7 +12,7 @@ class Level:
     def add_xp(self, xp):
         self.current_xp += xp
 
-        if self.current_xp > self.xp_to_next_level:
+        if self.current_xp >= self.xp_to_next_level:
             self.current_xp -= self.xp_to_next_level
             self.current_level += 1
             return True

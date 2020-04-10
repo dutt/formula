@@ -29,50 +29,8 @@ class LevelUpWindow(Window):
         if not self.choices:
             if "level_" in config.conf.unlock_mode:
                 all_choices = [self.slots_message, self.formulas_message]
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.FIRE):
-                    all_choices.append(Ingredient.FIRE.description)
-                else:
-                    inferno_unlocked = game_data.formula_builder.ingredient_unlocked(Ingredient.INFERNO)
-                    firebolt_unlocked = game_data.formula_builder.ingredient_unlocked(Ingredient.FIREBOLT)
-                    firespray_unlocked = game_data.formula_builder.ingredient_unlocked(Ingredient.FIRESPRAY)
-                    if not inferno_unlocked and not firebolt_unlocked and not firespray_unlocked:
-                        all_choices.extend(
-                            [
-                                Ingredient.INFERNO.description,
-                                Ingredient.FIREBOLT.description,
-                                Ingredient.FIRESPRAY.description,
-                            ]
-                        )
-
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.WATER):
-                    all_choices.append(Ingredient.WATER.description)
-                else:
-                    if not any(
-                        [
-                            game_data.formula_builder.ingredient_unlocked(Ingredient.SLEET),
-                            game_data.formula_builder.ingredient_unlocked(Ingredient.ICE),
-                            game_data.formula_builder.ingredient_unlocked(Ingredient.ICEBOLT),
-                            game_data.formula_builder.ingredient_unlocked(Ingredient.ICE_VORTEX),
-                        ]
-                    ):
-                        all_choices.extend(
-                            [
-                                Ingredient.SLEET.description,
-                                Ingredient.ICE.description,
-                                Ingredient.ICEBOLT.description,
-                                Ingredient.ICE_VORTEX.description,
-                            ]
-                        )
-
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.RANGE):
-                    all_choices.append(Ingredient.RANGE.description)
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.AREA):
-                    all_choices.append(Ingredient.AREA.description)
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.LIFE):
-                    all_choices.append(Ingredient.LIFE.description)
-                if not game_data.formula_builder.ingredient_unlocked(Ingredient.EARTH):
-                    all_choices.append(Ingredient.EARTH.description)
-
+                for upgrade in game_data.formula_builder.available_upgrades():
+                    all_choices.append(upgrade.description)
                 if config.conf.unlock_mode == "level_2random":
                     while len(self.choices) < 2:
                         self.choices = set(random.choices(all_choices, k=2))
@@ -93,33 +51,26 @@ class LevelUpWindow(Window):
         )
         gfx_data.main.blit(surface, self.pos.tuple())
 
+    def get_ingredient_from_description(self, description):
+        for i in Ingredient.all():
+            if i.description == description:
+                return i
+        return None
+
     def apply_choice(self, choice, game_data):
         chosen = self.choices[choice]
-        if chosen == self.slots_message:
+        ingred = self.get_ingredient_from_description(chosen)
+        if ingred:
+            if ingred in Ingredient.upgrades():
+                base = Ingredient.get_base_form(ingred)
+                game_data.formula_builder.unlock_ingredient(ingred)
+                game_data.formula_builder.replace_all(base, ingred)
+            else:
+                game_data.formula_builder.unlock_ingredient(ingred)
+        elif chosen == self.slots_message:
             game_data.formula_builder.add_slot()
         elif chosen == self.formulas_message:
             game_data.formula_builder.add_formula()
-        elif chosen == Ingredient.FIRE.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.FIRE)
-        elif chosen == Ingredient.RANGE.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.RANGE)
-        elif chosen == Ingredient.AREA.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.AREA)
-        elif chosen == Ingredient.WATER.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.WATER)
-        elif chosen == Ingredient.LIFE.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.LIFE)
-        elif chosen == Ingredient.EARTH.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.EARTH)
-        elif chosen == Ingredient.INFERNO.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.INFERNO)
-            game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.INFERNO)
-        elif chosen == Ingredient.FIREBOLT.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.FIREBOLT)
-            game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.FIREBOLT)
-        elif chosen == Ingredient.FIRESPRAY.description:
-            game_data.formula_builder.unlock_ingredient(Ingredient.FIRESPRAY)
-            game_data.formula_builder.replace_all(Ingredient.FIRE, Ingredient.FIRESPRAY)
         else:
             raise ValueError("Unknown choice in level up: {}".format(chosen))
 
@@ -140,7 +91,7 @@ class LevelUpWindow(Window):
         level_up = key_action.get(EventType.level_up)
         if level_up:
             self.apply_choice(game_data.menu_data.currchoice, game_data)
-            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate(game_data.player))
+            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate_entity(game_data.player))
             self.choices = []
             return self.close(game_data, next_window=FormulaWindow)
 

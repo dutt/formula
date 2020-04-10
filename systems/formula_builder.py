@@ -79,6 +79,28 @@ class FormulaBuilder:
             }
         return {**upgrades_unlocked, **basics}
 
+    def available_upgrades(self):
+        retr = []
+        skip = []
+
+        # first set up associative groups, you only get one fire upgrade etc
+        for ing in Ingredient.all():
+            if not self.ingredient_unlocked(ing):
+                continue
+            skip.extend(ing.associated)
+
+        for ing in Ingredient.all():
+            if self.ingredient_unlocked(ing):
+                continue
+            if ing in skip:
+                continue
+            if ing.is_upgraded:
+                base = Ingredient.get_base_form(ing)
+                if not self.ingredient_unlocked(base): # base has to be unlocked first
+                    continue
+            retr.append(ing)
+        return retr
+
     def ingredient_unlocked(self, ingredient):
         return self.unlock_state[ingredient]
 

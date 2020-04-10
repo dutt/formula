@@ -32,7 +32,6 @@ def play_game(game_data, gfx_data):
                         gfx_data.windows.activate_wnd_for_state(game_data.state)
                     else:
                         game_data.stats.monster_killed(dead_entity)
-                        leveled_up = game_data.player.level.add_xp(game_data.player.level.xp_until_next_level)
                         msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
                     game_data.log.add_message(msg)
 
@@ -53,6 +52,7 @@ def play_game(game_data, gfx_data):
                 xp = res.get("xp")
                 if xp:
                     leveled_up = game_data.player.level.add_xp(xp)
+                    #leveled_up = game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
                     game_data.log.add_message(Message("You gain {} xp".format(xp)))
                     if leveled_up:
                         game_data.log.add_message(
@@ -103,13 +103,15 @@ def set_seed():
         seed = str(now)
     else:
         seed = config.conf.random_seed
+
     # debugging seeds
-    # original seed
     # seed = "2018-12-30 09:38:04.303108"
     # seed = "2019-01-25 22:19:22.597013"
 
     # seed = "2020-03-15 08:47:05.439709"
     # seed = "2020-04-04 21:01:02.999223"
+    # seed = "2020-04-09 22:27:51.380348"
+
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
     return seed
