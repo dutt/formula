@@ -28,11 +28,18 @@ class Action:
 
 def do_looting(game_data, gfx_data, prefix):
     val = random.randint(0, 100)
-    if val <= 40:
+    can_heal = game_data.player.fighter.hp < game_data.player.fighter.max_hp
+    if val <= 40 and can_heal:
         amount = 3
         game_data.player.fighter.heal(amount)
         result = [{"message": Message(f"{prefix} your wounds close, you've been healed {amount} points")}]
-    elif val <= 70:
+    elif val <= 70 and game_data.player.caster.has_cooldown():
+        cooldown_reduction = 5
+        for _ in range(0, cooldown_reduction):
+            game_data.player.caster.tick_cooldowns()
+        text = f"{prefix} you shimmer, cooldowns reduced by {cooldown_reduction}"
+        result = [{"message": Message(text)}]
+    else: # we can always add more shield
         shield = game_data.player.fighter.shield
         shield_strength = 3
         if shield:
@@ -44,12 +51,6 @@ def do_looting(game_data, gfx_data, prefix):
             shield_effect = EffectBuilder.create(EffectType.DEFENSE, level=shield_strength, strikebacks=[], distance=0,)
             shield_effect.apply(game_data.player)
             text = f"{prefix} a shield appears around you"
-        result = [{"message": Message(text)}]
-    else:
-        cooldown_reduction = 5
-        for _ in range(0, cooldown_reduction):
-            game_data.player.caster.tick_cooldowns()
-        text = f"{prefix} you shimmer, cooldowns reduced by {cooldown_reduction}"
         result = [{"message": Message(text)}]
     return result
 

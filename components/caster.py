@@ -35,7 +35,7 @@ class Caster:
     def tick_cooldowns(self):
         to_remove = []
         for formula_idx in self.cooldowns:
-            self.cooldowns[formula_idx] = self.cooldowns[formula_idx] - 1
+            self.cooldowns[formula_idx] -= 1
             if self.cooldowns[formula_idx] <= 0:
                 to_remove.append(formula_idx)
         for r in to_remove:
@@ -43,5 +43,13 @@ class Caster:
 
     def clear_cooldowns(self):
         self.cooldowns = self.create_cooldowns()
+
+    def has_cooldown(self):
+        if not self.cooldowns:
+            return False
+        for cd in self.cooldowns:
+            if cd > 0:
+                return True
+        return False
 
     cooldown_message = Message("That formula is on cooldown")
