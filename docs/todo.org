@@ -1,6 +1,9 @@
-"Skill tree" för ingredienser
-
 Start:
     Fixed 2
     Choose 2
     Random 2 package
+
+[ ] Ingredient baseline
+[ ] Upgrades, step 2
+[ ] Damage resistance / immunity support
+[] Monsters with dmg resist/immunity
