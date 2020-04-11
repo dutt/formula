@@ -113,7 +113,7 @@ class FormulaBuilder:
 
     def replace_all(self, to_replace, replace_with):
         for formula in self.slots:
-            for idx, slot in enumerate(formula):
+            for idx, _ in enumerate(formula):
                 if formula[idx] == to_replace:
                     formula[idx] = replace_with
 
@@ -122,38 +122,6 @@ class FormulaBuilder:
             if self.ingredient_unlocked(ing) and ing.is_upgraded:
                 return ing
         return ingredient
-
-        #if ingredient == Ingredient.FIRE:
-        #    if self.ingredient_unlocked(Ingredient.INFERNO):
-        #        return Ingredient.INFERNO
-        #    elif self.ingredient_unlocked(Ingredient.FIREBOLT):
-        #        return Ingredient.FIREBOLT
-        #    elif self.ingredient_unlocked(Ingredient.FIRESPRAY):
-        #        return Ingredient.FIRESPRAY
-
-        #elif ingredient == Ingredient.WATER:
-        #    if self.ingredient_unlocked(Ingredient.SLEET):
-        #        return Ingredient.SLEET
-        #    elif self.ingredient_unlocked(Ingredient.ICE):
-        #        return Ingredient.ICE
-        #    elif self.ingredient_unlocked(Ingredient.ICEBOLT):
-        #        return Ingredient.ICEBOLT
-        #    elif self.ingredient_unlocked(Ingredient.ICE_VORTEX):
-        #        return Ingredient.ICE_VORTEX
-
-        #elif ingredient == Ingredient.LIFE:
-        #    if self.ingredient_unlocked(Ingredient.VITALITY):
-        #        return Ingredient.VITALITY
-
-        #elif ingredient == Ingredient.EARTH:
-        #    if self.ingredient_unlocked(Ingredient.ROCK):
-        #        return Ingredient.ROCK
-        #    elif self.ingredient_unlocked(Ingredient.MAGMA):
-        #        return Ingredient.MAGMA
-        #    elif self.ingredient_unlocked(Ingredient.MUD):
-        #        return Ingredient.MUD
-
-        #return ingredient
 
     def set_slot(self, slot, ingredient):
         self.slots[self.currformula][slot] = self.get_upgraded(ingredient)
@@ -204,79 +172,79 @@ class FormulaBuilder:
                 targeted = False
 
             if slot == Ingredient.FIRE:
-                fire_dmg += state.fire_dmg_per_step
+                fire_dmg += state.dmg_per_step * 2
                 attack_ingredient = True
             elif slot == Ingredient.RANGE:
                 attack_modifier = True
-                distance += state.distance_per_step
+                distance += state.distance_per_step * 2
             elif slot == Ingredient.AREA:
                 attack_modifier = True
-                area += state.area_per_step
+                area += state.area_per_step * 2
             elif slot == Ingredient.WATER:
                 slow_rounds += state.slow_per_step
                 attack_ingredient = True
-                water_dmg += state.water_dmg_per_step
+                water_dmg += state.dmg_per_step
             elif slot == Ingredient.LIFE:
-                healing += state.heal_per_step
+                healing += state.heal_per_step * 2
             elif slot == Ingredient.EARTH:
-                shield += state.shield_per_step
+                shield += state.shield_per_step * 2
 
             # fire upgrades
             elif slot == Ingredient.INFERNO:
-                fire_dmg += 2 * state.fire_dmg_per_step
+                fire_dmg += state.dmg_per_step * 3
                 attack_ingredient = True
             elif slot == Ingredient.FIREBOLT:
-                fire_dmg += state.fire_dmg_per_step
+                fire_dmg += state.dmg_per_step * 2
                 distance += state.distance_per_step
                 attack_ingredient = True
             elif slot == Ingredient.FIRESPRAY:
-                fire_dmg += state.fire_dmg_per_step
+                fire_dmg += state.dmg_per_step * 2
                 area += state.area_per_step
                 attack_ingredient = True
 
             # water upgrades
             elif slot == Ingredient.SLEET:
-                water_dmg += state.water_dmg_per_step
+                water_dmg += state.dmg_per_step
                 slow_rounds += state.slow_per_step * 2
                 attack_ingredient = True
             elif slot == Ingredient.ICE:
-                water_dmg += state.water_dmg_per_step * 2
+                water_dmg += state.dmg_per_step * 2
                 slow_rounds += state.slow_per_step
                 attack_ingredient = True
             elif slot == Ingredient.ICE_VORTEX:
-                water_dmg += state.water_dmg_per_step
+                water_dmg += state.dmg_per_step
                 slow_rounds += state.slow_per_step
                 area += state.area_per_step
                 attack_ingredient = True
             elif slot == Ingredient.ICEBOLT:
-                water_dmg += state.water_dmg_per_step
+                water_dmg += state.dmg_per_step
                 slow_rounds += state.slow_per_step
                 distance += state.distance_per_step
                 attack_ingredient = True
 
             # life upgrades
             elif slot == Ingredient.VITALITY:
-                healing += 2 * state.heal_per_step
+                healing += state.heal_per_step * 3
 
             # earth upgrades
             elif slot == Ingredient.ROCK:
-                shield += 2 * state.shield_per_step
+                shield += state.shield_per_step * 3
             elif slot == Ingredient.MAGMA:
                 shield += state.shield_per_step
-                fire_dmg += math.ceil(state.fire_dmg_per_step * 0.5)
+                fire_dmg += state.dmg_per_step
             elif slot == Ingredient.MUD:
                 shield += state.shield_per_step
-                fire_dmg += math.ceil(state.fire_dmg_per_step * 0.5)
+                slow_rounds += state.slow_per_step
 
             # scale ingredients
             if fire_dmg:
-                state.fire_dmg_per_step = scale_ingredient(state.fire_dmg_per_step)
-            if water_dmg:
-                state.water_dmg_per_step = scale_ingredient(state.water_dmg_per_step)
+                state.dmg_per_step = scale_ingredient(state.dmg_per_step)
             if healing:
                 state.heal_per_step = scale_ingredient(state.heal_per_step)
             if shield:
                 state.shield_per_step = scale_ingredient(state.shield_per_step)
+            # if slow
+            #    state.slow_per_step = scale_ingredient(state.slow_per_step)
             # if distance:
             #    state.distance_per_step = scale_ingredient(state.distance_per_step)
             # if area:

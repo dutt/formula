@@ -6,6 +6,7 @@ from components.fighter import Fighter
 from components.monster import Monster
 from util import Pos, Size
 from graphics.assets import Assets
+from components.damage_type import DamageType
 
 def get_monster(x, y, game_map, room, monster_choice, entities):
     assets = Assets.get()
@@ -42,7 +43,7 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
             ai = MeleeMonsterAI()
             drawable_component = Drawable(asset)
             # randname = "{}-{}".format(name, random.randint(0, 1000))
-            monster = Monster(wx, wy, name, speed=150, fighter=fighter_component, ai=ai, drawable=drawable_component,)
+            monster = Monster(wx, wy, name, speed=150, fighter=fighter_component, ai=ai, drawable=drawable_component)
             retr.append(monster)
         return retr
 
@@ -53,7 +54,7 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
         fighter_component = Fighter(hp=1, defense=0, power=0, xp=0)
         ai = DummyMonsterAI()
         drawable_component = Drawable(assets.thug)
-        monster = Monster(x, y, "Thug", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component,)
+        monster = Monster(x, y, "Thug", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
 
     # easy
@@ -61,7 +62,7 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
         fighter_component = Fighter(hp=15, defense=0, power=3, xp=40)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.thug)
-        monster = Monster(x, y, "Thug", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component,)
+        monster = Monster(x, y, "Thug", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "axe_thrower":
         fighter_component = Fighter(hp=10, defense=0, power=1, xp=40)
@@ -79,7 +80,7 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
         fighter_component = Fighter(hp=35, defense=5, power=5, xp=100)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.mercenary)
-        monster = Monster(x, y, "Mercenary", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component,)
+        monster = Monster(x, y, "Mercenary", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "rifleman":
         fighter_component = Fighter(hp=25, defense=3, power=3, xp=100)
@@ -97,7 +98,7 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
         fighter_component = Fighter(hp=50, defense=5, power=7, xp=200)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.stalker)
-        monster = Monster(x, y, "Stalker", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component,)
+        monster = Monster(x, y, "Stalker", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "zapper":
         fighter_component = Fighter(hp=30, defense=3, power=3, xp=200)
@@ -108,14 +109,14 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
         )
         monsters.append(monster)
     elif monster_choice == "armored_bear_group":
-        monsters.extend(create_pack(hp=20, defense=4, power=5, xp=200, asset=assets.armored_bear, name="Panzerbear",))
+        monsters.extend(create_pack(hp=20, defense=4, power=5, xp=200, asset=assets.armored_bear, name="Panzerbear"))
 
     # end of the world as we know it
     elif monster_choice == "boss":
         fighter_component = Fighter(hp=150, defense=15, power=8, xp=0)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.boss)
-        monster = Monster(x, y, "Arina", speed=150, fighter=fighter_component, ai=ai, drawable=drawable_component,)
+        monster = Monster(x, y, "Arina", speed=150, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     else:
         raise ValueError("Unknown choice: '{}'".format(monster_choice))

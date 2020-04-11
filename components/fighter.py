@@ -1,9 +1,9 @@
+import math
+
 import tcod
 
 from components.damage_type import DamageType
 from systems.messages import Message
-
-
 from graphics.visual_effect import VisualEffectSystem
 from util import Pos
 from graphics.assets import Assets
@@ -52,7 +52,10 @@ class Fighter:
     def take_damage(self, source, dmg, dmg_type):
         assert dmg > 0
         assert source
+        assert dmg_type
+
         results = []
+
         if self.shield:
             shield_results, actual_dmg = self.shield.on_hit(source, dmg, dmg_type)
             results.extend(shield_results)
@@ -60,6 +63,20 @@ class Fighter:
             for res in shield_results:
                 if res.get("depleted"):
                     self.shield = None
+
+        if dmg_type in self.immunities:
+            dmg_type_name = dmg_type.name.lower()
+            text = f"{self.owner.name} is immune to {dmg_type_name} and resisted all damage"
+            results.append({"message" : Message(text)})
+            dmg = 0
+
+        if dmg_type in self.resistances:
+            resisted = dmg // 2
+            dmg_type_name = dmg_type.name.lower()
+            text = f"{self.owner.name} has resistance to {dmg_type_name} and resisted {resisted}/{dmg} damage"
+            results.append({"message" : Message(text)})
+            dmg -= resisted
+
         self.hp = max(0, self.hp - dmg)
 
         if dmg > 0:

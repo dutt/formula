@@ -62,10 +62,6 @@ class EffectBuilder:
 
             def apply(target):
                 dmg_amount = amount
-                if dmg_type in target.fighter.immunities:
-                    return
-                if dmg_type in target.fighter.resistances:
-                    dmg_amount = amount // 2
                 color = None
                 base = 100
                 main = 200
