@@ -5,7 +5,8 @@ import pygame
 from components.game_states import GameStates
 from graphics.display_helpers import display_text, display_lines
 from graphics.story_window import StoryWindow
-from graphics.window import Window, TextWindow
+from graphics.window import Window
+from graphics.textwindow import TextWindow
 from systems.input_handlers import EventType
 from util import resource_path
 

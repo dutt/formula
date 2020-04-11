@@ -4,7 +4,8 @@ import pygame
 
 from components.events import EventType
 from graphics.display_helpers import display_text, display_lines, display_menu
-from graphics.window import TextWindow, Window
+from graphics.window import Window
+from graphics.textwindow import TextWindow
 from util import resource_path
 
 
@@ -12,7 +13,7 @@ class GeneralHelpWindow(TextWindow):
     PATH = resource_path("data/help/general.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(constants, visible, path=GeneralHelpWindow.PATH, next_window=None)
+        super().__init__(constants, visible, path=GeneralHelpWindow.PATH)
 
 
 class AskQuitWindow(Window):

@@ -32,7 +32,6 @@ class Tutorial:
         if Tutorial.TUTORIAL_SKIPPED:
             return messages
 
-        assets = gfx_data.assets
         px, py = game_data.player.pos.tuple()
         px, py = gfx_data.camera.map_to_screen(px, py)
         px, py = px * CELL_WIDTH + 40, py * CELL_HEIGHT
@@ -57,10 +56,19 @@ class Tutorial:
                     MessageType.LINE,
                 )
             )
-
-            messages.append(Message("Press Tab for help", Pos(20, 400), MessageType.LINE))
-            messages.append(Message("Press Escape to quit", Pos(20, 430), MessageType.LINE))
-            messages.append(Message("Press Alt-Enter for fullscreen", Pos(20, 460), MessageType.LINE))
+            x = 20
+            y = 370
+            diff = 30
+            messages.append(Message("Use W,A,S,D to move", Pos(x, y), MessageType.LINE))
+            y += diff
+            messages.append(
+                Message("You can also left-click on explored tiles to move there", Pos(x, y), MessageType.LINE,)
+            )
+            y += diff
+            messages.append(Message("Press Tab for help", Pos(x, y), MessageType.LINE))
+            y += diff
+            messages.append(Message("Press Escape to quit", Pos(x, y), MessageType.LINE))
+            #messages.append(Message("Press Alt-Enter for fullscreen", Pos(20, 460), MessageType.LINE))
             # text = "These are your formulas. You will gain more formulas, slots and ingredients as you level up"
             # messages.append(Message(text, Pos(20, 200), MessageType.LINE, Size(200, 150)))
 
@@ -88,7 +96,7 @@ class Tutorial:
 
         elif game_data.player.pos == third_pos:
             cast_px, cast_py = px, py + 40
-            messages.append(Message("Use 1,2,3,... to select vial", Pos(cast_px, cast_py), MessageType.LINE,))
+            messages.append(Message("Press 1,2 or 3 to select vial", Pos(cast_px, cast_py), MessageType.LINE,))
             messages.append(
                 Message("FFR is Fire, Fire, Range. Short range, high damage", Pos(20, 220), MessageType.LINE,)
             )
@@ -104,12 +112,10 @@ class Tutorial:
         elif game_data.player.pos == fourth_pos:
             messages.append(Message("This first enemy is inactive, others won't be.", Pos(80, 160), MessageType.LINE,))
             messages.append(
-                Message("Move closer, then kill it the first Formula, FFR", Pos(80, 200), MessageType.LINE,)
+                Message("Kill it the second Formula, FRR", Pos(80, 200), MessageType.LINE,)
             )
-            messages.append(Message("Press 1, or click the formula, to target", Pos(80, 240), MessageType.LINE,))
-            messages.append(
-                Message("You can also left-click on explored tiles to move there", Pos(80, 260), MessageType.LINE,)
-            )
+            messages.append(Message("Press 2, or click the formula, to target", Pos(80, 240), MessageType.LINE,))
+
             messages.append(Message("Defensive formulas will always target yourself", Pos(80, 300), MessageType.LINE,))
 
         elif game_data.stats.monsters_killed_level == 1 and game_data.stats.num_looted_monsters == 0:
@@ -121,6 +127,14 @@ class Tutorial:
             messages.append(Message("Now your formula is on cooldown", Pos(20, 220), MessageType.LINE))
             messages.append(Message("Cooldown reduce when you explore new tiles", Pos(20, 260), MessageType.LINE,))
 
+        elif game_data.player.pos == Pos(14,5):
+            x = 20
+            y = 200
+            diff = 30
+            messages.append(Message("This is a key, you need these to unlock stairs", Pos(x, y), MessageType.LINE))
+            messages.append(Message("Move onto it and press space to pick it up", Pos(x, y + diff), MessageType.LINE))
+            messages.append(Message("When you do, you'll get little loot", Pos(x, y + 2*diff), MessageType.LINE))
+
         elif game_data.state == GameStates.TARGETING:
             target_px, target_py = px, py + 40
             messages.append(Message("Left click target to throw vial", Pos(target_px, target_py), MessageType.LINE,))
@@ -128,7 +142,7 @@ class Tutorial:
         for e in game_data.map.entities:
             if e.stairs and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
                 sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
-                sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
+                sx, sy = sx * CELL_WIDTH + 40, sy * 2* CELL_HEIGHT
                 messages.append(Message("Stairs, press E to ascend", Pos(sx, sy), MessageType.LINE))
 
         return messages

@@ -1,5 +1,5 @@
 from map_related.gamemap import GameMap
-from util import Pos
+from util import Pos, Size
 
 def load_map(path, level):
     with open(path, "r") as reader:

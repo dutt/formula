@@ -64,8 +64,10 @@ class WindowManager:
             show_window = res.get(EventType.show_window)
             if show_window:
                 wnd = self.get(show_window)
-                if wnd:
-                    wnd.visible = True
+                assert wnd
+                game_data.prev_state.append(game_data.state)
+                game_data.state = self.get_state_for_wnd(show_window)
+                wnd.visible = True
             activate_wnd_for_state = res.get(EventType.activate_for_new_state)
             if activate_wnd_for_state:
                 self.activate_wnd_for_state(game_data.state)
@@ -76,6 +78,11 @@ class WindowManager:
         wnd = self.get_wnd_for_state(state)
         assert wnd
         wnd.visible = True
+
+    def get_state_for_wnd(self, wnd):
+        for state, w in self.state_wnd_mapping.items():
+            if w == wnd:
+                return state
 
     def get_wnd_for_state(self, state):
         if state in self.state_wnd_mapping:

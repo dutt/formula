@@ -76,8 +76,7 @@ class MapFileLoader:
         type = monster["type"]
         x = monster["x"]
         y = monster["y"]
-        assets = Assets.get()
-        return get_monster(x, y, game_map, room=None, monster_choice=type, assets=assets, entities=[])
+        return get_monster(x, y, game_map, room=None, monster_choice=type, entities=[])
 
     @staticmethod
     def place_stairs(game_map, stairs_data):

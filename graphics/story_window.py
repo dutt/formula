@@ -1,7 +1,8 @@
 import textwrap
 
 from graphics.display_helpers import display_menu, display_text
-from graphics.window import Window, TextWindow
+from graphics.window import Window
+from graphics.textwindow import TextWindow
 from systems.input_handlers import EventType
 from graphics.assets import Assets
 
