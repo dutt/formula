@@ -41,6 +41,10 @@ stats_help = """Print statistics for balancing
 Usage:
     ---stats
 """
+profiling_help = """Save statistics from profiling
+Usage:
+    ---profiling
+"""
 formula_description = "Formula, a roguelite game about blending stuff and throwing them at monsters"
 
 parser = argparse.ArgumentParser(description=formula_description, formatter_class=argparse.RawTextHelpFormatter)
@@ -57,6 +61,7 @@ parser.add_argument(
 )
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
 parser.add_argument("--stats", action="store_true", help=stats_help)
+parser.add_argument("--profiling", action="store_false", help=profiling_help)
 args = parser.parse_args()
 
 
@@ -99,6 +104,7 @@ class Config:
             self.is_testing = False
 
         self.stats = args.stats
+        self.profiling = args.profiling
 
     def serialize(self):
         return {

@@ -171,8 +171,19 @@ def load_replay_log(path):
     deserialized = input_recorder.deserialize_input(events)
     input_recorder.events.extend(deserialized)
 
+def write_profiling_data(starting_time, profiler):
+    timestamp = starting_time.strftime("%Y-%m-%d_%H-%M-%S")
+    path = os.path.abspath(f"formula.profiling.{timestamp}.data")
+    profiler.dump_stats(path)
+    print(f"Profiling data written at {path}")
 
 def main():
+    profiler = None
+    if config.conf.profiling:
+        import cProfile
+        profiler = cProfile.Profile()
+        profiler.enable()
+
     game_data = None
     now = datetime.datetime.now()
     seed = set_seed()
@@ -192,15 +203,19 @@ def main():
         while play_game(game_data, gfx_data):
             game_data, gfx_data = do_setup(constants)
 
+        if config.conf.profiling:
+            profiler.disable()
+            write_profiling_data(now, profiler)
+
         pygame.quit()
 
         if config.conf.is_testing:
             tester.validate_state(game_data, config.conf.test_data)
         elif not config.conf.is_replaying:
             write_logs(game_data, seed, now, crashed=False)
+
     except:
-        tb = traceback.format_exc()
-        print(tb)
+        traceback.print_exc()
         try:
             write_logs(game_data, seed, now, crashed=True)
         except:
