@@ -118,15 +118,6 @@ class Tutorial:
 
             messages.append(Message("Defensive formulas will always target yourself", Pos(80, 300), MessageType.LINE,))
 
-        elif game_data.stats.monsters_killed_level == 1 and game_data.stats.num_looted_monsters == 0:
-            monster = game_data.stats.monsters_killed_per_level[0][0]
-            mx, my = gfx_data.camera.map_to_screen(monster.pos.x, monster.pos.y)
-            mx, my = mx * CELL_WIDTH + 40, my * CELL_HEIGHT
-            if not config.conf.keys:
-                messages.append(Message("Go to the corpse and press space to loot", Pos(mx, my), MessageType.LINE,))
-            messages.append(Message("Now your formula is on cooldown", Pos(20, 220), MessageType.LINE))
-            messages.append(Message("Cooldown reduce when you explore new tiles", Pos(20, 260), MessageType.LINE,))
-
         elif game_data.player.pos == Pos(14,5):
             x = 20
             y = 200
@@ -135,14 +126,29 @@ class Tutorial:
             messages.append(Message("Move onto it and press space to pick it up", Pos(x, y + diff), MessageType.LINE))
             messages.append(Message("When you do, you'll get little loot", Pos(x, y + 2*diff), MessageType.LINE))
 
-        elif game_data.state == GameStates.TARGETING:
+        elif game_data.player.pos == Pos(10,5):
+            for e in game_data.map.entities:
+                if e.stairs and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                    sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
+                    sx, sy = sx, sy * CELL_HEIGHT + CELL_HEIGHT
+                    messages.append(Message("Stairs, press Space to ascend", Pos(sx, sy), MessageType.LINE))
+                    break
+
+        else:
+            has_killed = game_data.stats.monsters_killed_level == 1
+            has_not_looted = game_data.stats.num_looted_monsters == 0 and not config.conf.keys
+            has_cooldown = game_data.player.caster.has_cooldown()
+            if has_killed and (has_not_looted or has_cooldown):
+                monster = game_data.stats.monsters_killed_per_level[0][0]
+                mx, my = gfx_data.camera.map_to_screen(monster.pos.x, monster.pos.y)
+                mx, my = mx * CELL_WIDTH + 40, my * CELL_HEIGHT
+                if not config.conf.keys:
+                    messages.append(Message("Go to the corpse and press space to loot", Pos(mx, my), MessageType.LINE,))
+                messages.append(Message("Now your formula is on cooldown", Pos(20, 220), MessageType.LINE))
+                messages.append(Message("Cooldown reduce when you explore new tiles", Pos(20, 260), MessageType.LINE,))
+
+        if game_data.state == GameStates.TARGETING:
             target_px, target_py = px, py + 40
             messages.append(Message("Left click target to throw vial", Pos(target_px, target_py), MessageType.LINE,))
-
-        for e in game_data.map.entities:
-            if e.stairs and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
-                sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
-                sx, sy = sx * CELL_WIDTH + 40, sy * 2* CELL_HEIGHT
-                messages.append(Message("Stairs, press E to ascend", Pos(sx, sy), MessageType.LINE))
 
         return messages

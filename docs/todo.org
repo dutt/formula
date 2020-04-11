@@ -6,4 +6,8 @@ Start:
 [ ] Ingredient baseline
 [ ] Upgrades, step 2
 [ ] Damage resistance / immunity support
-[] Monsters with dmg resist/immunity
+[ ] Monsters with dmg resist/immunity
+[ ] Lightning ingredient? stun
+[ ] Air ingredient, reduce cooldown
+[ ] Time ingredient, add turns
+[ ] Game should create test info, not only write log
