@@ -35,6 +35,17 @@ class Effect:
     def no_color(self):
         pass
 
+    def serialize(self):
+        retr = {
+            "rounds" : self.rounds,
+        }
+        stats = self.stats_func()
+        for key in stats:
+            if key in ["type", "dmg_type"]:
+                retr[f"stats.{key}"] = stats[key].name
+            else:
+                retr[f"stats.{key}"] = stats[key]
+        return retr
 
 class EffectBuilder:
     @staticmethod
@@ -68,7 +79,7 @@ class EffectBuilder:
                 return target.fighter.take_damage(source=caster, dmg=dmg_amount, dmg_type=dmg_type)
 
             def stats_func():
-                return AttrDict({"type": EffectType.DAMAGE, "amount": amount, "dmg_type": dmg_type, "rounds": rounds,})
+                return AttrDict({"type": EffectType.DAMAGE, "amount": amount, "dmg_type": dmg_type, "rounds": rounds})
 
             return Effect(rounds, apply, stats_func)
 

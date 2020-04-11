@@ -6,7 +6,8 @@ from components.entity import Entity
 from components.key import Key
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
-from map_related.map_util import load_map, get_monster
+from map_related.map_util import load_map
+from systems.monster_generator import get_monster
 from util import Pos
 
 

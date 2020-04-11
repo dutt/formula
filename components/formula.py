@@ -19,13 +19,23 @@ class Formula:
         self.suboptimal = kwargs["suboptimal"]
 
         self.targeting_message_text = self.text_stats_text = self.applied_text = None
-        self.parse()
+        self.set_texts()
 
-    def parse(self):
+    def serialize(self):
+        return {
+            "slots" : [s.name for s in self.slots],
+            "distance" : self.distance,
+            "area" : self.area,
+            "effects" : [e.serialize() for e in self.effects],
+            "targeted" : self.targeted,
+            "suboptimal" : self.suboptimal
+        }
+
+    def set_texts(self):
         text_msg = ""
         applied_msg = ""
         for e in self.effects:
-            e_text_message, e_applied_msg = self.parse_effect(e)
+            e_text_message, e_applied_msg = self.get_effect_messages(e)
             text_msg += e_text_message
             applied_msg += e_applied_msg
         postfix = "range={}, area={}".format(self.distance, self.area)
@@ -38,7 +48,7 @@ class Formula:
             self.text_stats_text = ""
             self.applied_text = ""
 
-    def parse_effect(self, effect):
+    def get_effect_messages(self, effect):
         text_msg = ""
         applied_msg = ""
         stats = effect.stats
@@ -59,7 +69,7 @@ class Formula:
                 text_msg += " and dealing "
                 applied_msg += ", shield dealing "
                 for sb in stats.strikebacks:
-                    sb_txt, sb_applied = self.parse_effect(sb)
+                    sb_txt, _ = self.parse_effect(sb)
                     text_msg += sb_txt
                     applied_msg += applied_msg
             else:

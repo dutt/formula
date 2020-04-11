@@ -4,19 +4,7 @@ import config
 from components.damage_type import DamageType
 from components.effects import EffectType, EffectBuilder
 from components.formula import Formula
-from components.ingredients import Ingredient
-
-
-class IngredientState:
-    def __init__(self):
-        self.fire_dmg_per_step = 10
-        self.water_dmg_per_step = 5
-        self.distance_per_step = 2
-        self.area_per_step = 0.5
-        self.cooldown_per_slot = 3
-        self.slow_per_step = 3
-        self.heal_per_step = 3
-        self.shield_per_step = 4
+from components.ingredients import Ingredient, IngredientState
 
 
 class FormulaBuilder:

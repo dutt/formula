@@ -158,6 +158,17 @@ class Ingredient(Enum):
             Ingredient.ICE_VORTEX,
         ]
 
+class IngredientState:
+    def __init__(self):
+        self.fire_dmg_per_step = 10
+        self.water_dmg_per_step = 5
+        self.distance_per_step = 2
+        self.area_per_step = 0.5
+        self.cooldown_per_slot = 3
+        self.slow_per_step = 3
+        self.heal_per_step = 3
+        self.shield_per_step = 4
+
 
 class IngredientMeta():
     UPGRADE_TO_BASE_MAP = {

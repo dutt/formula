@@ -13,7 +13,7 @@ from systems.death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, setup_data_state
 from systems.messages import Message
 from components.game_states import GameStates
-from systems import input_recorder, tester
+from systems import input_recorder, tester, balance_statistics
 import config
 
 
@@ -176,6 +176,11 @@ def main():
     game_data = None
     now = datetime.datetime.now()
     seed = set_seed()
+
+    if config.conf.stats:
+        balance_statistics.print_stats()
+        return
+
     if config.conf.is_replaying:
         load_replay_log(config.conf.replay_log_path)
 

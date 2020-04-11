@@ -9,7 +9,7 @@ from components.stairs import Stairs
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
 from map_related.gamemap import GameMap
-from map_related.map_util import get_monster
+from systems.monster_generator import get_monster
 from random_utils import random_choice_from_dict, from_dungeon_level
 from util import Pos, Rect
 import config
@@ -35,15 +35,14 @@ class TowerMapGenerator:
     @staticmethod
     def make_map(constants, level, monster_chances, key_ratio):
         retr = GameMap(constants.map_size, level)
-        assets = Assets.get()
         retr.chunks = TowerMapGenerator.chunkify(retr)
         TowerMapGenerator.cleanup_walls(retr)
         TowerMapGenerator.make_doors(retr, retr.chunks)
-        TowerMapGenerator.place_monsters(retr, retr.chunks, monster_chances, level, assets)
-        TowerMapGenerator.place_stairs(retr, retr.chunks, assets)
+        TowerMapGenerator.place_monsters(retr, retr.chunks, monster_chances, level)
+        TowerMapGenerator.place_stairs(retr, retr.chunks)
 
         if config.conf.keys:
-            TowerMapGenerator.place_keys(retr, retr.chunks, assets, key_ratio)
+            TowerMapGenerator.place_keys(retr, retr.chunks, key_ratio)
         retr.set_tile_info(retr.tiles)
 
         px = retr.chunks[0].x + retr.chunks[0].width // 2
@@ -230,7 +229,7 @@ class TowerMapGenerator:
                 m.tiles[xpos][y].room = -1
 
     @staticmethod
-    def place_monsters(m, chunks, monster_chances, level, assets):
+    def place_monsters(m, chunks, monster_chances, level):
         entities = []
         chance_any = monster_chances["any"]
         del monster_chances["any"]
@@ -247,7 +246,7 @@ class TowerMapGenerator:
             room_center = Pos(c.x + c.width // 2, c.y + c.height // 2)
             skip_room = False
 
-            for i in range(num_monsters):
+            for _ in range(num_monsters):
                 x = random.randint(c.x + 1, c.x + c.width - 1)
                 y = random.randint(c.y + 1, c.y + c.height - 1)
                 if idx == 0:
@@ -265,16 +264,16 @@ class TowerMapGenerator:
                 already_there = [entity for entity in entities if entity.pos.x == x and entity.pos.y == y]
                 if not any(already_there) and not m.tiles[x][y].blocked:
                     monster_choice = random_choice_from_dict(monster_chances)
-                    monster_data = get_monster(x, y, m, c, monster_choice, assets, entities)
+                    monster_data = get_monster(x, y, m, c, monster_choice, entities)
                     entities.extend(monster_data)
                     c.monsters.extend(monster_data)
 
         m.entities = entities
 
     @staticmethod
-    def place_stairs(m, chunks, assets):
+    def place_stairs(m, chunks):
         stairs_component = Stairs(m.dungeon_level + 1)
-        drawable_component = Drawable(assets.stairs)
+        drawable_component = Drawable(Assets.get().stairs)
         posx = chunks[-1].x + chunks[-1].width // 2
         posy = chunks[-1].y + chunks[-1].height // 2
         down_stairs = Entity(
@@ -283,7 +282,7 @@ class TowerMapGenerator:
         m.entities.append(down_stairs)
 
     @staticmethod
-    def place_keys(m, chunks, assets, key_ratio):
+    def place_keys(m, chunks, key_ratio):
         num_rooms_with_keys = math.floor(len(chunks) * key_ratio)
         if num_rooms_with_keys > len(chunks[1:-1]):  # if it's a map with few rooms
             # print("would have cosen {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
@@ -291,7 +290,7 @@ class TowerMapGenerator:
         # print("choosing {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
         # sample random rooms but not in the first room, not in the room with stairs
         rooms_with_keys = random.sample(chunks[1:-1], k=num_rooms_with_keys)
-        for idx, c in enumerate(rooms_with_keys):
+        for _, c in enumerate(rooms_with_keys):
             occupied = True
             while occupied:
                 x = random.randint(c.x + 1, c.x + c.width - 2)
@@ -300,7 +299,7 @@ class TowerMapGenerator:
                 for cm in c.monsters:
                     if cm.pos == Pos(x, y):
                         occupied = True
-            drawable_component = Drawable(assets.key)
+            drawable_component = Drawable(Assets.get().key)
             key = Entity(x, y, "Key", render_order=RenderOrder.ITEM, key=Key(), drawable=drawable_component,)
             m.entities.append(key)
         m.num_keys_total = num_rooms_with_keys

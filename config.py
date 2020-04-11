@@ -36,6 +36,11 @@ Allowed choices:
 test_help = """Run an automated test
 Usage:
     --test PATH_TO_FILE"""
+
+stats_help = """Print statistics for balancing
+Usage:
+    ---stats
+"""
 formula_description = "Formula, a roguelite game about blending stuff and throwing them at monsters"
 
 parser = argparse.ArgumentParser(description=formula_description, formatter_class=argparse.RawTextHelpFormatter)
@@ -51,6 +56,7 @@ parser.add_argument(
     "--ingredient_scaling", type=str, action="store", default="yes", help=ingredient_scaling_help,
 )
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
+parser.add_argument("--stats", action="store_true", help=stats_help)
 args = parser.parse_args()
 
 
@@ -91,6 +97,8 @@ class Config:
             self.parse_test(self.test_file)
         else:
             self.is_testing = False
+
+        self.stats = args.stats
 
     def serialize(self):
         return {
