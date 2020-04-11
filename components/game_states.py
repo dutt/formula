@@ -16,3 +16,4 @@ class GameStates(Enum):
     STORY_HELP_SCREEN = auto()
     VICTORY = auto()
     ASK_QUIT = auto()
+    CONSOLE = auto()

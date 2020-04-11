@@ -23,7 +23,7 @@ class EventType:
     show_window = "show_window"
     keep_playing = "keep_playing"
     activate_for_new_state = "activate_for_new_state"
-
+    console = "console"
 
 class InputType(Enum):
     KEY = auto()

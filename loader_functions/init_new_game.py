@@ -16,6 +16,7 @@ from graphics.minor_windows import (
 from graphics.right_panel_window import RightPanelWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
+from graphics.console_window import ConsoleWindow
 from graphics.visual_effect import VisualEffectSystem
 from graphics.window_manager import WindowManager
 from util import Size, Pos
@@ -133,6 +134,7 @@ def setup_data_state(constants):
     windows.push(AskQuitWindow(constants))
     windows.push(DeadWindow(constants))
     windows.push(VictoryWindow(constants))
+    windows.push(ConsoleWindow(constants))
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides

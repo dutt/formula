@@ -11,6 +11,7 @@ from graphics.minor_windows import (
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.game_window import GameWindow
+from graphics.console_window import ConsoleWindow
 
 
 class WindowManager:
@@ -28,6 +29,7 @@ class WindowManager:
             GameStates.PLAYER_DEAD: DeadWindow,
             GameStates.VICTORY: VictoryWindow,
             GameStates.PLAY: GameWindow,
+            GameStates.CONSOLE: ConsoleWindow
         }
 
     def push(self, window):
@@ -48,9 +50,17 @@ class WindowManager:
     def handle_key(self, game_data, gfx_data, key_action):
         wnd = self.get_wnd_for_state(game_data.state)
         if wnd:
+            console = key_action.get(EventType.console)
+            if console and game_data.state != GameStates.CONSOLE:
+                console_wnd = self.get_wnd_for_state(GameStates.CONSOLE)
+                console_wnd.activate(game_data, gfx_data)
+                self.activate_wnd_for_state(GameStates.CONSOLE)
+                return True, {}
+
             res = wnd.handle_key(game_data, gfx_data, key_action)
             if res is None:
                 return False, key_action  # not handled, game can handle it
+
             show_window = res.get(EventType.show_window)
             if show_window:
                 wnd = self.get(show_window)

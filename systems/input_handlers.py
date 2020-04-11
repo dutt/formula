@@ -11,7 +11,9 @@ import config
 
 def handle_keys(events, state):
     pressed_keys = pygame.key.get_pressed()
-    modifiers = [key for key in [pygame.K_LALT, pygame.K_RALT] if pressed_keys[key]]
+    modifier_keys = [ pygame.K_LALT, pygame.K_RALT,
+                      pygame.K_RSHIFT, pygame.K_LSHIFT ]
+    modifiers = [key for key in modifier_keys if pressed_keys[key]]
 
     for e in events:
         if not config.conf.is_replaying:
@@ -37,8 +39,36 @@ def handle_keys(events, state):
             return handle_ask_quit(e.key, modifiers)
         elif state in [GameStates.VICTORY, GameStates.PLAYER_DEAD]:
             return handle_player_dead(e.key, modifiers)
+        elif state == GameStates.CONSOLE:
+            return handle_console(e.key, modifiers)
+        else:
+            raise ValueError("Input handler in unknown state")
     return {}
 
+
+def handle_console(key, modifiers):
+    #print(key)
+    #print(modifiers)
+    if key >= pygame.K_a and key <= pygame.K_z: #alphabet
+        return {"key" : key }
+    elif pygame.K_RSHIFT in modifiers:
+        if key == pygame.K_MINUS:
+            return {"key" : pygame.K_UNDERSCORE }
+        elif key == pygame.K_0:
+            return {"key" : pygame.K_EQUALS}
+    elif key >= pygame.K_0 and key <= pygame.K_9: # numbers
+        return {"key" : key }
+    elif key in [pygame.K_PERIOD]:
+        return {"key" : key }
+    elif key == pygame.K_RETURN:
+        return {"apply" : True }
+    elif key == pygame.K_BACKSPACE:
+        return {"backspace" : True }
+    elif key == pygame.K_UP:
+        return {"history" : -1 }
+    elif key == pygame.K_DOWN:
+        return {"history" : 1 }
+    return handle_general_keys(key, modifiers)
 
 def handle_ask_quit(key, modifiers):
     if key == pygame.K_SPACE:
@@ -112,7 +142,8 @@ def handle_general_keys(key, modifiers):
         return {EventType.scroll_up: 1}
     elif key in [pygame.K_DOWN, pygame.K_s]:
         return {EventType.scroll_down: 1}
-
+    elif key == 167: # paragraph sign key, left of 1
+        return {EventType.console: True}
     return {}
 
 

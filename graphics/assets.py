@@ -15,12 +15,67 @@ class Assets:
         return Assets._assets
 
     @staticmethod
-    def setup():
+    def setup(mock=False):
         assert not Assets._assets
-        Assets._assets = Assets()
+        Assets._assets = Assets(mock)
         return Assets._assets
 
-    def __init__(self):
+    def __init__(self, mock):
+        self.mocked = mock
+
+        if mock:
+            self.setup_mocked()
+        else:
+            self.setup_actual()
+
+    def setup_mocked(self):
+        self.player = "mocked"
+
+        self.stairs = "mocked"
+
+        self.light_wall = "mocked"
+        self.dark_wall = "mocked"
+
+        self.light_floor = "mocked"
+        self.dark_floor = "mocked"
+
+        self.monster_corpse = "mocked"
+
+        self.ghost = "mocked"
+        self.demon = "mocked"
+        self.chucker = "mocked"
+        self.wolf = "mocked"
+
+        self.thug = "mocked"
+        self.mercenary = "mocked"
+        self.stalker = "mocked"
+
+        self.dog = "mocked"
+        self.boar = "mocked"
+        self.armored_bear = "mocked"
+
+        self.axe_thrower = "mocked"
+        self.rifleman = "mocked"
+        self.zapper = "mocked"
+
+        self.boss = "mocked"
+
+        self.throwing_bottle = "mocked"
+        self.sword = "mocked"
+        self.arrow = "mocked"
+
+        self.shield_effect = "mocked"
+        self.spark_effect = "mocked"
+
+        self.crystal = "mocked"
+        self.key = "mocked"
+
+        self.font_title = "mocked"
+
+        self.font_message = "mocked"
+        self.font_message_height = "mocked"
+
+    def setup_actual(self):
         graphics_file_tile_size = util.Size(16, 16)
 
         self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Reptile"))
@@ -142,3 +197,5 @@ class Assets:
         self.font_message = pygame.font.Font(util.resource_path("data/font/rm_typerighter_old.ttf"), 38)
         self.font_message_height = font.get_height(self.font_message)
         # self.font_message = pygame.font.Font(util.resource_path("data/font/primer print.ttf"), 30)
+
+        self.font_console = pygame.font.Font(util.resource_path("data/font/Consolas.ttf"), 20)

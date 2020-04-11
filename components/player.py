@@ -152,6 +152,7 @@ class Player(Entity):
             start_throwing_vial = key_action.get(EventType.start_throwing_vial)
             show_help = key_action.get(EventType.show_help)
             interact = key_action.get(EventType.interact)
+            console = key_action.get(EventType.console)
 
             if interact:
                 for e in game_data.map.entities:
@@ -294,6 +295,7 @@ class Player(Entity):
                         gfx_data.fullscreen = not gfx_data.fullscreen
                         gfx_data.main.blit(display_copy, (0, 0))
                         pygame.display.update()
+
 
             key_action = mouse_action = None  # clear them for next round
 
