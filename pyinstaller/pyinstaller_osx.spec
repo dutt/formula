@@ -29,7 +29,7 @@ exe = EXE(pyz,
           console=False)
 
 app = BUNDLE(exe,
-             name="formula.app"),
+             name="formula.app",
              icon=None,
              bundle_identifier=None,
              info_plist={
