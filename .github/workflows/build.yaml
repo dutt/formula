@@ -18,13 +18,12 @@ jobs:
           pip install -r dependencies.txt
       - name: package binary
         run: |
-          pyinstaller --clean pyinstaller.spec
-          mv dist/formula dist/formula_macosx
+          pyinstaller --clean --onefile --windowed pyinstaller.spec
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
-          name: formula_macosx
-          path: dist/formula_macosx
+          name: formula_macosx.app
+          path: dist/formula.app
   build-windows:
     name: Build for windows-2019
     runs-on: windows-2019
@@ -83,7 +82,7 @@ jobs:
       - name: Download osx artifact
         uses: actions/download-artifact@v1
         with:
-          name: formula_macosx
+          name: formula_macosx.app
       - name: Download windows artifact
         uses: actions/download-artifact@v1
         with:
