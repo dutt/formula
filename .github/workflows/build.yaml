@@ -18,7 +18,7 @@ jobs:
           pip install -r dependencies.txt
       - name: package binary
         run: |
-          pyinstaller --clean --onefile --windowed pyinstaller.spec
+          pyinstaller --clean --onefile --windowed pyinstaller/pyinstaller.spec
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
@@ -40,7 +40,7 @@ jobs:
           pip install -r dependencies.txt
       - name: package binary
         run: |
-          python -m PyInstaller --clean pyinstaller.spec
+          python -m PyInstaller --clean pyinstaller/pyinstaller.spec
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
@@ -66,7 +66,7 @@ jobs:
           pip install -r dependencies.txt
       - name: package binary
         run: |
-          pyinstaller --clean pyinstaller.spec
+          pyinstaller --clean pyinstaller/pyinstaller.spec
           mv dist/formula dist/formula_ubuntu18
       - name: publish binary
         uses: actions/upload-artifact@master
