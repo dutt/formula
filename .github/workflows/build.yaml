@@ -18,7 +18,8 @@ jobs:
           pip install -r dependencies.txt
       - name: package binary
         run: |
-          pyinstaller --clean --onefile --windowed pyinstaller/pyinstaller.spec
+          pyinstaller --clean --onefile --windowed pyinstaller/pyinstaller_osx.spec
+          ls -lR dist
       - name: publish binary
         uses: actions/upload-artifact@master
         with:
