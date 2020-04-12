@@ -1,9 +1,9 @@
 block_cipher = None
 
 
-a = Analysis(['main.py'],
+a = Analysis(['../main.py'],
              binaries=[],
-             datas=[('data', 'data')],
+             datas=[('../data', 'data')],
              hiddenimports=['pygame'],
              hookspath=[],
              runtime_hooks=[],
