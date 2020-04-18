@@ -68,6 +68,13 @@ class GameWindow(Window):
                     drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
                     sx, sy = gfx_data.camera.map_to_screen(x, y)
                     surface.blit(drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
+
+                    if game_data.map.tiles[x][y].decor:
+                        for decor_drawable in game_data.map.tiles[x][y].decor:
+                            drawable = Drawable(decor_drawable.asset)
+                            drawable.colorize((darken, darken, darken), pygame.BLEND_RGB_SUB)
+                            surface.blit(drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
+
         main.blit(surface, (0, 0))
 
     def draw_entities(self, game_data, gfx_data, main):

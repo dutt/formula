@@ -4,8 +4,11 @@ import pygame
 class Drawable:
     def __init__(self, asset):
         super().__init__()
-        self.asset_ = asset
-        self.orig = asset
+        if type(asset) == list:
+            self.asset_ = asset
+        else:
+            self.asset_ = [asset]
+        self.orig = self.asset_
         self.curr_idx = 0
         self.flickerspeed = 1  # change once per second
         self.flickertimer = 0
@@ -15,8 +18,11 @@ class Drawable:
         for orig_img in self.orig:
             img = orig_img.copy()
             # img.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
-            img.fill(colour[0:3] + (0,), None, mode)
-            img.set_colorkey(colour)
+            if mode == pygame.BLEND_RGBA_ADD:
+                img.fill(colour[0:3] + (0,), None, mode)
+                img.set_colorkey(colour)
+            else:
+                img.fill(colour[0:3], None, mode)
             self.asset_.append(img)
 
     def restore(self):

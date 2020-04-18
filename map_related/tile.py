@@ -13,6 +13,7 @@ class Tile:
         self.room = -1
         self.hallway = False
         self.symbol = None  # debugging
+        self.decor = []
 
     def get_drawable(self, visible):
         if visible:

@@ -130,24 +130,38 @@ class Assets:
             return retr
 
         def get_floor(sheet, col, row):  # col, row are coords for the top left sprite
-            retr = []
-            retr.append(get_img(sheet, col + 3, row + 0, rotate=0))  # 0, solo floor
-            retr.append(get_img(sheet, col + 3, row + 2, rotate=0))  # 1, floor to the north
-            retr.append(get_img(sheet, col + 4, row + 1, rotate=0))  # 2, floor to the east
-            retr.append(get_img(sheet, col + 0, row + 2, rotate=0))  # 3, floor to the north, east
-            retr.append(get_img(sheet, col + 1, row + 1, rotate=180))  # 4, floor to the south
-            retr.append(get_img(sheet, col + 3, row + 1, rotate=0))  # 5, floor to the north, south
-            retr.append(get_img(sheet, col + 0, row + 0, rotate=0))  # 6, floor to the east, south
-            retr.append(get_img(sheet, col + 0, row + 1, rotate=0))  # 7, floor to the north, south, east
-            retr.append(get_img(sheet, col + 6, row + 1, rotate=0))  # 8, floor to the west
-            retr.append(get_img(sheet, col + 2, row + 2, rotate=0))  # 9, floor to the north, west
-            retr.append(get_img(sheet, col + 5, row + 1, rotate=0))  # 10, floor to the east, west
-            retr.append(get_img(sheet, col + 1, row + 2, rotate=0))  # 11, floor to the north, east, west
-            retr.append(get_img(sheet, col + 2, row + 0, rotate=0))  # 12, floor to the south, west
-            retr.append(get_img(sheet, col + 2, row + 1, rotate=0))  # 13, floor to the north, south, west
-            retr.append(get_img(sheet, col + 1, row + 0, rotate=0))  # 14. floor to the east, south, west
-            retr.append(get_img(sheet, col + 1, row + 1, rotate=0))  # 15, floor all around
+            retr = [
+                get_img(sheet, col + 3, row + 0, rotate=0),  # 0, solo floor
+                get_img(sheet, col + 3, row + 2, rotate=0),  # 1, floor to the north
+                get_img(sheet, col + 4, row + 1, rotate=0),  # 2, floor to the east
+                get_img(sheet, col + 0, row + 2, rotate=0),  # 3, floor to the north, east
+                get_img(sheet, col + 1, row + 1, rotate=180),  # 4, floor to the south
+                get_img(sheet, col + 3, row + 1, rotate=0),  # 5, floor to the north, south
+                get_img(sheet, col + 0, row + 0, rotate=0),  # 6, floor to the east, south
+                get_img(sheet, col + 0, row + 1, rotate=0),  # 7, floor to the north, south, east
+                get_img(sheet, col + 6, row + 1, rotate=0),  # 8, floor to the west
+                get_img(sheet, col + 2, row + 2, rotate=0),  # 9, floor to the north, west
+                get_img(sheet, col + 5, row + 1, rotate=0),  # 10, floor to the east, west
+                get_img(sheet, col + 1, row + 2, rotate=0),  # 11, floor to the north, east, west
+                get_img(sheet, col + 2, row + 0, rotate=0),  # 12, floor to the south, west
+                get_img(sheet, col + 2, row + 1, rotate=0),  # 13, floor to the north, south, west
+                get_img(sheet, col + 1, row + 0, rotate=0),  # 14. floor to the east, south, west
+                get_img(sheet, col + 1, row + 1, rotate=0),  # 15, floor all around
+            ]
             return retr
+
+        def get_carpet(sheet, col, row):
+            return {
+                "topleft" : get_img(sheet, col + 0, row + 0, rotate=0),
+                "top" : get_img(sheet, col + 1, row + 0, rotate=0),
+                "topright" : get_img(sheet, col + 2, row + 0, rotate=0),
+                "left" : get_img(sheet, col + 0, row + 1, rotate=0),
+                "center" : get_img(sheet, col + 1, row + 1, rotate=0),
+                "right" : get_img(sheet, col + 2, row + 1, rotate=0),
+                "bottomleft" : get_img(sheet, col + 0, row + 2, rotate=0),
+                "bottom" : get_img(sheet, col + 1, row + 2, rotate=0),
+                "bottomright" : get_img(sheet, col + 2, row + 2, rotate=0),
+            }
 
         self.player = get_animation(self.player_sheet, 1, 0)
 
@@ -158,6 +172,9 @@ class Assets:
 
         self.light_floor = get_floor(self.floor_sheet, 0, 6)
         self.dark_floor = get_floor(self.floor_sheet, 0, 9)
+
+        self.red_carpet = get_carpet(self.decor_sheet, 0, 14)
+        self.blue_carpet = get_carpet(self.decor_sheet, 3, 14)
 
         self.monster_corpse = get_img(self.decor_sheet, 2, 12)
 

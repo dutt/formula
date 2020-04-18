@@ -47,6 +47,8 @@ class TowerMapGenerator:
         if config.conf.pickup:
             TowerMapGenerator.place_ingredients(retr, retr.chunks, ingredient_count)
 
+        TowerMapGenerator.place_decorations(retr, retr.chunks)
+
         retr.set_tile_info(retr.tiles)
 
         px = retr.chunks[0].x + retr.chunks[0].width // 2
@@ -346,6 +348,41 @@ class TowerMapGenerator:
             ingredient = Entity(x, y, f"{name} ingredient", render_order=RenderOrder.ITEM, drawable=drawable_component, ingredient=ingredient_component)
             m.entities.append(ingredient)
 
+
+    @staticmethod
+    def place_decorations(m, chunks):
+        for c in chunks:
+            print(f"chunk {c}")
+            drawable_component = Drawable(Assets.get().red_carpet["topleft"])
+            m.tiles[c.x+1][c.y+1].decor.append(drawable_component)
+
+            drawable_component = Drawable(Assets.get().red_carpet["topright"])
+            m.tiles[c.x+c.width-2][c.y+1].decor.append(drawable_component)
+
+            drawable_component = Drawable(Assets.get().red_carpet["bottomleft"])
+            m.tiles[c.x+1][c.y+c.height-2].decor.append(drawable_component)
+
+            drawable_component = Drawable(Assets.get().red_carpet["bottomright"])
+            m.tiles[c.x+c.width-2][c.y+c.height-2].decor.append(drawable_component)
+
+            for x in range(c.x+2, c.x + c.width-2):
+                drawable_component = Drawable(Assets.get().red_carpet["top"])
+                m.tiles[x][c.y+1].decor.append(drawable_component)
+
+                drawable_component = Drawable(Assets.get().red_carpet["bottom"])
+                m.tiles[x][c.y + c.height-2].decor.append(drawable_component)
+
+            for y in range(c.y+2, c.y + c.height-2):
+                drawable_component = Drawable(Assets.get().red_carpet["left"])
+                m.tiles[c.x+1][y].decor.append(drawable_component)
+
+                drawable_component = Drawable(Assets.get().red_carpet["right"])
+                m.tiles[c.x+c.width-2][y].decor.append(drawable_component)
+
+            for x in range(c.x + 2, c.x + c.width - 2):
+                for y in range(c.y + 2, c.y + c.height - 2):
+                    drawable_component = Drawable(Assets.get().red_carpet["center"])
+                    m.tiles[x][y].decor.append(drawable_component)
 
     @staticmethod
     def free_area(m):
