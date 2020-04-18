@@ -1,20 +1,22 @@
+from util import Pos
+
 class Console():
 
     @staticmethod
     def parse(command):
-        #return command.split(" ")
         return command
 
     @staticmethod
     def run(data, game):
-        global_vars = {
-            "game" : game
+        global_data = {
+            "game" : game,
+            "Pos" : Pos
         }
         try:
             if "=" in data and "==" not in data:
-                return exec(data, global_vars)
+                return exec(data, global_data)
             else:
-                return eval(data, global_vars)
+                return eval(data, global_data)
         except Exception as ex:
             return str(ex)
 

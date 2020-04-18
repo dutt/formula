@@ -49,16 +49,22 @@ def handle_keys(events, state):
 def handle_console(key, modifiers):
     #print(key)
     #print(modifiers)
-    if key >= pygame.K_a and key <= pygame.K_z: #alphabet
-        return {"key" : key }
-    elif pygame.K_RSHIFT in modifiers:
+    if pygame.K_RSHIFT in modifiers:
         if key == pygame.K_MINUS:
             return {"key" : pygame.K_UNDERSCORE }
         elif key == pygame.K_0:
             return {"key" : pygame.K_EQUALS}
+        elif key == pygame.K_8:
+            return {"key" : pygame.K_LEFTPAREN}
+        elif key == pygame.K_9:
+            return {"key" : pygame.K_RIGHTPAREN}
+    if key >= pygame.K_a and key <= pygame.K_z: #alphabet lowercase
+        return { "key" : key,
+                "uppercase" : pygame.K_RSHIFT in modifiers,
+                }
     elif key >= pygame.K_0 and key <= pygame.K_9: # numbers
         return {"key" : key }
-    elif key in [pygame.K_PERIOD]:
+    elif key in [pygame.K_PERIOD, pygame.K_SPACE, pygame.K_COMMA]:
         return {"key" : key }
     elif key == pygame.K_RETURN:
         return {"apply" : True }

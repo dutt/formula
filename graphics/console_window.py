@@ -48,7 +48,10 @@ class ConsoleWindow(Window):
 
         key = key_action.get("key")
         if key:
-            self.line += chr(key)
+            char = chr(key)
+            if key_action.get("uppercase"):
+                char = char.upper()
+            self.line += char
 
         apply = key_action.get("apply")
         if apply:
