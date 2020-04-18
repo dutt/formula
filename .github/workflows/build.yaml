@@ -101,4 +101,4 @@ jobs:
           name: ${{ steps.trimmer.outputs.tag }}
           draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "formula_macosx/formula_macosx,formula_windows/formula.exe,formula_ubuntu18/formula_ubuntu18"
+          artifacts: "formula_windows/formula.exe,formula_ubuntu18/formula_ubuntu18"
