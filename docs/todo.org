@@ -3,11 +3,10 @@ Start:
     Choose 2
     Random 2 package
 
-[ ] Ingredient baseline
 [ ] Upgrades, step 2
-[ ] Damage resistance / immunity support
 [ ] Monsters with dmg resist/immunity
 [ ] Lightning ingredient? stun
 [ ] Air ingredient, reduce cooldown
 [ ] Time ingredient, add turns
 [ ] Game should create test info, not only write log
+[ ] Crafting system? 1 fire + 1 fire => 1 inferno etc. How does this combine with unlock ingredients on level up?

@@ -189,6 +189,7 @@ class Assets:
 
         self.crystal = get_img(self.money_sheet, 1, 3)
         self.key = get_img(self.key_sheet, 0, 0)
+        self.ingredient = get_img(self.decor_sheet, 4,3)
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 20)
         # self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 14)

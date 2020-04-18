@@ -13,6 +13,7 @@ from components.action import (
     DescendStairsAction,
     LootAction,
     PickupKeyAction,
+    PickupIngredientAction,
 )
 from components.caster import Caster
 from components.drawable import Drawable
@@ -176,6 +177,9 @@ class Player(Entity):
                             break
                         elif e.key:
                             player_action = PickupKeyAction(self, e)
+                            break
+                        elif e.ingredient:
+                            player_action = PickupIngredientAction(self, e)
                             break
                 else:
                     if config.conf.cooldown_mode != "always":

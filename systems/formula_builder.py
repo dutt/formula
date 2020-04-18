@@ -83,7 +83,7 @@ class FormulaBuilder:
             if ing in skip:
                 continue
             if ing.is_upgraded:
-                base = Ingredient.get_base_form(ing)
+                base = ing.get_base_form()
                 if not self.ingredient_unlocked(base): # base has to be unlocked first
                     continue
             retr.append(ing)
@@ -99,7 +99,7 @@ class FormulaBuilder:
         skip = []
         for ing in full:
             if ing.is_upgraded:
-                base = Ingredient.get_base_form(ing)
+                base = ing.get_base_form()
                 skip.append(base)
 
         retr = [ing for ing in full if ing not in skip]
@@ -121,7 +121,7 @@ class FormulaBuilder:
         upgrades = [ing for ing in Ingredient.all() if ing.is_upgraded]
         upgrades = [ing for ing in upgrades if self.ingredient_unlocked(ing)]
         for ing in upgrades:
-            if Ingredient.get_base_form(ing) == ingredient:
+            if ing.get_base_form() == ingredient:
                 return ing
         return ingredient
 

@@ -3,6 +3,7 @@ from graphics.assets import Assets
 from map_related.map_file_loader import MapFileLoader
 from map_related.tower_map_gen import TowerMapGenerator
 from util import resource_path
+from components.ingredients import Ingredient
 
 
 class RunPlanner:
@@ -79,8 +80,16 @@ class RunPlanner:
 
     def make_easy_map(self, current_level):
         monster_chances = {"any": 80, "thug": 40, "axe_thrower": 30, "dog_group": 30}
+        ingredient_count = {
+            Ingredient.FIRE : 2,
+            Ingredient.WATER : 2,
+            Ingredient.EARTH : 2,
+            Ingredient.RANGE : 2,
+            Ingredient.AREA : 2
+        }
         key_ratio = 0.4
-        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio)
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
+                                          ingredient_count=ingredient_count)
 
     def make_medium_map(self, current_level):
         monster_chances = {
@@ -89,8 +98,16 @@ class RunPlanner:
             "boar_group": 30,
             "rifleman": 30,
         }
+        ingredient_count = {
+            Ingredient.FIRE : 2,
+            Ingredient.WATER : 2,
+            Ingredient.EARTH : 2,
+            Ingredient.RANGE : 2,
+            Ingredient.AREA : 2
+        }
         key_ratio = 0.6
-        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio)
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
+                                          ingredient_count=ingredient_count)
 
     def make_hard_map(self, current_level):
         monster_chances = {
@@ -99,8 +116,16 @@ class RunPlanner:
             "armored_bear_group": 30,
             "zapper": 30,
         }
+        ingredient_count = {
+            Ingredient.FIRE : 2,
+            Ingredient.WATER : 2,
+            Ingredient.EARTH : 2,
+            Ingredient.RANGE : 2,
+            Ingredient.AREA : 2
+        }
         key_ratio = 0.8
-        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio)
+        return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
+                                          ingredient_count=ingredient_count)
 
     def make_final_map(self, current_level):
         return MapFileLoader.make_map(self.constants, current_level, resource_path("data/maps/final"))

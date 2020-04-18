@@ -3,13 +3,14 @@ import textwrap
 import pygame
 
 from components.game_states import GameStates
+from components.ingredients import Ingredient
 from graphics.display_helpers import display_text, display_lines
 from graphics.story_window import StoryWindow
 from graphics.window import Window
 from graphics.textwindow import TextWindow
 from systems.input_handlers import EventType
 from util import resource_path
-
+import config
 
 class FormulaHelpWindow(TextWindow):
     PATH = resource_path("data/help/formula_window.txt")
@@ -22,41 +23,75 @@ class FormulaWindow(Window):
     def __init__(self, constants, visible=False):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
-    def draw(self, game_data, gfx_data):
-        def draw_ingredient_list(surface):
-            from components.ingredients import Ingredient
+    def draw_ingredient_list(self, surface, game_data, gfx_data):
+        ingredient_lines = []
+        ingredient_to_key_map = [
+            [ [Ingredient.EMPTY], "Q" ],
+            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
+            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "A"],
+            [ [Ingredient.RANGE], "E"],
+            [ [Ingredient.AREA], "R"],
+            [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
+            [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
+        ]
+        choices = game_data.formula_builder.current_ingredient_choices()
+        for ing in choices:
+            for group, key in ingredient_to_key_map:
+                if ing in group:
+                    ingredient_lines.append(f"{key}: {ing.name}")
 
-            ingredient_lines = []
-            ingredient_to_key_map = [
-                [ [Ingredient.EMPTY], "Q" ],
-                [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
-                [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "A"],
-                [ [Ingredient.RANGE], "E"],
-                [ [Ingredient.AREA], "R"],
-                [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
-                [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
-            ]
-            choices = game_data.formula_builder.current_ingredient_choices()
-            for ing in choices:
-                for group, key in ingredient_to_key_map:
-                    if ing in group:
+        def get_ingredient_list_key(item):
+            mapping = {
+                "Q": 0,
+                "W": 1,
+                "E": 2,
+                "R": 3,
+                "A": 4,
+                "S": 5,
+                "D": 6,
+            }
+            return mapping[item[0]]
+
+        ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
+        display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 120)
+
+    def draw_counted_ingredient_list(self, surface, game_data, gfx_data):
+        ingredient_lines = []
+        ingredient_to_key_map = [
+            [ [Ingredient.EMPTY], "Q" ],
+            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
+            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "A"],
+            [ [Ingredient.RANGE], "E"],
+            [ [Ingredient.AREA], "R"],
+            [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
+            [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
+        ]
+        choices = game_data.formula_builder.current_ingredient_choices()
+        for ing in choices:
+            for group, key in ingredient_to_key_map:
+                if ing in group:
+                    if ing == Ingredient.EMPTY:
                         ingredient_lines.append(f"{key}: {ing.name}")
+                    else:
+                        count = game_data.ingredient_storage.count_left(ing, game_data.formula_builder)
+                        ingredient_lines.append(f"{key}: {ing.name}, {count} left")
 
-            def get_ingredient_list_key(item):
-                mapping = {
-                    "Q": 0,
-                    "W": 1,
-                    "E": 2,
-                    "R": 3,
-                    "A": 4,
-                    "S": 5,
-                    "D": 6,
-                }
-                return mapping[item[0]]
+        def get_ingredient_list_key(item):
+            mapping = {
+                "Q": 0,
+                "W": 1,
+                "E": 2,
+                "R": 3,
+                "A": 4,
+                "S": 5,
+                "D": 6,
+            }
+            return mapping[item[0]]
 
-            ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
-            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 120)
+        ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
+        display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 120)
 
+    def draw(self, game_data, gfx_data):
         formulas = game_data.formula_builder.evaluate_entity(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
 
@@ -114,7 +149,10 @@ class FormulaWindow(Window):
             surface, "Press Tab for help, or Space to confirm selection", gfx_data.assets.font_message, (50, y),
         )
 
-        draw_ingredient_list(surface)
+        if config.conf.pickup:
+            self.draw_counted_ingredient_list(surface, game_data, gfx_data)
+        else:
+            self.draw_ingredient_list(surface, game_data, gfx_data)
 
         gfx_data.main.blit(surface, self.pos.tuple())
 
@@ -141,6 +179,10 @@ class FormulaWindow(Window):
 
         ingredient = key_action.get("ingredient")
         if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient):
+            if config.conf.pickup and ingredient != Ingredient.EMPTY:
+                count = game_data.ingredient_storage.count_left(ingredient, game_data.formula_builder)
+                if count < 1:
+                    return {}
             game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
             self.change_slot(game_data, 1)
             return {}
