@@ -81,16 +81,18 @@ class GfxState:
         self.windows = windows
 
 
-from systems.time_system import TimeSystem
-from components.state_data import StateData
-from systems.messages import MessageLog
 from components.player import Player
+from components.state_data import StateData
+from components.formula import Formula
+from components.ingredients import Ingredient
+from systems.time_system import TimeSystem
+from systems.messages import MessageLog
 from systems.story import StoryLoader, StoryData
 from systems.run_planner import RunPlanner
+from systems.formula_builder import FormulaBuilder
+from systems.ingredient_storage import IngredientStorage
 from graphics.font import get_width
 from graphics.assets import Assets
-from systems.formula_builder import FormulaBuilder
-from components.formula import Formula
 import config
 
 
@@ -105,8 +107,8 @@ def setup_data_state(constants):
 
     assets = Assets.setup()
 
-    run_tutorial = True
-    godmode = False
+    run_tutorial = False
+    godmode = True
 
     fps_per_second = 30
 
@@ -146,6 +148,16 @@ def setup_data_state(constants):
     planner = RunPlanner(levels, player, constants, timesystem, run_tutorial)
     fov_map = None
 
+    ingredient_storage = IngredientStorage()
+    if config.conf.pickupstartcount == "base":
+        ingredient_storage.add_multiple({
+            Ingredient.FIRE : 3,
+            Ingredient.WATER : 3,
+            Ingredient.EARTH : 3
+        })
+    else:
+        for ing in Ingredient.all():
+            ingredient_storage.add_multiple({ ing : config.conf.pickupstartcount} )
     menu_data = AttrDict({"currchoice": 0})
 
     game_data = StateData(
@@ -161,6 +173,7 @@ def setup_data_state(constants):
         menu_data=menu_data,
         initial_state=state,
         initial_state_history=[GameStates.PLAY],
+        ingredient_storage=ingredient_storage
     )
 
     camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)

@@ -61,7 +61,7 @@ class LevelUpWindow(Window):
         ingred = self.get_ingredient_from_description(chosen)
         if ingred:
             if ingred in Ingredient.upgrades():
-                base = Ingredient.get_base_form(ingred)
+                base = ingred.get_base_form()
                 game_data.formula_builder.unlock_ingredient(ingred)
                 game_data.formula_builder.replace_all(base, ingred)
             else:

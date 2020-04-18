@@ -14,6 +14,7 @@ class StateData:
         run_planner,
         formula_builder,
         menu_data,
+        ingredient_storage,
         initial_state,
         initial_state_history=[],
     ):
@@ -29,6 +30,7 @@ class StateData:
         self.targeting_formula = (None,)
         self.targeting_formula_idx = (None,)
         self.menu_data = menu_data
+        self.ingredient_storage=ingredient_storage
         self._state = initial_state
         self.prev_state = initial_state_history
         self.stats = Statistics()

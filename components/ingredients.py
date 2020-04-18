@@ -125,11 +125,21 @@ class Ingredient(Enum):
         ]
 
     @staticmethod
-    def get_base_form(upgraded):
-        if upgraded in IngredientMeta.UPGRADE_TO_BASE_MAP:
-            return IngredientMeta.UPGRADE_TO_BASE_MAP[upgraded]
+    def basics():
+        return [
+            Ingredient.FIRE,
+            Ingredient.RANGE,
+            Ingredient.AREA,
+            Ingredient.WATER,
+            Ingredient.LIFE,
+            Ingredient.EARTH
+        ]
+
+    def get_base_form(self):
+        if self in IngredientMeta.UPGRADE_TO_BASE_MAP:
+            return IngredientMeta.UPGRADE_TO_BASE_MAP[self]
         else:
-            return upgraded
+            return self
 
     @property
     def is_upgraded(self):

@@ -33,7 +33,7 @@ class DoorDirection(Enum):
 
 class TowerMapGenerator:
     @staticmethod
-    def make_map(constants, level, monster_chances, key_ratio):
+    def make_map(constants, level, monster_chances, key_ratio, ingredient_count):
         retr = GameMap(constants.map_size, level)
         retr.chunks = TowerMapGenerator.chunkify(retr)
         TowerMapGenerator.cleanup_walls(retr)
@@ -43,6 +43,10 @@ class TowerMapGenerator:
 
         if config.conf.keys:
             TowerMapGenerator.place_keys(retr, retr.chunks, key_ratio)
+
+        if config.conf.pickup:
+            TowerMapGenerator.place_ingredients(retr, retr.chunks, ingredient_count)
+
         retr.set_tile_info(retr.tiles)
 
         px = retr.chunks[0].x + retr.chunks[0].width // 2
@@ -285,9 +289,7 @@ class TowerMapGenerator:
     def place_keys(m, chunks, key_ratio):
         num_rooms_with_keys = math.floor(len(chunks) * key_ratio)
         if num_rooms_with_keys > len(chunks[1:-1]):  # if it's a map with few rooms
-            # print("would have cosen {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
             num_rooms_with_keys = len(chunks[1:-1])
-        # print("choosing {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
         # sample random rooms but not in the first room, not in the room with stairs
         rooms_with_keys = random.sample(chunks[1:-1], k=num_rooms_with_keys)
         placed_keys = [] # not two keys in the same square
@@ -307,6 +309,43 @@ class TowerMapGenerator:
             key = Entity(x, y, "Key", render_order=RenderOrder.ITEM, key=Key(), drawable=drawable_component,)
             m.entities.append(key)
         m.num_keys_total = num_rooms_with_keys
+
+    @staticmethod
+    def place_ingredients(m, chunks, ingredient_count):
+        def has_ingredients_left():
+            for val in ingredient_count.values():
+                if val > 0:
+                    return True
+
+        def get_ingredient():
+            while True:
+                ingredient = random.choice(list(ingredient_count.keys()))
+                if ingredient_count[ingredient] > 0:
+                    ingredient_count[ingredient] -= 1
+                    return ingredient
+
+        #print("--- level ingredients ---")
+        placed_ingredients = [] # not two ingredients in the same square
+        while has_ingredients_left():
+            c = random.choice(chunks)
+            occupied = True
+            while occupied:
+                x = random.randint(c.x + 1, c.x + c.width - 2)
+                y = random.randint(c.y + 1, c.y + c.height - 2)
+                occupied = False
+                for cm in c.monsters:
+                    if cm.pos == Pos(x, y):
+                        occupied = True
+                if (x,y) in placed_ingredients:
+                    occupied = True
+            placed_ingredients.append((x,y))
+            drawable_component = Drawable(Assets.get().ingredient)
+            ingredient_component = get_ingredient()
+            #print(f"placing ingredient {ingredient_component} at {x},{y}")
+            name = ingredient_component.name.capitalize()
+            ingredient = Entity(x, y, f"{name} ingredient", render_order=RenderOrder.ITEM, drawable=drawable_component, ingredient=ingredient_component)
+            m.entities.append(ingredient)
+
 
     @staticmethod
     def free_area(m):

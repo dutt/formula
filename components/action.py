@@ -221,3 +221,17 @@ class PickupKeyAction(Action):
         result = [{"message": Message(text)}]
         result.extend(do_looting(game_data, gfx_data, prefix="You pick up the key and"))
         return self.package(result=result)
+
+class PickupIngredientAction(Action):
+    COST = 100
+
+    def __init__(self, actor, ingredient_entity):
+        super(PickupIngredientAction, self).__init__(actor, PickupIngredientAction.COST)
+        self.ingredient = ingredient_entity
+
+    def execute(self, game_data, gfx_data):
+        game_data.map.entities.remove(self.ingredient)
+        text = "You found an ingredient, some {}".format(self.ingredient.ingredient.name.lower())
+        result = [{"message": Message(text)}]
+        game_data.ingredient_storage.add(self.ingredient.ingredient)
+        return self.package(result=result)

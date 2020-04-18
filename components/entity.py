@@ -24,6 +24,7 @@ class Entity:
         key=None,
         caster=None,
         drawable=None,
+        ingredient=None,
     ):
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
@@ -67,6 +68,11 @@ class Entity:
         self.drawable = drawable
         if self.drawable:
             self.drawable.owner = self
+
+        self.ingredient = ingredient
+        if self.ingredient:
+            self.ingredient.owner = self
+
 
     def __repr__(self):
         return str(self)

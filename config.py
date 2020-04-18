@@ -45,6 +45,17 @@ profiling_help = """Save statistics from profiling
 Usage:
     ---profiling
 """
+ingredient_pickup_help = """Do you want to have unlimited ingredientes, or find them during the game?
+Allowed choices:
+    unlimited - Use however many you want
+    find - Find ingredients during the game and use them
+"""
+ingredient_pickup_startcount_help = """How many ingredients do you want to start with?
+Allowed choices:
+    N - where N is an integer
+    base - a basic selection
+"""
+
 formula_description = "Formula, a roguelite game about blending stuff and throwing them at monsters"
 
 parser = argparse.ArgumentParser(description=formula_description, formatter_class=argparse.RawTextHelpFormatter)
@@ -62,6 +73,8 @@ parser.add_argument(
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
 parser.add_argument("--stats", action="store_true", help=stats_help)
 parser.add_argument("--profiling", action="store_false", help=profiling_help)
+parser.add_argument("--pickup", action="store", default="find", help=ingredient_pickup_help)
+parser.add_argument("--pickupstartcount", action="store", default="base", help=ingredient_pickup_startcount_help)
 args = parser.parse_args()
 
 
@@ -105,6 +118,20 @@ class Config:
 
         self.stats = args.stats
         self.profiling = args.profiling
+
+        self.pickup = args.pickup
+        assert self.pickup in ["unlimited", "find"]
+        self.pickup = self.pickup == "find"
+
+        self.pickupstartcount = args.pickupstartcount
+        if self.pickupstartcount:
+            if not self.pickup:
+                sys.exit("pickupstartcount is only usable in --pickup find mode")
+            if self.pickupstartcount != "base":
+                try:
+                    self.pickupstartcount = int(self.pickupstartcount)
+                except:
+                    sys.exit(f"pickupstartcount, {self.pickupstartcount} doesn't seem to be a number")
 
     def serialize(self):
         return {
