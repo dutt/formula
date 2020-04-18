@@ -290,6 +290,7 @@ class TowerMapGenerator:
         # print("choosing {}/{} rooms for keys".format(num_rooms_with_keys, len(chunks[1:-1])))
         # sample random rooms but not in the first room, not in the room with stairs
         rooms_with_keys = random.sample(chunks[1:-1], k=num_rooms_with_keys)
+        placed_keys = [] # not two keys in the same square
         for _, c in enumerate(rooms_with_keys):
             occupied = True
             while occupied:
@@ -299,6 +300,9 @@ class TowerMapGenerator:
                 for cm in c.monsters:
                     if cm.pos == Pos(x, y):
                         occupied = True
+                if (x,y) in placed_keys:
+                    occupied = True
+            placed_keys.append((x,y))
             drawable_component = Drawable(Assets.get().key)
             key = Entity(x, y, "Key", render_order=RenderOrder.ITEM, key=Key(), drawable=drawable_component,)
             m.entities.append(key)

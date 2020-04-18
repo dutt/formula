@@ -118,8 +118,10 @@ class FormulaBuilder:
                     formula[idx] = replace_with
 
     def get_upgraded(self, ingredient):
-        for ing in Ingredient.all():
-            if self.ingredient_unlocked(ing) and ing.is_upgraded:
+        upgrades = [ing for ing in Ingredient.all() if ing.is_upgraded]
+        upgrades = [ing for ing in upgrades if self.ingredient_unlocked(ing)]
+        for ing in upgrades:
+            if Ingredient.get_base_form(ing) == ingredient:
                 return ing
         return ingredient
 

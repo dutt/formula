@@ -23,7 +23,7 @@ class FormulaWindow(Window):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
-        def draw_ingredient_list():
+        def draw_ingredient_list(surface):
             from components.ingredients import Ingredient
 
             ingredient_lines = []
@@ -55,7 +55,7 @@ class FormulaWindow(Window):
                 return mapping[item[0]]
 
             ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
-            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 65)
+            display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 120)
 
         formulas = game_data.formula_builder.evaluate_entity(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
@@ -63,7 +63,7 @@ class FormulaWindow(Window):
         surface = pygame.Surface(self.size.tuple())
         linediff = gfx_data.assets.font_message_height
 
-        y = 5 * linediff
+        y = 120
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
         y += 3 * linediff
@@ -114,7 +114,7 @@ class FormulaWindow(Window):
             surface, "Press Tab for help, or Space to confirm selection", gfx_data.assets.font_message, (50, y),
         )
 
-        draw_ingredient_list()
+        draw_ingredient_list(surface)
 
         gfx_data.main.blit(surface, self.pos.tuple())
 

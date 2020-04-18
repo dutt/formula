@@ -53,7 +53,8 @@ def play_game(game_data, gfx_data):
                 if xp:
                     leveled_up = game_data.player.level.add_xp(xp)
                     #leveled_up = game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
-                    game_data.log.add_message(Message("You gain {} xp".format(xp)))
+                    if not config.conf.keys:
+                        game_data.log.add_message(Message("You gain {} xp".format(xp)))
                     if leveled_up:
                         game_data.log.add_message(
                             Message(
@@ -62,7 +63,6 @@ def play_game(game_data, gfx_data):
                             )
                         )
                         game_data.prev_state.append(game_data.state)
-                        game_data.prev_state.append(GameStates.FORMULA_SCREEN)
                         game_data.state = GameStates.LEVEL_UP
                         game_data.menu_data.currchoice = 0
             except AttributeError:

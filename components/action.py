@@ -103,6 +103,7 @@ class DescendStairsAction(Action):
             result = [{"message": Message(text)}]
             return self.package(result=result)
 
+        results = []
         if game_data.run_planner.has_next:
 
             if game_data.map.tutorial:
@@ -111,7 +112,7 @@ class DescendStairsAction(Action):
                 game_data.formula_builder.set_initial_slots()
                 game_data.player.caster.clear_cooldowns()
             elif config.conf.keys:
-                game_data.player.level.add_xp(game_data.player.level.xp_to_next_level)
+                results.append({"xp" : game_data.player.level.xp_to_next_level})
 
             game_data.prev_state.append(game_data.state)
             game_data.prev_state.append(GameStates.FORMULA_SCREEN)
@@ -128,15 +129,15 @@ class DescendStairsAction(Action):
             gfx_data.camera.initialize_map()
             gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
             game_data.stats.next_level()
-            result = [{"descended": True}]
+            results.append({"descended": True})
         else:
             game_data.prev_state.append(game_data.state)
             game_data.state = GameStates.VICTORY
             game_data.story.next_story()
             gfx_data.windows.activate_wnd_for_state(game_data.state)
             game_data.stats.end_time = datetime.datetime.now()
-            result = [{"victory": True}]
-        return self.package(result)
+            results.append({"victory": True})
+        return self.package(results)
 
 
 class MoveToPositionAction(Action):

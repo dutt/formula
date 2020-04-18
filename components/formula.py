@@ -69,7 +69,7 @@ class Formula:
                 text_msg += " and dealing "
                 applied_msg += ", shield dealing "
                 for sb in stats.strikebacks:
-                    sb_txt, _ = self.parse_effect(sb)
+                    sb_txt, _ = self.get_effect_messages(sb)
                     text_msg += sb_txt
                     applied_msg += applied_msg
             else:

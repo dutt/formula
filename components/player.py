@@ -57,6 +57,7 @@ class Player(Entity):
         )
         self.last_num_explored = None
         self.moving_towards = None
+        self.godmode = godmode
 
     def handle_tick_cooldowns(self, game_data):
         if config.conf.cooldown_mode == "always":
@@ -148,11 +149,9 @@ class Player(Entity):
             do_exit = key_action.get(EventType.exit)
             left_click = mouse_action.get(EventType.left_click)
             right_click = mouse_action.get(EventType.right_click)
-            level_up = key_action.get(EventType.level_up)
             start_throwing_vial = key_action.get(EventType.start_throwing_vial)
             show_help = key_action.get(EventType.show_help)
             interact = key_action.get(EventType.interact)
-            console = key_action.get(EventType.console)
 
             if interact:
                 for e in game_data.map.entities:
@@ -197,7 +196,12 @@ class Player(Entity):
                 destx = self.pos.x + dx
                 desty = self.pos.y + dy
 
-                if not game_data.map.is_blocked(destx, desty):
+                if self.godmode:
+                    self.pos = Pos(destx, desty)
+                    player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
+                    gfx_data.camera.center_on(destx, desty)
+                    game_data.stats.move_player(Pos(destx, desty))
+                elif not game_data.map.is_blocked(destx, desty):
                     target = get_blocking_entites_at_location(game_data.map.entities, destx, desty)
                     if target and target.fighter:
                         player_action = AttackAction(self, target=target)
@@ -261,6 +265,8 @@ class Player(Entity):
             if start_throwing_vial is not None:
                 if start_throwing_vial >= len(self.caster.formulas):
                     game_data.log.add_message(Message("You don't have that formula yet", tcod.yellow))
+                elif self.caster.is_on_cooldown(start_throwing_vial):
+                    game_data.log.add_message(Message("That's not ready yet", tcod.yellow))
                 else:
                     formula = self.caster.formulas[start_throwing_vial]
                     if formula.targeted:
