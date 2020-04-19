@@ -36,7 +36,7 @@ class IngredientStorage:
             for s in slots:
                 if s == ingredient:
                     count += 1
-        assert count <= max_count, f"count: {count}, max_count {max_count}"
+        #assert count <= max_count, f"count: {count}, max_count {max_count}"
         return max_count - count
 
     def count_left_nocrafting(self, ingredient, formula_builder):

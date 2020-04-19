@@ -108,8 +108,8 @@ def setup_data_state(constants):
 
     assets = Assets.setup()
 
-    run_tutorial = True
-    godmode = False
+    run_tutorial = False
+    godmode = True
 
     fps_per_second = 30
 
@@ -153,10 +153,11 @@ def setup_data_state(constants):
     ingredient_storage = IngredientStorage()
     if config.conf.pickupstartcount == "base":
         ingredient_storage.add_multiple({
-            Ingredient.FIRE : 3,
-            Ingredient.WATER : 3,
-            Ingredient.EARTH : 3,
-            Ingredient.INFERNO : 1,
+            Ingredient.FIRE : 2,
+            Ingredient.WATER : 2,
+            Ingredient.EARTH : 2,
+            Ingredient.RANGE : 1,
+            Ingredient.AREA : 1,
         })
     else:
         for ing in Ingredient.all():

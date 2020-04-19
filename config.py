@@ -76,10 +76,10 @@ parser.add_argument(
 )
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
 parser.add_argument("--stats", action="store_true", help=stats_help)
-parser.add_argument("--profiling", action="store_false", help=profiling_help)
+parser.add_argument("--profiling", action="store_true", help=profiling_help)
 parser.add_argument("--pickup", action="store", default="find", help=ingredient_pickup_help)
 parser.add_argument("--pickupstartcount", action="store", default="base", help=ingredient_pickup_startcount_help)
-parser.add_argument("--crafting", action="store_false", help=ingredient_crafting_help)
+parser.add_argument("--crafting", action="store_true", help=ingredient_crafting_help)
 
 args = parser.parse_args()
 
@@ -131,8 +131,6 @@ class Config:
 
         self.pickupstartcount = args.pickupstartcount
         if self.pickupstartcount:
-            if not self.pickup:
-                sys.exit("pickupstartcount is only usable in --pickup find mode")
             if self.pickupstartcount != "base":
                 try:
                     self.pickupstartcount = int(self.pickupstartcount)

@@ -77,13 +77,13 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
 
     # medium
     elif monster_choice == "mercenary":
-        fighter_component = Fighter(hp=35, defense=5, power=5, xp=100)
+        fighter_component = Fighter(hp=25, defense=5, power=5, xp=100)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.mercenary)
         monster = Monster(x, y, "Mercenary", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "rifleman":
-        fighter_component = Fighter(hp=25, defense=3, power=3, xp=100)
+        fighter_component = Fighter(hp=15, defense=3, power=3, xp=100)
         ai = RangedMonsterAI()
         drawable_component = Drawable(assets.rifleman)
         monster = Monster(
@@ -95,13 +95,13 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
 
     # hard
     elif monster_choice == "stalker":
-        fighter_component = Fighter(hp=50, defense=5, power=7, xp=200)
+        fighter_component = Fighter(hp=35, defense=5, power=7, xp=200)
         ai = MeleeMonsterAI()
         drawable_component = Drawable(assets.stalker)
         monster = Monster(x, y, "Stalker", speed=100, fighter=fighter_component, ai=ai, drawable=drawable_component)
         monsters.append(monster)
     elif monster_choice == "zapper":
-        fighter_component = Fighter(hp=30, defense=3, power=3, xp=200)
+        fighter_component = Fighter(hp=20, defense=3, power=3, xp=200)
         ai = RangedMonsterAI()
         drawable_component = Drawable(assets.zapper)
         monster = Monster(
@@ -109,7 +109,7 @@ def get_monster(x, y, game_map, room, monster_choice, entities):
         )
         monsters.append(monster)
     elif monster_choice == "armored_bear_group":
-        monsters.extend(create_pack(hp=20, defense=4, power=5, xp=200, asset=assets.armored_bear, name="Panzerbear"))
+        monsters.extend(create_pack(hp=15, defense=4, power=5, xp=200, asset=assets.armored_bear, name="Panzerbear"))
 
     # end of the world as we know it
     elif monster_choice == "boss":
