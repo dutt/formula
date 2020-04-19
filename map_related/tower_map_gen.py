@@ -326,7 +326,6 @@ class TowerMapGenerator:
                     ingredient_count[ingredient] -= 1
                     return ingredient
 
-        #print("--- level ingredients ---")
         placed_ingredients = [] # not two ingredients in the same square
         while has_ingredients_left():
             c = random.choice(chunks)
@@ -338,12 +337,14 @@ class TowerMapGenerator:
                 for cm in c.monsters:
                     if cm.pos == Pos(x, y):
                         occupied = True
+                for ent in m.entities:
+                    if ent.pos == Pos(x,y):
+                        occupied = True
                 if (x,y) in placed_ingredients:
                     occupied = True
             placed_ingredients.append((x,y))
             drawable_component = Drawable(Assets.get().ingredient)
             ingredient_component = get_ingredient()
-            #print(f"placing ingredient {ingredient_component} at {x},{y}")
             name = ingredient_component.name.capitalize()
             ingredient = Entity(x, y, f"{name} ingredient", render_order=RenderOrder.ITEM, drawable=drawable_component, ingredient=ingredient_component)
             m.entities.append(ingredient)
@@ -352,7 +353,6 @@ class TowerMapGenerator:
     @staticmethod
     def place_decorations(m, chunks):
         for c in chunks:
-            print(f"chunk {c}")
             drawable_component = Drawable(Assets.get().red_carpet["topleft"])
             m.tiles[c.x+1][c.y+1].decor.append(drawable_component)
 

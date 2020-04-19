@@ -41,10 +41,38 @@ def handle_keys(events, state):
             return handle_player_dead(e.key, modifiers)
         elif state == GameStates.CONSOLE:
             return handle_console(e.key, modifiers)
+        elif state == GameStates.CRAFTING:
+            return handle_crafting(e.key, modifiers)
         else:
             raise ValueError("Input handler in unknown state")
     return {}
 
+
+def handle_crafting(key, modifiers):
+    if key == pygame.K_q:
+        return {"ingredient": Ingredient.EMPTY}
+    elif key == pygame.K_w:
+        return {"ingredient": Ingredient.FIRE}
+    elif key == pygame.K_e:
+        return {"ingredient": Ingredient.RANGE}
+    elif key == pygame.K_r:
+        return {"ingredient": Ingredient.AREA}
+    elif key == pygame.K_a:
+        return {"ingredient": Ingredient.WATER}
+    elif key == pygame.K_s:
+        return {"ingredient": Ingredient.LIFE}
+    elif key == pygame.K_d:
+        return {"ingredient": Ingredient.EARTH}
+    elif key == pygame.K_DOWN:
+        return {"next_slot": 1}
+    elif key == pygame.K_UP:
+        return {"next_slot": -1}
+    elif key == pygame.K_SPACE:
+        return {"apply" : True}
+    elif key == pygame.K_TAB:
+        return {EventType.show_help: True}
+
+    return handle_general_keys(key, modifiers)
 
 def handle_console(key, modifiers):
     #print(key)
@@ -216,5 +244,7 @@ def handle_player_turn_keys(key, modifiers):
         return {EventType.start_throwing_vial: 8}
     elif key == pygame.K_TAB:
         return {EventType.show_help: True}
+    elif key == pygame.K_c:
+        return {EventType.start_crafting : True}
 
     return handle_general_keys(key, modifiers)

@@ -17,3 +17,4 @@ class GameStates(Enum):
     VICTORY = auto()
     ASK_QUIT = auto()
     CONSOLE = auto()
+    CRAFTING = auto()

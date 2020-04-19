@@ -17,6 +17,7 @@ from graphics.right_panel_window import RightPanelWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
 from graphics.console_window import ConsoleWindow
+from graphics.crafting_window import CraftingWindow
 from graphics.visual_effect import VisualEffectSystem
 from graphics.window_manager import WindowManager
 from util import Size, Pos
@@ -107,8 +108,8 @@ def setup_data_state(constants):
 
     assets = Assets.setup()
 
-    run_tutorial = False
-    godmode = True
+    run_tutorial = True
+    godmode = False
 
     fps_per_second = 30
 
@@ -137,6 +138,7 @@ def setup_data_state(constants):
     windows.push(DeadWindow(constants))
     windows.push(VictoryWindow(constants))
     windows.push(ConsoleWindow(constants))
+    windows.push(CraftingWindow(constants))
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
@@ -153,7 +155,8 @@ def setup_data_state(constants):
         ingredient_storage.add_multiple({
             Ingredient.FIRE : 3,
             Ingredient.WATER : 3,
-            Ingredient.EARTH : 3
+            Ingredient.EARTH : 3,
+            Ingredient.INFERNO : 1,
         })
     else:
         for ing in Ingredient.all():

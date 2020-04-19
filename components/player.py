@@ -138,7 +138,7 @@ class Player(Entity):
             if mouse_action:
                 gui_action = gfx_data.windows.handle_click(game_data, gfx_data, mouse_action)
                 if gui_action:
-                    key_action = gui_action
+                    mouse_action = gui_action
 
             if key_action:
                 handled, gui_action = gfx_data.windows.handle_key(game_data, gfx_data, key_action)
@@ -150,9 +150,15 @@ class Player(Entity):
             do_exit = key_action.get(EventType.exit)
             left_click = mouse_action.get(EventType.left_click)
             right_click = mouse_action.get(EventType.right_click)
-            start_throwing_vial = key_action.get(EventType.start_throwing_vial)
             show_help = key_action.get(EventType.show_help)
             interact = key_action.get(EventType.interact)
+            start_crafting = key_action.get(EventType.start_crafting)
+
+            start_throwing_vial = None
+            if key_action.get(EventType.start_throwing_vial) is not None:
+                start_throwing_vial = key_action.get(EventType.start_throwing_vial)
+            elif mouse_action.get(EventType.start_throwing_vial) is not None:
+                start_throwing_vial = mouse_action.get(EventType.start_throwing_vial)
 
             if interact:
                 for e in game_data.map.entities:
@@ -161,7 +167,13 @@ class Player(Entity):
                             player_action = DescendStairsAction(self)
                             self.last_num_explored = None
                             game_data.story.next_story()
-                            # TODO clear cooldowns?
+                            self.caster.clear_cooldowns()
+                            break
+                        elif e.key:
+                            player_action = PickupKeyAction(self, e)
+                            break
+                        elif e.ingredient:
+                            player_action = PickupIngredientAction(self, e)
                             break
                         elif e.name.startswith("Remains of"):  # monster
                             if e.orig_name == "Arina":
@@ -175,15 +187,14 @@ class Player(Entity):
                                 e.name = "Looted r" + e.name[1:]
                                 game_data.stats.loot_monster(e)
                             break
-                        elif e.key:
-                            player_action = PickupKeyAction(self, e)
-                            break
-                        elif e.ingredient:
-                            player_action = PickupIngredientAction(self, e)
-                            break
                 else:
                     if config.conf.cooldown_mode != "always":
                         player_action = WaitAction(self)
+
+            if start_crafting:
+                game_data.prev_state.append(game_data.state)
+                game_data.state = GameStates.CRAFTING
+                gfx_data.windows.activate_wnd_for_state(game_data.state)
 
             if show_help:
                 game_data.prev_state.append(game_data.state)

@@ -24,6 +24,7 @@ class EventType:
     keep_playing = "keep_playing"
     activate_for_new_state = "activate_for_new_state"
     console = "console"
+    start_crafting = "start_crafting"
 
 class InputType(Enum):
     KEY = auto()

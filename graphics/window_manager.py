@@ -12,6 +12,7 @@ from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.game_window import GameWindow
 from graphics.console_window import ConsoleWindow
+from graphics.crafting_window import CraftingWindow
 
 
 class WindowManager:
@@ -29,7 +30,8 @@ class WindowManager:
             GameStates.PLAYER_DEAD: DeadWindow,
             GameStates.VICTORY: VictoryWindow,
             GameStates.PLAY: GameWindow,
-            GameStates.CONSOLE: ConsoleWindow
+            GameStates.CONSOLE: ConsoleWindow,
+            GameStates.CRAFTING : CraftingWindow
         }
 
     def push(self, window):

@@ -1,15 +1,16 @@
 import textwrap
 
 import pygame
+from attrdict import AttrDict
 
 from components.game_states import GameStates
 from components.ingredients import Ingredient
 from graphics.display_helpers import display_text, display_lines
 from graphics.story_window import StoryWindow
-from graphics.window import Window
+from graphics.window import Window, ClickableLabel
 from graphics.textwindow import TextWindow
 from systems.input_handlers import EventType
-from util import resource_path
+from util import resource_path, Pos, Size
 import config
 
 class FormulaHelpWindow(TextWindow):
@@ -19,9 +20,45 @@ class FormulaHelpWindow(TextWindow):
         super().__init__(constants, visible, path=FormulaHelpWindow.PATH, next_window=None)
 
 
+class IngredientMarker(ClickableLabel):
+    def __init__(self, pos, text, ingredient, parent):
+        super().__init__(pos=pos, text=text, size=Size(100, 30))
+        self.ingredient = ingredient
+        self.parent = parent
+
+    def handle_click(self, game_data, gfx_data, mouse_action):
+        left_click = mouse_action.get(EventType.left_click)
+        if left_click:
+            print(f"{self.ingredient} clicked")
+            game_data.formula_builder.set_slot(game_data.formula_builder.currslot, self.ingredient)
+            self.parent.change_slot(game_data, 1)
+        return {}
+
+    def is_clicked(self, mouse_action):
+        if "left_click" not in mouse_action:
+            return False
+        left_click = AttrDict(mouse_action["left_click"])
+        left_click.x -= self.parent.pos.x
+        left_click.y -= self.parent.pos.y
+        return super().is_clicked({"left_click" : left_click})
+
+    def draw(self, surface, game_data, gfx_data):
+        display_text(surface, self.text, gfx_data.assets.font_message, self.pos.tuple())
+
+        x1 = self.pos.x
+        x2 = self.pos.x + self.size.width
+        y1 = self.pos.y
+        y2 = self.pos.y + self.size.height
+        color = (255, 0, 0)
+        #pygame.draw.line(surface, color, (x1, y1), (x1, y2), 2)
+        #pygame.draw.line(surface, color, (x1, y1), (x2, y1), 2)
+        #pygame.draw.line(surface, color, (x2, y1), (x2, y2), 2)
+        #pygame.draw.line(surface, color, (x1, y2), (x2, y2), 2)
+
 class FormulaWindow(Window):
     def __init__(self, constants, visible=False):
         super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
+        self.ingredient_markers = []
 
     def draw_ingredient_list(self, surface, game_data, gfx_data):
         ingredient_lines = []
@@ -91,6 +128,25 @@ class FormulaWindow(Window):
         ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
         display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 120)
 
+    def draw_crafted_ingredient_list(self, surface, game_data, gfx_data):
+        counts = game_data.ingredient_storage.remaining(game_data.formula_builder)
+
+        x = 450
+        y = 120
+
+        self.ingredient_markers = []
+        self.ingredient_markers.append(IngredientMarker(Pos(x, y), "Empty", Ingredient.EMPTY, parent=self))
+        y += 40
+        for ing, count in counts.items():
+            if count <= 0:
+                continue
+            text = "{}, {} left".format(ing.name.capitalize(), count)
+            self.ingredient_markers.append(IngredientMarker(Pos(x, y), text, ing, parent=self))
+            y += 40
+
+        for im in self.ingredient_markers:
+            im.draw(surface, game_data, gfx_data)
+
     def draw(self, game_data, gfx_data):
         formulas = game_data.formula_builder.evaluate_entity(caster=game_data.player)
         formula = formulas[game_data.formula_builder.currformula]
@@ -150,7 +206,10 @@ class FormulaWindow(Window):
         )
 
         if config.conf.pickup:
-            self.draw_counted_ingredient_list(surface, game_data, gfx_data)
+            if config.conf.crafting:
+                self.draw_crafted_ingredient_list(surface, game_data, gfx_data)
+            else:
+                self.draw_counted_ingredient_list(surface, game_data, gfx_data)
         else:
             self.draw_ingredient_list(surface, game_data, gfx_data)
 
@@ -198,6 +257,11 @@ class FormulaWindow(Window):
             return {}
 
     def handle_click(self, game_data, gfx_data, mouse_action):
+        if config.conf.crafting:
+            for im in self.ingredient_markers:
+                if im.is_clicked(mouse_action):
+                    return im.handle_click(game_data, gfx_data, mouse_action)
+
         scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
             self.change_slot(game_data, -1)

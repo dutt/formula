@@ -17,7 +17,16 @@ class Widget:
 
 class Clickable(Widget):
     def is_clicked(self, mouse_action):
-        val = list(mouse_action.values())[0]
+        if "left_click" in mouse_action:
+            val = mouse_action["left_click"]
+        elif "right_click" in mouse_action:
+            val = mouse_action["right_click"]
+        elif "scroll_up" in mouse_action:
+            val = mouse_action["scroll_up"]
+        elif "scroll_down" in mouse_action:
+            val = mouse_action["scroll_down"]
+        else:
+            return False
         x, y = val.x, val.y
         x_inside = self.pos.x <= x <= (self.pos.x + self.size.width)
         y_inside = self.pos.y <= y <= (self.pos.y + self.size.height)
@@ -89,6 +98,14 @@ class Bar(Clickable):
 class Label(Widget):
     def __init__(self, pos, text):
         super().__init__(pos, Size(0, 0))
+        self.text = text
+
+    def draw(self, surface):
+        display_text(surface, self.text, Assets.get().font_title, self.pos.tuple())
+
+class ClickableLabel(Clickable):
+    def __init__(self, pos, text, size):
+        super().__init__(pos, size)
         self.text = text
 
     def draw(self, surface):

@@ -55,6 +55,10 @@ Allowed choices:
     N - where N is an integer
     base - a basic selection
 """
+ingredient_crafting_help = """Enable ingredient crafting
+Usage:
+    --crafting
+"""
 
 formula_description = "Formula, a roguelite game about blending stuff and throwing them at monsters"
 
@@ -75,6 +79,8 @@ parser.add_argument("--stats", action="store_true", help=stats_help)
 parser.add_argument("--profiling", action="store_false", help=profiling_help)
 parser.add_argument("--pickup", action="store", default="find", help=ingredient_pickup_help)
 parser.add_argument("--pickupstartcount", action="store", default="base", help=ingredient_pickup_startcount_help)
+parser.add_argument("--crafting", action="store_false", help=ingredient_crafting_help)
+
 args = parser.parse_args()
 
 
@@ -132,6 +138,8 @@ class Config:
                     self.pickupstartcount = int(self.pickupstartcount)
                 except:
                     sys.exit(f"pickupstartcount, {self.pickupstartcount} doesn't seem to be a number")
+
+        self.crafting = args.crafting
 
     def serialize(self):
         return {

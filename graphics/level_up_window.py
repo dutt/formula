@@ -26,7 +26,9 @@ class LevelUpWindow(Window):
         y += 2 * linediff
 
         if not self.choices:
-            if "level_" in config.conf.unlock_mode:
+            if config.conf.crafting:
+                self.choices = [self.slots_message, self.formulas_message]
+            elif "level_" in config.conf.unlock_mode:
                 all_choices = [self.slots_message, self.formulas_message]
                 for upgrade in game_data.formula_builder.available_upgrades():
                     all_choices.append(upgrade.description)
