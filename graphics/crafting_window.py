@@ -5,6 +5,7 @@ from graphics.window import Window
 from systems.input_handlers import EventType
 from systems.ingredient_crafter import IngredientCrafter
 from components.ingredients import Ingredient
+from systems.messages import Message
 from util import Pos
 
 class CraftingSlot():
@@ -117,6 +118,8 @@ class CraftingWindow(Window):
         inputs = [slot.ingredient for slot in self.input_slots]
         game_data.ingredient_storage.remove_multiple(inputs)
         game_data.ingredient_storage.add(self.output_slot.ingredient)
+        logname = self.output_slot.ingredient.name.capitalize()
+        return [{"message" : Message(f"You crafted a {logname}") }]
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)
@@ -133,8 +136,7 @@ class CraftingWindow(Window):
 
         apply = key_action.get("apply")
         if apply:
-            self.apply_craft(game_data)
-            return self.close(game_data, activate_for_new_state=True)
+            return self.apply_craft(game_data)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(EventType.scroll_up)

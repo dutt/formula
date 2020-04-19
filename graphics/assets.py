@@ -176,6 +176,8 @@ class Assets:
         self.red_carpet = get_carpet(self.decor_sheet, 0, 14)
         self.blue_carpet = get_carpet(self.decor_sheet, 3, 14)
 
+        self.light = get_animation(self.decor_sheet, 2, 8)
+
         self.monster_corpse = get_img(self.decor_sheet, 2, 12)
 
         self.ghost = get_animation(self.undead_sheet, 2, 2)

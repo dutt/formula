@@ -25,6 +25,7 @@ class Entity:
         caster=None,
         drawable=None,
         ingredient=None,
+        light=None
     ):
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
@@ -73,6 +74,9 @@ class Entity:
         if self.ingredient:
             self.ingredient.owner = self
 
+        self.light = light
+        if self.light:
+            self.light.owner = self
 
     def __repr__(self):
         return str(self)

@@ -1,3 +1,4 @@
+import random
 import math
 
 import pygame
@@ -24,8 +25,7 @@ class GameWindow(Window):
     def draw(self, game_data, gfx_data):
         main = pygame.Surface(self.size.tuple())
 
-        gfx_data.main.fill(colors.YELLOW)
-
+        self.calculate_lightmap(game_data, gfx_data)
         self.draw_terrain(game_data, gfx_data, main)
         if game_data.state == GameStates.TARGETING:
             self.draw_targeting_boundary(game_data, gfx_data, main)
@@ -38,6 +38,29 @@ class GameWindow(Window):
         if game_data.state == GameStates.PLAY:
             self.draw_mouse_over_info(game_data, gfx_data, main)
         gfx_data.main.blit(main, self.pos.tuple())
+
+    def calculate_lightmap(self, game_data, gfx_data):
+        # first zero all visible light values
+        for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
+            for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
+                visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
+                if not visible:
+                    continue
+                game_data.map.tiles[x][y].light = 0
+
+        # then add brightness for each surrounding tile
+        for e in game_data.map.entities:
+            if not e.light:
+                continue
+            for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
+                for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
+                    visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
+                    if not visible:
+                        continue
+                    distance = int((e.pos - Pos(x,y)).length())
+                    distance = max(1, distance)
+                    if distance < e.light.brightness:
+                        game_data.map.tiles[x][y].light += 60 // distance
 
     def draw_terrain(self, game_data, gfx_data, main):
         surface = pygame.Surface(game_data.constants.game_window_size.tuple(), pygame.SRCALPHA)
@@ -63,7 +86,10 @@ class GameWindow(Window):
                     else:
                         darken = 80
 
-                    darken = min(255, darken)
+                    #if visible:
+                    darken -= game_data.map.tiles[x][y].light
+
+                    darken = max(0, min(255, darken))
                     drawable = Drawable(asset)
                     drawable.colorize((darken, darken, darken), pygame.BLEND_RGBA_SUB)
                     sx, sy = gfx_data.camera.map_to_screen(x, y)

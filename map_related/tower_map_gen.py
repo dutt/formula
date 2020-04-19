@@ -6,6 +6,7 @@ from components.key import Key
 from components.drawable import Drawable
 from components.entity import Entity
 from components.stairs import Stairs
+from components.light import Light
 from graphics.assets import Assets
 from graphics.render_order import RenderOrder
 from map_related.gamemap import GameMap
@@ -48,6 +49,7 @@ class TowerMapGenerator:
             TowerMapGenerator.place_ingredients(retr, retr.chunks, ingredient_count)
 
         TowerMapGenerator.place_decorations(retr, retr.chunks)
+        TowerMapGenerator.place_lights(retr, retr.chunks)
 
         retr.set_tile_info(retr.tiles)
 
@@ -383,6 +385,22 @@ class TowerMapGenerator:
                 for y in range(c.y + 2, c.y + c.height - 2):
                     drawable_component = Drawable(Assets.get().red_carpet["center"])
                     m.tiles[x][y].decor.append(drawable_component)
+
+    @staticmethod
+    def place_lights(m, chunks):
+        def add_light(x, y):
+            drawable_component = Drawable(Assets.get().light)
+            light_component = Light(brightness=4)
+            light = Entity(x, y, "light", render_order=RenderOrder.DECOR, drawable=drawable_component, light=light_component)
+            m.entities.append(light)
+
+        for c in chunks:
+            if c.width > c.height: # horizontal room, lights  top + bottom middle
+                add_light(c.x + c.width // 2, c.y + 1)
+                add_light(c.x + c.width // 2, c.y + c.height-2)
+            else: # horizontal room, lights  top + bottom middle
+                add_light(c.x + 1, c.y + c.height // 2)
+                add_light(c.x + c.width - 2, c.y + c.height // 2)
 
     @staticmethod
     def free_area(m):

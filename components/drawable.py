@@ -18,7 +18,7 @@ class Drawable:
         for orig_img in self.orig:
             img = orig_img.copy()
             # img.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
-            if mode == pygame.BLEND_RGBA_ADD:
+            if mode in [pygame.BLEND_RGBA_ADD, pygame.BLEND_RGBA_SUB]:
                 img.fill(colour[0:3] + (0,), None, mode)
                 img.set_colorkey(colour)
             else:
