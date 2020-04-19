@@ -25,12 +25,36 @@
             ]
         },
         {
-            "name": "Formula",
+            "name": "Formula default",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "pythonPath": "${workspaceFolder}/.venv/bin/python"
+        },
+        {
+            "name": "Formula streamlined",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "console": "integratedTerminal",
+            "pythonPath": "${workspaceFolder}/.venv/bin/python",
+            "args": [
+                "--pickup",
+                "unlimited"
+            ]
+        },
+        {
+            "name": "Formula crafting",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "console": "integratedTerminal",
+            "pythonPath": "${workspaceFolder}/.venv/bin/python",
+            "args": [
+                "--pickup", "find",
+                "--crafting"
+            ]
         }
     ]
 }
