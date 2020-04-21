@@ -131,8 +131,19 @@ def do_setup(constants):
 
 
 def write_logs(game_data, seed, start_time, crashed):
-    timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
-    logname = "formula_run.{}.log".format(timestamp)
+    def serialize_end_state():
+        data = {
+            "hp" : game_data.player.fighter.hp,
+            "cooldowns" : game_data.player.caster.cooldowns
+        }
+        if game_data.player.fighter.shield:
+            data["shield"] = {
+                "level" : game_data.player.fighter.shield.level,
+                "max_level" : game_data.player.fighter.shield.max_level
+            }
+        else:
+            data["shield"] = None
+        return data
     data = {
         "seed": seed,
         "config": config.conf.serialize(),
@@ -144,9 +155,14 @@ def write_logs(game_data, seed, start_time, crashed):
             "cooldown_mode": config.conf.cooldown_mode,
             "starting_mode": config.conf.starting_mode,
         },
+        "end_state" : serialize_end_state(),
     }
+    timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
     if crashed:
         data["traceback"] = str(traceback.format_exc())
+        logname = "formula_run.{}.crash.log".format(timestamp)
+    else:
+        logname = "formula_run.{}.log".format(timestamp)
     dirname = "formula_logs"
     if not os.path.isdir(dirname):
         os.mkdir(dirname)

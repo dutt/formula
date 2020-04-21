@@ -15,6 +15,7 @@ class CraftingSlot():
         self.ingredient = Ingredient.EMPTY
 
     def draw(self, surface, game_data, gfx_data, selected_slot):
+        assert self.ingredient, f"{self.index} {self.ingredient}"
         text = "[" + self.ingredient.name.upper() + "]"
         if self.index is not None and selected_slot == self.index:
             text += " <--"
