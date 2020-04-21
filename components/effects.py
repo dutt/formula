@@ -103,9 +103,8 @@ class EffectBuilder:
             assert rounds
 
             def apply(target):
-                target.round_speed = target.round_speed // 2
+                target.round_speed = target.round_speed // 5
                 return []
-                # return [{"message": Message("The {} is slowed".format(target.name))}]
 
             def stats_func():
                 return AttrDict({"type": EffectType.SLOW, "rounds": rounds})

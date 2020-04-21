@@ -108,8 +108,8 @@ def setup_data_state(constants):
 
     assets = Assets.setup()
 
-    run_tutorial = False
-    godmode = True
+    run_tutorial = True
+    godmode = False
 
     fps_per_second = 30
 
