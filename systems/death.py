@@ -14,6 +14,7 @@ def kill_player(game_state, assets):
     game_state.player.name = "Your corpse"
     game_state.state = GameStates.PLAYER_DEAD
     game_state.stats.end_time = datetime.datetime.now()
+    game_state.player.effects.clear()
     return Message("You died", tcod.red), game_state
 
 

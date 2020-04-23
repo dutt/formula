@@ -16,8 +16,8 @@ class Assets:
 
     @staticmethod
     def setup(mock=False):
-        assert not Assets._assets
-        Assets._assets = Assets(mock)
+        if not Assets._assets:
+            Assets._assets = Assets(mock)
         return Assets._assets
 
     def __init__(self, mock):

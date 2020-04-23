@@ -70,7 +70,7 @@ class DeadWindow(Window):
 
         display_text(
             surface,
-            "Press Escape again to quit, press Space to keep playing",
+            "Press Escape again to quit, press Space to restart",
             gfx_data.assets.font_message,
             (120, 500),
         )

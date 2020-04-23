@@ -56,6 +56,10 @@ class Fighter:
 
         results = []
 
+        if self.hp <= 0:
+            # already dead, stacked damage
+            return results
+
         if self.shield:
             shield_results, actual_dmg = self.shield.on_hit(source, dmg, dmg_type)
             results.extend(shield_results)
