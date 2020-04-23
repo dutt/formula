@@ -275,6 +275,9 @@ class FormulaBuilder:
                 )
             if slow_rounds > 0:
                 strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
+
+            if healing > 0:
+                effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
             effects.append(
                 EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks, distance=distance,)
             )

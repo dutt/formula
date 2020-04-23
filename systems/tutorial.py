@@ -132,6 +132,11 @@ class Tutorial:
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     sx, sy = sx, sy * CELL_HEIGHT + CELL_HEIGHT
                     messages.append(Message("Stairs, press Space to ascend", Pos(sx, sy), MessageType.LINE))
+
+                    messages.append(Message("When you ascend:", Pos(sx, sy+50), MessageType.LINE))
+                    messages.append(Message("1) You will get to change your formulas", Pos(sx+30, sy+75), MessageType.LINE))
+                    messages.append(Message("2) Your cooldowns will reset", Pos(sx+30, sy+100), MessageType.LINE))
+                    messages.append(Message("3) Your shield will remain", Pos(sx+30, sy+115), MessageType.LINE))
                     break
 
         else:
