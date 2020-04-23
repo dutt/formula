@@ -154,6 +154,17 @@ class FormulaWindow(Window):
         surface = pygame.Surface(self.size.tuple())
         linediff = gfx_data.assets.font_message_height
 
+        if game_data.map.tutorial:
+            lines = [
+                "TUTORIAL: This is just to show you your current formulas for the tutorial",
+            ]
+            if not config.conf.pickup:
+                lines.append("After this tutorial you'll be able to select these as you want")
+            else:
+                lines.append("After this tutorial you'll be able to find ingredients on the levels")
+
+            display_lines(surface, gfx_data.assets.font_message, lines, 00, 20)
+
         y = 120
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
@@ -229,35 +240,32 @@ class FormulaWindow(Window):
         do_quit = key_action.get(EventType.exit)
         if do_quit:
             game_data.player.caster.set_formulas(game_data.formula_builder.evaluate_entity(game_data.player))
+            game_data.formula_builder.currformula = 0
             return self.close(game_data, activate_for_new_state=True)
 
         slot = key_action.get("slot")
         if slot is not None:
             game_data.formula_builder.currslot = slot
-            return {}
 
         ingredient = key_action.get("ingredient")
-        if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient):
+        if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient) and not game_data.map.tutorial:
             if config.conf.pickup and ingredient != Ingredient.EMPTY:
                 count = game_data.ingredient_storage.count_left(ingredient, game_data.formula_builder)
                 if count < 1:
-                    return {}
+                    return
             game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
             self.change_slot(game_data, 1)
-            return {}
 
         next_formula = key_action.get("next_formula")
         if next_formula:
             self.change_formula(game_data, next_formula)
-            return {}
 
         next_slot = key_action.get("next_slot")
         if next_slot:
             self.change_slot(game_data, next_slot)
-            return {}
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        if config.conf.crafting:
+        if config.conf.crafting and not game_data.map.tutorial:
             for im in self.ingredient_markers:
                 if im.is_clicked(mouse_action):
                     return im.handle_click(game_data, gfx_data, mouse_action)

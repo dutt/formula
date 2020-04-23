@@ -88,6 +88,10 @@ class RightPanelWindow(Window):
             self.shield_bar.draw(
                 surface, game_data.player.fighter.shield.level, game_data.player.fighter.shield.max_level,
             )
+        else:
+            self.shield_bar.draw(
+                surface, 0, 10
+            )
 
         if config.conf.keys:
             if game_data.map.stairs_found:

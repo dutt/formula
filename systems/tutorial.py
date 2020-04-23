@@ -81,8 +81,8 @@ class Tutorial:
             # messages.append(Message("Use W,A,S,D to move", Pos(move_px, move_py), MessageType.LINE))
 
         elif game_data.player.pos == second_pos:
-            messages.append(Message("This is your health bar", Pos(20, 20), MessageType.LINE))
-            messages.append(Message("This will be is your shield bar", Pos(20, 70), MessageType.LINE))
+            messages.append(Message("<--- This is your health bar", Pos(0, 20), MessageType.LINE))
+            messages.append(Message("<--- This is your shield bar", Pos(0, 70), MessageType.LINE))
             if not config.conf.keys:
                 messages.append(Message("This is your experience bar", Pos(20, 140), MessageType.LINE))
             else:
@@ -124,7 +124,7 @@ class Tutorial:
             diff = 30
             messages.append(Message("This is a key, you need these to unlock stairs", Pos(x, y), MessageType.LINE))
             messages.append(Message("Move onto it and press space to pick it up", Pos(x, y + diff), MessageType.LINE))
-            messages.append(Message("When you do, you'll get little loot", Pos(x, y + 2*diff), MessageType.LINE))
+            messages.append(Message("When you do, you'll get a little loot", Pos(x, y + 2*diff), MessageType.LINE))
 
         elif game_data.player.pos == Pos(10,5):
             for e in game_data.map.entities:

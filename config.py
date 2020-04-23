@@ -28,10 +28,9 @@ Allowed choices:
    kill - XP for killing monsters, no keys
    keys - XP per level
 """
-ingredient_scaling_help = """Should ingredient effectiveness scale?
-Allowed choices:
-   yes - Ingredients become less effective the more you have
-   no - Ingredients don't become less effective
+ingredient_scaling_help = """Turn ingredient effectiveness scaling on?
+Usage:
+    --ingredient_scaling
 """
 test_help = """Run an automated test
 Usage:
@@ -72,7 +71,7 @@ parser.add_argument(
 parser.add_argument("--replay_log_path", type=str, action="store", default=replay_off, help=replay_help)
 parser.add_argument("--keys", type=str, action="store", default="keys", help=keys_help)
 parser.add_argument(
-    "--ingredient_scaling", type=str, action="store", default="yes", help=ingredient_scaling_help,
+    "--ingredient_scaling", action="store_true", help=ingredient_scaling_help,
 )
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
 parser.add_argument("--stats", action="store_true", help=stats_help)
@@ -102,8 +101,6 @@ class Config:
         self.keys = self.keys == "keys"
 
         self.ingredient_scaling = args.ingredient_scaling
-        assert self.ingredient_scaling in ["yes", "no"]
-        self.ingredient_scaling = self.ingredient_scaling == "yes"
 
         self.replay_log_path = args.replay_log_path
         if not os.path.exists(self.replay_log_path) and self.replay_log_path != replay_off:

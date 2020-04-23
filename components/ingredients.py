@@ -173,7 +173,7 @@ class IngredientState:
         self.dmg_per_step = 5
         self.distance_per_step = 2
         self.area_per_step = 1
-        self.cooldown_per_slot = 3
+        self.cooldown_per_slot = 2
         self.slow_per_step = 5
         self.heal_per_step = 2
         self.shield_per_step = 2
