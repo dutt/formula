@@ -65,9 +65,9 @@ class FormulaWindow(Window):
         ingredient_to_key_map = [
             [ [Ingredient.EMPTY], "Q" ],
             [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
-            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "A"],
-            [ [Ingredient.RANGE], "E"],
-            [ [Ingredient.AREA], "R"],
+            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "E"],
+            [ [Ingredient.RANGE], "R"],
+            [ [Ingredient.AREA], "A"],
             [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
             [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
         ]
@@ -97,9 +97,9 @@ class FormulaWindow(Window):
         ingredient_to_key_map = [
             [ [Ingredient.EMPTY], "Q" ],
             [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
-            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "A"],
-            [ [Ingredient.RANGE], "E"],
-            [ [Ingredient.AREA], "R"],
+            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "E"],
+            [ [Ingredient.RANGE], "R"],
+            [ [Ingredient.AREA], "A"],
             [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
             [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
         ]
@@ -205,7 +205,7 @@ class FormulaWindow(Window):
 
         y += 2 * linediff
         display_text(
-            surface, "Arrow left/right or Mouse left/right: select formula", gfx_data.assets.font_message, (50, y),
+            surface, "Arrow left/right or 1,2,3,...: select formula", gfx_data.assets.font_message, (50, y),
         )
         y += linediff
         display_text(
@@ -243,9 +243,9 @@ class FormulaWindow(Window):
             game_data.formula_builder.currformula = 0
             return self.close(game_data, activate_for_new_state=True)
 
-        slot = key_action.get("slot")
-        if slot is not None:
-            game_data.formula_builder.currslot = slot
+        formula = key_action.get("formula")
+        if formula is not None and formula < game_data.formula_builder.num_formula:
+            game_data.formula_builder.currformula = formula
 
         ingredient = key_action.get("ingredient")
         if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient) and not game_data.map.tutorial:
@@ -277,11 +277,3 @@ class FormulaWindow(Window):
         scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
             self.change_slot(game_data, 1)
-
-        right_clicked = mouse_action.get(EventType.right_click)
-        if right_clicked:
-            self.change_formula(game_data, 1)
-
-        left_clicked = mouse_action.get(EventType.left_click)
-        if left_clicked:
-            self.change_formula(game_data, -1)

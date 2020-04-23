@@ -130,25 +130,25 @@ def handle_story_screen(key, modifiers):
 
 def handle_formula_screen_keys(key, modifiers):
     if key == pygame.K_1:
-        return {"slot": 0}
+        return {"formula": 0}
     elif key == pygame.K_2:
-        return {"slot": 1}
+        return {"formula": 1}
     elif key == pygame.K_3:
-        return {"slot": 2}
+        return {"formula": 2}
     elif key == pygame.K_4:
-        return {"slot": 3}
+        return {"formula": 3}
     elif key == pygame.K_5:
-        return {"slot": 4}
+        return {"formula": 4}
     elif key == pygame.K_q:
         return {"ingredient": Ingredient.EMPTY}
     elif key == pygame.K_w:
         return {"ingredient": Ingredient.FIRE}
     elif key == pygame.K_e:
-        return {"ingredient": Ingredient.RANGE}
-    elif key == pygame.K_r:
-        return {"ingredient": Ingredient.AREA}
-    elif key == pygame.K_a:
         return {"ingredient": Ingredient.WATER}
+    elif key == pygame.K_r:
+        return {"ingredient": Ingredient.RANGE}
+    elif key == pygame.K_a:
+        return {"ingredient": Ingredient.AREA}
     elif key == pygame.K_s:
         return {"ingredient": Ingredient.LIFE}
     elif key == pygame.K_d:
