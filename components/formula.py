@@ -42,7 +42,7 @@ class Formula:
         if text_msg:
             self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
             self.text_stats_text = "{}, {}".format(text_msg[:-2], postfix)
-            self.applied_text = "The {} " + applied_msg[:-2]
+            self.applied_text = "{} " + applied_msg[:-2]
         else:
             self.targeting_message_text = ""
             self.text_stats_text = ""
@@ -55,16 +55,16 @@ class Formula:
         if stats.type == EffectType.DAMAGE:
             name = stats.dmg_type.name.lower()
             text_msg = "{} {} damage, ".format(stats.amount, name)
-            applied_msg = "takes {} {} damage, ".format(stats.amount, name)
+            applied_msg = "hurt, {} {} damage, ".format(stats.amount, name)
         elif stats.type == EffectType.HEALING:
             text_msg = "{} healing, ".format(stats.amount)
-            applied_msg = "is healed for {}, ".format(stats.amount)
+            applied_msg = "healed for {}, ".format(stats.amount)
         elif stats.type == EffectType.SLOW:
             text_msg = "slow for {} rounds, ".format(stats.rounds)
-            applied_msg = "is slowed for {} rounds, ".format(stats.rounds)
+            applied_msg = "slowed for {} rounds, ".format(stats.rounds)
         elif stats.type == EffectType.DEFENSE:
             text_msg = "shield resisting {} damage".format(stats.level)
-            applied_msg = "is shielded for {} damage".format(stats.level)
+            applied_msg = "shielded for {} damage".format(stats.level)
             if stats.strikebacks:
                 text_msg += " and dealing "
                 applied_msg += ", shield dealing "
@@ -91,7 +91,7 @@ class Formula:
 
     def apply(self, **kwargs):
         def get_msg(e):
-            return self.applied_text.format(e.name)
+            return self.applied_text.format(e.name_with_prep)
 
         caster = kwargs.get("caster")
         target_x = kwargs.get("target_x")

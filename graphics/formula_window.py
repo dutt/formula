@@ -189,7 +189,7 @@ class FormulaWindow(Window):
             y += linediff
             display_text(
                 surface,
-                "INFO: Combined heal/attack or attack modifier but no attack",
+                f"Note, this formula might not be what you want: {formula.suboptimal}",
                 gfx_data.assets.font_message,
                 (50, y),
             )

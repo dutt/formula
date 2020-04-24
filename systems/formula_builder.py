@@ -253,11 +253,13 @@ class FormulaBuilder:
             #    state.area_per_step = scale_ingredient(state.area_per_step)
 
         if attack_modifier and not attack_ingredient:
-            suboptimal = True
+            suboptimal = "Attack modifier but no damage"
         elif healing > 0 and attack_ingredient:
-            suboptimal = True
+            suboptimal = "Both damage and heal"
+        elif area > 1 and distance < 2:
+            suboptimal = "Area but no range"
         else:
-            suboptimal = False
+            suboptimal = None
         effects = []
         if shield:
             strikebacks = []

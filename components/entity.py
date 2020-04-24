@@ -32,7 +32,7 @@ class Entity:
 
         self.pos = util.Pos(int(x), int(y))
         self.orig_name = name
-        self.name = name
+        self.name_ = name
         self.blocks = blocks
         self.render_order = render_order
         self.action_points = 0
@@ -83,6 +83,18 @@ class Entity:
 
     def __str__(self):
         return "<entity id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
+
+    @property
+    def name(self):
+        return f"The {self.name_}"
+
+    @property
+    def name_with_prep(self):
+        return f"The {self.name_} is"
+
+    @name.setter
+    def name(self, value):
+        self.name_ = value
 
     def move(self, dx, dy):
         self.pos.x += dx
