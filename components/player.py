@@ -45,9 +45,9 @@ class Player(Entity):
         drawable_component = Drawable(Assets.get().player)
 
         super(Player, self).__init__(
-            0,
-            0,
-            "You",
+            x=0,
+            y=0,
+            name="You",
             speed=100,
             blocks=True,
             render_order=RenderOrder.ACTOR,
@@ -59,6 +59,19 @@ class Player(Entity):
         self.last_num_explored = None
         self.moving_towards = None
         self.godmode = godmode
+        self.ignore_first_click = False
+
+    @property
+    def name(self):
+        return self.name_
+
+    @name.setter
+    def name(self, value):
+        self.name_ = value
+
+    @property
+    def name_with_prep(self):
+        return "You are"
 
     def handle_tick_cooldowns(self, game_data):
         if config.conf.cooldown_mode == "always":
@@ -129,6 +142,9 @@ class Player(Entity):
                     key_events = []
                     mouse_events = [next_event]
             else:
+                if not pygame.key.get_focused() and not self.ignore_first_click:
+                    self.ignore_first_click = True
+
                 key_events = [KeyEvent(e) for e in events if e.type == pygame.KEYDOWN]
                 mouse_events = [MouseEvent(e) for e in events if e.type == pygame.MOUSEBUTTONDOWN]
 
@@ -136,9 +152,13 @@ class Player(Entity):
             mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera)
 
             if mouse_action:
-                gui_action = gfx_data.windows.handle_click(game_data, gfx_data, mouse_action)
-                if gui_action:
-                    mouse_action = gui_action
+                if self.ignore_first_click:
+                    self.ignore_first_click = False
+                    mouse_action = {}
+                else:
+                    gui_action = gfx_data.windows.handle_click(game_data, gfx_data, mouse_action)
+                    if gui_action:
+                        mouse_action = gui_action
 
             if key_action:
                 handled, gui_action = gfx_data.windows.handle_key(game_data, gfx_data, key_action)
@@ -231,7 +251,7 @@ class Player(Entity):
                     if e.pos.x == left_click.cx and e.pos.y == left_click.cy:
                         if e.ai:
                             monster_there = True
-                if not monster_there:
+                if not monster_there and game_data.map.tiles[left_click.cx][left_click.cy].explored:
                     # click to move
                     self.moving_towards = Pos(left_click.cx, left_click.cy)
 
