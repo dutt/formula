@@ -13,7 +13,7 @@ from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.game_window import GameWindow
 from graphics.console_window import ConsoleWindow
 from graphics.crafting_window import CraftingWindow
-
+from graphics.inventory_window import InventoryWindow
 
 class WindowManager:
     def __init__(self):
@@ -31,7 +31,8 @@ class WindowManager:
             GameStates.VICTORY: VictoryWindow,
             GameStates.PLAY: GameWindow,
             GameStates.CONSOLE: ConsoleWindow,
-            GameStates.CRAFTING : CraftingWindow
+            GameStates.CRAFTING : CraftingWindow,
+            GameStates.INVENTORY : InventoryWindow
         }
 
     def push(self, window):
@@ -70,9 +71,15 @@ class WindowManager:
                 game_data.prev_state.append(game_data.state)
                 game_data.state = self.get_state_for_wnd(show_window)
                 wnd.visible = True
+
             activate_wnd_for_state = res.get(EventType.activate_for_new_state)
             if activate_wnd_for_state:
                 self.activate_wnd_for_state(game_data.state)
+
+            message = res.get("message")
+            if message:
+                game_data.log.add_message(message)
+
             return True, {}
         return False, key_action
 

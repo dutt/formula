@@ -34,7 +34,7 @@ class DoorDirection(Enum):
 
 class TowerMapGenerator:
     @staticmethod
-    def make_map(constants, level, monster_chances, key_ratio, ingredient_count):
+    def make_map(constants, level, monster_chances, key_ratio, ingredient_count={}, consumable_count={}):
         retr = GameMap(constants.map_size, level)
         retr.chunks = TowerMapGenerator.chunkify(retr)
         TowerMapGenerator.cleanup_walls(retr)
@@ -47,6 +47,9 @@ class TowerMapGenerator:
 
         if config.conf.pickup:
             TowerMapGenerator.place_ingredients(retr, retr.chunks, ingredient_count)
+
+        if config.conf.consumables:
+            TowerMapGenerator.place_consumables(retr, retr.chunks, consumable_count)
 
         TowerMapGenerator.place_decorations(retr, retr.chunks)
         TowerMapGenerator.place_lights(retr, retr.chunks)
@@ -351,6 +354,42 @@ class TowerMapGenerator:
             ingredient = Entity(x, y, f"{name} ingredient", render_order=RenderOrder.ITEM, drawable=drawable_component, ingredient=ingredient_component)
             m.entities.append(ingredient)
 
+    @staticmethod
+    def place_consumables(m, chunks, consumable_count):
+        def has_consumables_left():
+            for val in consumable_count.values():
+                if val > 0:
+                    return True
+
+        def get_consumable():
+            while True:
+                itemtype = random.choice(list(consumable_count.keys()))
+                if consumable_count[itemtype] > 0:
+                    consumable_count[itemtype] -= 1
+                    return itemtype()
+
+        placed_consumables = [] # not two consumables in the same square
+        while has_consumables_left():
+            c = random.choice(chunks)
+            occupied = True
+            while occupied:
+                x = random.randint(c.x + 1, c.x + c.width - 2)
+                y = random.randint(c.y + 1, c.y + c.height - 2)
+                occupied = False
+                for cm in c.monsters:
+                    if cm.pos == Pos(x, y):
+                        occupied = True
+                for ent in m.entities:
+                    if ent.pos == Pos(x,y):
+                        occupied = True
+                if (x,y) in placed_consumables:
+                    occupied = True
+            placed_consumables.append((x,y))
+            drawable_component = Drawable(Assets.get().consumable)
+            consumable_component = get_consumable()
+            name = consumable_component.name.capitalize()
+            consumable = Entity(x, y, f"{name}", render_order=RenderOrder.ITEM, drawable=drawable_component, consumable=consumable_component)
+            m.entities.append(consumable)
 
     @staticmethod
     def place_decorations(m, chunks):
@@ -391,7 +430,7 @@ class TowerMapGenerator:
         def add_light(x, y):
             drawable_component = Drawable(Assets.get().light)
             light_component = Light(brightness=4)
-            light = Entity(x, y, "light", render_order=RenderOrder.DECOR, drawable=drawable_component, light=light_component)
+            light = Entity(x, y, "Light", render_order=RenderOrder.DECOR, drawable=drawable_component, light=light_component)
             m.entities.append(light)
 
         for c in chunks:

@@ -108,6 +108,11 @@ class Tutorial:
                     "This is a shield, activate it and it will protect you from damage", Pos(20, 300), MessageType.LINE,
                 )
             )
+            messages.append(
+                Message(
+                    "You can also melee attack enemies by moving into them, this won't deal much damage though", Pos(80, 360), MessageType.LINE,
+                )
+            )
 
         elif game_data.player.pos == fourth_pos:
             messages.append(Message("This first enemy is inactive, others won't be.", Pos(80, 160), MessageType.LINE,))

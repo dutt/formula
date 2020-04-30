@@ -170,7 +170,7 @@ class Ingredient(Enum):
 
 class IngredientState:
     def __init__(self):
-        self.dmg_per_step = 5
+        self.dmg_per_step = 4
         self.distance_per_step = 2
         self.area_per_step = 1
         self.cooldown_per_slot = 2

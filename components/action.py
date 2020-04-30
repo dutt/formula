@@ -235,3 +235,33 @@ class PickupIngredientAction(Action):
         result = [{"message": Message(text)}]
         game_data.ingredient_storage.add(self.ingredient.ingredient)
         return self.package(result=result)
+
+class PickupConsumableAction(Action):
+    COST = 100
+
+    def __init__(self, actor, consumable_entity):
+        super(PickupConsumableAction, self).__init__(actor, PickupConsumableAction.COST)
+        self.consumable = consumable_entity
+
+    def execute(self, game_data, gfx_data):
+        game_data.map.entities.remove(self.consumable)
+        text = "You found a consumable, {}".format(self.consumable.consumable.name.lower())
+        result = [{"message": Message(text)}]
+        game_data.inventory.add(self.consumable.consumable)
+        return self.package(result=result)
+
+class UseConsumableAction(Action):
+    COST = 100
+
+    def __init__(self, actor, consumable, targetpos):
+        super().__init__(actor, UseConsumableAction.COST)
+        self.consumable = consumable
+        self.targetpos = targetpos
+
+    def execute(self, game_data, gfx_data):
+        result = self.consumable.apply(
+            game_data=game_data,
+            gfx_data=gfx_data,
+            target=self.targetpos
+        )
+        return self.package(result)

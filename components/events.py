@@ -25,6 +25,8 @@ class EventType:
     activate_for_new_state = "activate_for_new_state"
     console = "console"
     start_crafting = "start_crafting"
+    use_consumable = "use_consumable"
+    inventory = "inventory"
 
 class InputType(Enum):
     KEY = auto()

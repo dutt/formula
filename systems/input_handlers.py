@@ -43,10 +43,25 @@ def handle_keys(events, state):
             return handle_console(e.key, modifiers)
         elif state == GameStates.CRAFTING:
             return handle_crafting(e.key, modifiers)
+        elif state == GameStates.INVENTORY:
+            return handle_inventory(e.key, modifiers)
         else:
             raise ValueError("Input handler in unknown state")
     return {}
 
+
+def handle_inventory(key, modifiers):
+    if key in [pygame.K_UP, pygame.K_w]:
+        return {"up": 1}
+    elif key in [pygame.K_DOWN, pygame.K_s]:
+        return {"down": 1}
+    elif key in [pygame.K_LEFT, pygame.K_a]:
+        return {"left": 1}
+    elif key in [pygame.K_RIGHT, pygame.K_d]:
+        return {"right": 1}
+    elif key >= pygame.K_1 and key <= pygame.K_9: # quickslot assignments
+        return {"assign" : int(chr(key)) }
+    return handle_general_keys(key, modifiers)
 
 def handle_crafting(key, modifiers):
     if key == pygame.K_q:
@@ -75,8 +90,6 @@ def handle_crafting(key, modifiers):
     return handle_general_keys(key, modifiers)
 
 def handle_console(key, modifiers):
-    #print(key)
-    #print(modifiers)
     if pygame.K_RSHIFT in modifiers:
         if key == pygame.K_MINUS:
             return {"key" : pygame.K_UNDERSCORE }
@@ -246,5 +259,7 @@ def handle_player_turn_keys(key, modifiers):
         return {EventType.show_help: True}
     elif key == pygame.K_c:
         return {EventType.start_crafting : True}
+    elif key == pygame.K_i:
+        return {EventType.inventory: True}
 
     return handle_general_keys(key, modifiers)

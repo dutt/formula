@@ -15,6 +15,7 @@ class StateData:
         formula_builder,
         menu_data,
         ingredient_storage,
+        inventory,
         initial_state,
         initial_state_history=[],
     ):
@@ -33,7 +34,9 @@ class StateData:
         self.ingredient_storage=ingredient_storage
         self._state = initial_state
         self.prev_state = initial_state_history
+        self.inventory = inventory
         self.stats = Statistics()
+
 
     @property
     def state(self):

@@ -18,6 +18,7 @@ from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
 from graphics.console_window import ConsoleWindow
 from graphics.crafting_window import CraftingWindow
+from graphics.inventory_window import InventoryWindow
 from graphics.visual_effect import VisualEffectSystem
 from graphics.window_manager import WindowManager
 from util import Size, Pos
@@ -37,6 +38,9 @@ def get_constants():
 
     helper_window_size = Size(800, 600)
     helper_window_pos = Pos(100, 100)
+
+    num_consumables = 5
+    num_quickslots = 3
 
     room_max_size = 15
     room_min_size = 6
@@ -64,6 +68,8 @@ def get_constants():
             "fov_algorithm": fov_algorithm,
             "fov_light_walls": fov_light_walls,
             "fov_radius": fov_radius,
+            "num_consumables" : num_consumables,
+            "num_quickslots" : num_quickslots,
         }
     )
 
@@ -92,23 +98,22 @@ from systems.story import StoryLoader, StoryData
 from systems.run_planner import RunPlanner
 from systems.formula_builder import FormulaBuilder
 from systems.ingredient_storage import IngredientStorage
+from systems.inventory import Inventory
 from graphics.font import get_width
 from graphics.assets import Assets
 import config
 
 
 def setup_data_state(constants):
-    state = GameStates.STORY_SCREEN
-
     pygame.init()
-    pygame.display.set_caption("Formulas")
+    pygame.display.set_caption("Formula")
     pygame.mixer.quit()
     pygame.key.set_repeat(200)
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
 
     assets = Assets.setup()
 
-    run_tutorial = True
+    run_tutorial = False
     godmode = False
 
     fps_per_second = 30
@@ -139,6 +144,7 @@ def setup_data_state(constants):
     windows.push(VictoryWindow(constants))
     windows.push(ConsoleWindow(constants))
     windows.push(CraftingWindow(constants))
+    windows.push(InventoryWindow(constants))
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
@@ -164,6 +170,13 @@ def setup_data_state(constants):
             ingredient_storage.add_multiple({ ing : config.conf.pickupstartcount} )
     menu_data = AttrDict({"currchoice": 0})
 
+    inventory = Inventory(constants)
+    #from components.consumable import Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig
+    #for t in [Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig]:
+    #    inventory.add(t())
+
+    initial_state = GameStates.STORY_SCREEN
+
     game_data = StateData(
         player,
         log,
@@ -175,9 +188,10 @@ def setup_data_state(constants):
         run_planner=planner,
         formula_builder=formula_builder,
         menu_data=menu_data,
-        initial_state=state,
+        initial_state=initial_state,
         initial_state_history=[GameStates.PLAY],
-        ingredient_storage=ingredient_storage
+        ingredient_storage=ingredient_storage,
+        inventory=inventory
     )
 
     camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)
@@ -203,4 +217,4 @@ def setup_data_state(constants):
     initial_formulas = formula_builder.evaluate_entity(caster=player)
     player.caster.set_formulas(initial_formulas)
 
-    return game_data, gfx_data, state
+    return game_data, gfx_data, initial_state

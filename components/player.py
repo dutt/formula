@@ -14,6 +14,8 @@ from components.action import (
     LootAction,
     PickupKeyAction,
     PickupIngredientAction,
+    UseConsumableAction,
+    PickupConsumableAction,
 )
 from components.caster import Caster
 from components.drawable import Drawable
@@ -28,7 +30,7 @@ from systems.input_handlers import EventType, handle_keys, handle_mouse
 from systems.messages import Message
 from systems import input_recorder
 from components.events import InputType, KeyEvent, MouseEvent
-from util import Pos
+from util import Pos, Vec
 from graphics.level_up_window import LevelUpWindow
 import config
 
@@ -173,6 +175,13 @@ class Player(Entity):
             show_help = key_action.get(EventType.show_help)
             interact = key_action.get(EventType.interact)
             start_crafting = key_action.get(EventType.start_crafting)
+            inventory = key_action.get(EventType.inventory)
+
+            use_consumable = None
+            if key_action.get(EventType.start_throwing_vial) is not None:
+                use_consumable = key_action.get(EventType.use_consumable)
+            elif mouse_action.get(EventType.use_consumable) is not None:
+                use_consumable = mouse_action.get(EventType.use_consumable)
 
             start_throwing_vial = None
             if key_action.get(EventType.start_throwing_vial) is not None:
@@ -195,6 +204,9 @@ class Player(Entity):
                         elif e.ingredient:
                             player_action = PickupIngredientAction(self, e)
                             break
+                        elif e.consumable:
+                            player_action = PickupConsumableAction(self, e)
+                            break
                         elif e.name.startswith("Remains of"):  # monster
                             if e.orig_name == "Arina":
                                 game_data.prev_state.append(game_data.state)
@@ -214,6 +226,11 @@ class Player(Entity):
             if start_crafting:
                 game_data.prev_state.append(game_data.state)
                 game_data.state = GameStates.CRAFTING
+                gfx_data.windows.activate_wnd_for_state(game_data.state)
+
+            if inventory:
+                game_data.prev_state.append(game_data.state)
+                game_data.state = GameStates.INVENTORY
                 gfx_data.windows.activate_wnd_for_state(game_data.state)
 
             if show_help:
@@ -277,23 +294,38 @@ class Player(Entity):
             elif game_data.state == GameStates.TARGETING:
                 if left_click:
                     targetx, targety = left_click.cx, left_click.cy
-                    from util import Vec
-
                     distance = (self.pos - Vec(targetx, targety)).length()
-                    if distance > game_data.targeting_formula.distance:
-                        turn_results.append(
-                            {"target_out_of_range": True, "targeting_formula": game_data.targeting_formula,}
-                        )
-                    else:
-                        player_action = ThrowVialAction(
-                            self, game_data.targeting_formula, targetpos=(Pos(targetx, targety)),
-                        )
-                        # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
-                        gfx_data.visuals.add_temporary(
-                            self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
-                        )
-                        game_data.state = game_data.prev_state.pop()
-                        game_data.targeting_formula_idx = None
+                    if game_data.targeting_formula:
+                        if distance > game_data.targeting_formula.distance:
+                            turn_results.append(
+                                {"target_out_of_range": True, "targeting_formula": game_data.targeting_formula,}
+                            )
+                        else:
+                            player_action = ThrowVialAction(
+                                self, game_data.targeting_formula, targetpos=(Pos(targetx, targety)),
+                            )
+                            # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
+                            gfx_data.visuals.add_temporary(
+                                self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
+                            )
+                            game_data.state = game_data.prev_state.pop()
+                            game_data.targeting_formula_idx = None
+                    elif game_data.targeting_consumable:
+                        if distance > game_data.targeting_consumable.distance:
+                            turn_results.append(
+                                {"target_out_of_range": True, "targeting_consumable": game_data.targeting_consumable,}
+                            )
+                        else:
+                            player_action = UseConsumableAction(
+                                self, game_data.targeting_consumable, targetpos=(Pos(targetx, targety)),
+                            )
+                            gfx_data.visuals.add_temporary(
+                                self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
+                            )
+                            game_data.state = game_data.prev_state.pop()
+                            game_data.inventory.use(game_data.targeting_consumable)
+                            game_data.targeting_consumable = None
+
                 elif right_click:
                     turn_results.append({"targeting_cancelled": True})
 
@@ -312,6 +344,17 @@ class Player(Entity):
                         turn_results.append(start_throwing_vial_results)
                     else:
                         player_action = ThrowVialAction(self, formula, targetpos=game_data.player.pos)
+
+            if use_consumable is not None:
+                item = game_data.inventory.get_quickslot(use_consumable)
+                if item.targeted:
+                    res = {
+                        "use_consumable" : item,
+                        "use_consumable_index" : use_consumable,
+                    }
+                    turn_results.append(res)
+                else:
+                    player_action = UseConsumableAction(self, item, targetpos=game_data.player.pos)
 
             if do_exit:
                 if game_data.state == GameStates.TARGETING:
@@ -348,9 +391,8 @@ class Player(Entity):
                     if self.caster.is_on_cooldown(formula_idx):
                         game_data.log.add_message(self.caster.cooldown_message)
                     else:
-                        game_data.prev_state.append(GameStates.PLAY)
+                        game_data.prev_state.append(game_data.state)
                         game_data.state = GameStates.TARGETING
-
                         game_data.log.add_message(game_data.targeting_formula.targeting_message)
 
                 targeting_cancelled = res.get("targeting_cancelled")
@@ -361,6 +403,14 @@ class Player(Entity):
                 target_out_of_range = res.get("target_out_of_range")
                 if target_out_of_range:
                     game_data.log.add_message(Message("Target out of range"))
+
+                use_consumable = res.get(EventType.use_consumable)
+                if use_consumable:
+                    if use_consumable.targeted:
+                        game_data.targeting_consumable = use_consumable
+                        print(f"{item.name} is a targeted consumable, targeting...")
+                        game_data.prev_state.append(game_data.state)
+                        game_data.state = GameStates.TARGETING
 
             gfx_data.visuals.update(game_data, gfx_data)
             gfx_data.clock.tick(gfx_data.fps_per_second)

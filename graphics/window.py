@@ -96,17 +96,19 @@ class Bar(Clickable):
 
 
 class Label(Widget):
-    def __init__(self, pos, text):
+    def __init__(self, pos, text, font=None):
         super().__init__(pos, Size(0, 0))
         self.text = text
+        self.font = font if font else Assets.get().font_title
 
     def draw(self, surface):
-        display_text(surface, self.text, Assets.get().font_title, self.pos.tuple())
+        display_text(surface, self.text, self.font, self.pos.tuple())
 
 class ClickableLabel(Clickable):
-    def __init__(self, pos, text, size):
+    def __init__(self, pos, text, size, font=None):
         super().__init__(pos, size)
         self.text = text
+        self.font = font if font else Assets.get().font_title
 
     def draw(self, surface):
-        display_text(surface, self.text, Assets.get().font_title, self.pos.tuple())
+        display_text(surface, self.text, self.font, self.pos.tuple())

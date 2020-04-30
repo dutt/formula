@@ -108,10 +108,22 @@ class CraftingWindow(Window):
 
             if count > 0:
                 self.input_slots[self.current_slot].ingredient = ingredient
+                self.change_slot(1)
 
         inputs = [slot.ingredient for slot in self.input_slots]
         self.update_output_slot(inputs)
         self.update_ingredient_counts(inputs)
+
+    def has_all_needed(self, ingredients, game_data):
+        counts = {}
+        for i in ingredients:
+            if i not in counts:
+                counts[i] = 0
+            counts[i] += 1
+        for i, num in counts.items():
+            if num > game_data.ingredient_storage.count_left(i, game_data.formula_builder):
+                return False
+        return True
 
     def apply_craft(self, game_data):
         if self.output_slot.ingredient == Ingredient.EMPTY:
@@ -119,8 +131,15 @@ class CraftingWindow(Window):
         inputs = [slot.ingredient for slot in self.input_slots]
         game_data.ingredient_storage.remove_multiple(inputs)
         game_data.ingredient_storage.add(self.output_slot.ingredient)
+
+        if not self.has_all_needed(inputs, game_data):
+            for s in self.input_slots: # lacking one, reset
+                s.ingredient = Ingredient.EMPTY
+            inputs = [slot.ingredient for slot in self.input_slots]
+            self.update_ingredient_counts(inputs)
+
         logname = self.output_slot.ingredient.name.capitalize()
-        return [{"message" : Message(f"You crafted a {logname}") }]
+        return {"message" : Message(f"You crafted a {logname}") }
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)

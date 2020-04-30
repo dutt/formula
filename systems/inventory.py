@@ -1,0 +1,31 @@
+class Inventory():
+    def __init__(self, constants):
+        self.items = []
+        self.quickslots = self.setup_quickslots(constants.num_quickslots)
+
+    def setup_quickslots(self, count):
+        retr = {}
+        for idx in range(count):
+            retr[idx] = None
+        return retr
+
+    def get_quickslot(self, index):
+        if not index in self.quickslots:
+            return None
+        return self.quickslots[index]
+
+    def set_quickslot(self, index, item):
+        if item:
+            assert item in self.items
+        self.quickslots[index] = item
+
+    def add(self, item):
+        self.items.append(item)
+
+    def use(self, item):
+        assert item
+        assert item in self.items
+        self.items.remove(item)
+        for qs_index, qs_item in self.quickslots.items():
+            if qs_item == item:
+                self.set_quickslot(qs_index, None)

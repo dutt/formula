@@ -25,7 +25,8 @@ class Entity:
         caster=None,
         drawable=None,
         ingredient=None,
-        light=None
+        light=None,
+        consumable=None,
     ):
         self.id = Entity.LAST_ID
         Entity.LAST_ID += 1
@@ -78,11 +79,19 @@ class Entity:
         if self.light:
             self.light.owner = self
 
+        self.consumable = consumable
+        if self.consumable:
+            self.consumable.owner = self
+
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         return "<entity id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
+
+    @property
+    def raw_name(self):
+        return self.name_
 
     @property
     def name(self):

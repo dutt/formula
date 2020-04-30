@@ -58,6 +58,10 @@ ingredient_crafting_help = """Enable ingredient crafting
 Usage:
     --crafting
 """
+consumables_help=""" Enable consumables
+Usage:
+    --consumables
+"""
 
 formula_description = "Formula, a roguelite game about blending stuff and throwing them at monsters"
 
@@ -79,6 +83,7 @@ parser.add_argument("--profiling", action="store_true", help=profiling_help)
 parser.add_argument("--pickup", action="store", default="find", help=ingredient_pickup_help)
 parser.add_argument("--pickupstartcount", action="store", default="base", help=ingredient_pickup_startcount_help)
 parser.add_argument("--crafting", action="store_true", help=ingredient_crafting_help)
+parser.add_argument("--consumables", action="store_true", help=consumables_help)
 
 args = parser.parse_args()
 
@@ -135,6 +140,7 @@ class Config:
                     sys.exit(f"pickupstartcount, {self.pickupstartcount} doesn't seem to be a number")
 
         self.crafting = args.crafting
+        self.consumables = args.consumables
 
     def serialize(self):
         return {

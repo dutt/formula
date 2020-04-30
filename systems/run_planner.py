@@ -4,7 +4,7 @@ from map_related.map_file_loader import MapFileLoader
 from map_related.tower_map_gen import TowerMapGenerator
 from util import resource_path
 from components.ingredients import Ingredient
-
+from components.consumable import Firebomb, Freezebomb, CooldownClear, Teleporter
 
 class RunPlanner:
     def __init__(self, levels, player, constants, timesystem, run_tutorial):
@@ -88,8 +88,14 @@ class RunPlanner:
             Ingredient.AREA : 2
         }
         key_ratio = 0.4
+        consumable_count = {
+            Firebomb : 10,
+            Freezebomb : 10,
+            CooldownClear : 10,
+            Teleporter : 10
+        }
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
-                                          ingredient_count=ingredient_count)
+                                          ingredient_count=ingredient_count, consumable_count=consumable_count)
 
     def make_medium_map(self, current_level):
         monster_chances = {
@@ -99,15 +105,12 @@ class RunPlanner:
             "rifleman": 30,
         }
         ingredient_count = {
-            Ingredient.FIRE : 2,
-            Ingredient.WATER : 2,
-            Ingredient.EARTH : 2,
-            Ingredient.RANGE : 2,
-            Ingredient.AREA : 2
+        }
+        consumable_count = {
         }
         key_ratio = 0.6
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
-                                          ingredient_count=ingredient_count)
+                                          ingredient_count=ingredient_count, consumable_count=consumable_count)
 
     def make_hard_map(self, current_level):
         monster_chances = {
@@ -117,15 +120,12 @@ class RunPlanner:
             "zapper": 30,
         }
         ingredient_count = {
-            Ingredient.FIRE : 2,
-            Ingredient.WATER : 2,
-            Ingredient.EARTH : 2,
-            Ingredient.RANGE : 2,
-            Ingredient.AREA : 2
+        }
+        consumable_count = {
         }
         key_ratio = 0.8
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
-                                          ingredient_count=ingredient_count)
+                                          ingredient_count=ingredient_count, consumable_count=consumable_count)
 
     def make_final_map(self, current_level):
         return MapFileLoader.make_map(self.constants, current_level, resource_path("data/maps/final"))

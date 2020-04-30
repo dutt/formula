@@ -162,7 +162,14 @@ class GameWindow(Window):
                 pygame.draw.line(surface, colour, (x1, y1), (x2, y2), 3)
                 pygame.draw.line(surface, colour, (x2, y1), (x1, y2), 3)
 
-        max_dist = game_data.targeting_formula.distance * CELL_WIDTH
+        item = None
+        if game_data.targeting_formula:
+            item = game_data.targeting_formula
+        elif game_data.targeting_consumable:
+            item = game_data.targeting_consumable
+        assert item
+
+        max_dist = item.distance * CELL_WIDTH
         pos = pygame.mouse.get_pos()
         px, py = pos
 
@@ -194,22 +201,22 @@ class GameWindow(Window):
             pygame.draw.line(targeting_surface, (150, 0, 0), orig, red_part)
             pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
             draw_rect_boundary(targeting_surface, (150, 100, 100), rect, draw_cross=True)
-        elif game_data.targeting_formula.area == 1:  # no aoe
+        elif item.area == 1:  # no aoe
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
             draw_rect_boundary(targeting_surface, (255, 0, 0), rect, draw_cross=False)
         else:
             pygame.draw.line(main, (255, 0, 0), orig, rect_center)
 
             for x in range(
-                math.ceil(tile[0] - game_data.targeting_formula.distance),
-                math.ceil(tile[0] + game_data.targeting_formula.distance),
+                math.ceil(tile[0] - item.distance),
+                math.ceil(tile[0] + item.distance),
             ):
                 for y in range(
-                    math.ceil(tile[1] - game_data.targeting_formula.distance),
-                    math.ceil(tile[1] + game_data.targeting_formula.distance),
+                    math.ceil(tile[1] - item.distance),
+                    math.ceil(tile[1] + item.distance),
                 ):
                     dist = math.sqrt((x - tile[0]) ** 2 + (y - tile[1]) ** 2)
-                    if dist < game_data.targeting_formula.area:
+                    if dist < item.area:
                         tile_rect = self.get_tile_rect(x, y, gfx_data)
                         draw_rect_boundary(
                             targeting_surface, (255, 0, 0), tile_rect, draw_cross=False,
@@ -224,6 +231,14 @@ class GameWindow(Window):
         orig = (s_player_x * CELL_WIDTH, s_player_y * CELL_HEIGHT)
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
+        item = None
+        if game_data.targeting_formula:
+            item = game_data.targeting_formula
+        elif game_data.targeting_consumable:
+            item = game_data.targeting_consumable
+        assert item
+
+
         for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
             for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
                 visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
@@ -233,7 +248,7 @@ class GameWindow(Window):
                 rect = self.get_tile_rect(x, y, gfx_data)
                 rect_center = rect[0] + CELL_WIDTH / 2, rect[1] + CELL_HEIGHT / 2
                 dist = distance(orig[0], orig[1], rect_center[0], rect_center[1])
-                max_dist = game_data.targeting_formula.distance * CELL_WIDTH
+                max_dist = item.distance * CELL_WIDTH
                 if dist <= max_dist:
                     continue
                 drawable = Drawable(asset)
@@ -261,7 +276,7 @@ class GameWindow(Window):
         names = []
         for e in game_data.map.entities:
             if e.pos == tile_pos and tcod.map_is_in_fov(game_data.fov_map, tile_pos.x, tile_pos.y):
-                names.append(e.name)
+                names.append(e.raw_name)
         if not names:
             return
         text = ", ".join(names)

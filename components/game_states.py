@@ -18,3 +18,4 @@ class GameStates(Enum):
     ASK_QUIT = auto()
     CONSOLE = auto()
     CRAFTING = auto()
+    INVENTORY = auto()

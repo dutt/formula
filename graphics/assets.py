@@ -93,6 +93,7 @@ class Assets:
         self.player_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Player"))
         self.money_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Money.png"))
         self.key_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Key.png"))
+        self.scroll_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Scroll.png"))
 
         if graphics_file_tile_size.width != CELL_WIDTH or graphics_file_tile_size.height != CELL_HEIGHT:
             scale = (CELL_WIDTH, CELL_HEIGHT)
@@ -208,7 +209,8 @@ class Assets:
 
         self.crystal = get_img(self.money_sheet, 1, 3)
         self.key = get_img(self.key_sheet, 0, 0)
-        self.ingredient = get_img(self.decor_sheet, 4,3)
+        self.ingredient = get_img(self.decor_sheet, 4, 3)
+        self.consumable = get_img(self.scroll_sheet, 4, 0)
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 20)
         # self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 14)
