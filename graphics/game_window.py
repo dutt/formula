@@ -16,9 +16,9 @@ from systems.tutorial import Tutorial
 
 
 class GameWindow(Window):
-    def __init__(self, constants, visible=False):
+    def __init__(self, constants, visible=False, parent=None):
         super().__init__(
-            Pos(constants.right_panel_size.width, 0), constants.game_window_size, visible,
+            Pos(constants.right_panel_size.width, 0), constants.game_window_size, visible, parent=parent
         )
         self.show_all = False
 

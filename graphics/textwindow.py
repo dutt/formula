@@ -35,7 +35,7 @@ class TextWindow(Window):
         surface = pygame.Surface(self.size.tuple())
 
         show_lines = self.lines[self.offset : self.offset + self.num_lines]
-        display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface)
+        display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface, x=self.pos.x + 10)
 
         if len(self.lines) > self.num_lines:
             pygame.draw.line(surface, (255, 255, 255), (100, 520), (500, 520))

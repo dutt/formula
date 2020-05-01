@@ -11,9 +11,10 @@ from graphics.minor_windows import (
 from graphics.setup_window import SetupWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.game_window import GameWindow
+from graphics.right_panel_window import RightPanelWindow
 from graphics.console_window import ConsoleWindow
-from graphics.crafting_window import CraftingWindow
-from graphics.inventory_window import InventoryWindow
+from graphics.crafting_window import CraftingWindow, CraftingHelpWindow
+from graphics.inventory_window import InventoryWindow, InventoryHelpWindow
 
 class WindowManager:
     def __init__(self):
@@ -29,10 +30,12 @@ class WindowManager:
             GameStates.ASK_QUIT: AskQuitWindow,
             GameStates.PLAYER_DEAD: DeadWindow,
             GameStates.VICTORY: VictoryWindow,
-            GameStates.PLAY: GameWindow,
+            GameStates.PLAY: RightPanelWindow,
             GameStates.CONSOLE: ConsoleWindow,
             GameStates.CRAFTING : CraftingWindow,
-            GameStates.INVENTORY : InventoryWindow
+            GameStates.CRAFTING_HELP : CraftingHelpWindow,
+            GameStates.INVENTORY : InventoryWindow,
+            GameStates.INVENTORY_HELP : InventoryHelpWindow,
         }
 
     def push(self, window):
@@ -74,7 +77,7 @@ class WindowManager:
 
             activate_wnd_for_state = res.get(EventType.activate_for_new_state)
             if activate_wnd_for_state:
-                self.activate_wnd_for_state(game_data.state)
+                self.activate_wnd_for_state(game_data.state, game_data, gfx_data)
 
             message = res.get("message")
             if message:
@@ -83,10 +86,11 @@ class WindowManager:
             return True, {}
         return False, key_action
 
-    def activate_wnd_for_state(self, state):
+    def activate_wnd_for_state(self, state, game_data, gfx_data):
         wnd = self.get_wnd_for_state(state)
         assert wnd
         wnd.visible = True
+        wnd.init(game_data, gfx_data)
         self.windows = sorted(self.windows, key=lambda wnd : wnd.drawing_priority)
 
     def get_state_for_wnd(self, wnd):

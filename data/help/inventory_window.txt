@@ -1,0 +1,5 @@
+This is your inventory window
+
+Use W,S,A,D or arrow keys to select item. You can also click to select.
+
+Press 1, 2 or 3 to put selected item into corresponding quickslot. You can also click the slot.

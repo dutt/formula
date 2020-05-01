@@ -29,6 +29,8 @@ def handle_keys(events, state):
             GameStates.GENERAL_HELP_SCREEN,
             GameStates.FORMULA_HELP_SCEEN,
             GameStates.STORY_HELP_SCREEN,
+            GameStates.CRAFTING_HELP,
+            GameStates.INVENTORY_HELP
         ]:
             return handle_general_keys(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
@@ -61,6 +63,9 @@ def handle_inventory(key, modifiers):
         return {"right": 1}
     elif key >= pygame.K_1 and key <= pygame.K_9: # quickslot assignments
         return {"assign" : int(chr(key)) }
+    elif key == pygame.K_TAB:
+        return {EventType.show_help: True}
+
     return handle_general_keys(key, modifiers)
 
 def handle_crafting(key, modifiers):

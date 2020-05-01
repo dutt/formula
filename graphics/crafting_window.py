@@ -2,11 +2,21 @@ import pygame
 
 from graphics.display_helpers import display_text
 from graphics.window import Window
+from graphics.textwindow import TextWindow
 from systems.input_handlers import EventType
 from systems.ingredient_crafter import IngredientCrafter
 from components.ingredients import Ingredient
 from systems.messages import Message
-from util import Pos
+from util import Pos, resource_path
+
+
+class CraftingHelpWindow(TextWindow):
+    PATH = resource_path("data/help/crafting_window.txt")
+
+    def __init__(self, constants, visible=False):
+        super().__init__(constants, visible, path=CraftingHelpWindow.PATH, next_window=None)
+
+
 
 class CraftingSlot():
     def __init__(self, pos, index=None):

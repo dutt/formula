@@ -212,7 +212,7 @@ class Player(Entity):
                                 game_data.prev_state.append(game_data.state)
                                 game_data.state = GameStates.VICTORY
                                 game_data.story.next_story()
-                                gfx_data.windows.activate_wnd_for_state(game_data.state)
+                                gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
                                 game_data.stats.end_time = datetime.datetime.now()
                             elif not config.conf.keys:
                                 player_action = LootAction(self)
@@ -226,12 +226,12 @@ class Player(Entity):
             if start_crafting:
                 game_data.prev_state.append(game_data.state)
                 game_data.state = GameStates.CRAFTING
-                gfx_data.windows.activate_wnd_for_state(game_data.state)
+                gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
 
             if inventory:
                 game_data.prev_state.append(game_data.state)
                 game_data.state = GameStates.INVENTORY
-                gfx_data.windows.activate_wnd_for_state(game_data.state)
+                gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
 
             if show_help:
                 game_data.prev_state.append(game_data.state)
@@ -239,9 +239,13 @@ class Player(Entity):
                     game_data.state = GameStates.FORMULA_HELP_SCEEN
                 elif game_data.state == GameStates.STORY_SCREEN:
                     game_data.state = GameStates.STORY_HELP_SCREEN
+                elif game_data.state == GameStates.INVENTORY:
+                    game_data.state = GameStates.INVENTORY_HELP
+                elif game_data.state == GameStates.CRAFTING:
+                    game_data.state = GameStates.CRAFTING_HELP
                 else:
                     game_data.state = GameStates.GENERAL_HELP_SCREEN
-                gfx_data.windows.activate_wnd_for_state(game_data.state)
+                gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
 
             elif move:
                 dx, dy = move

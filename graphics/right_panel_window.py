@@ -3,7 +3,7 @@ import pygame
 from graphics.assets import Assets
 from graphics.constants import colors
 from graphics.display_helpers import display_text
-from graphics.window import Window, Bar, Label, Clickable
+from graphics.window import Window, Bar, Label, Clickable, ClickMode
 from systems.input_handlers import EventType
 from util import Pos, Size
 import config
@@ -11,7 +11,7 @@ import config
 
 class FormulaMarker(Clickable):
     def __init__(self, pos, formula_idx, player, size=Size(100, 30)):
-        super().__init__(pos, size)
+        super().__init__(pos, size, click_mode=ClickMode.LEFT)
         self.formula_idx = formula_idx
         self.player = player
         self.cooldown_bar = Bar(
@@ -41,7 +41,7 @@ class FormulaMarker(Clickable):
 
 class ConsumableMarker(Clickable):
     def __init__(self, pos, consumable_index, size=Size(130, 30)):
-        super().__init__(pos, size)
+        super().__init__(pos, size, click_mode=ClickMode.LEFT)
         self.consumable_index = consumable_index
         self.shortcut = self.get_shortcut(self.consumable_index)
         self.font = Assets.get().font_message
@@ -74,8 +74,8 @@ class ConsumableMarker(Clickable):
 
 
 class RightPanelWindow(Window):
-    def __init__(self, constants, parent):
-        super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent)
+    def __init__(self, constants, parent=None):
+        super().__init__(Pos(0, 0), constants.right_panel_size, visible=False, parent=parent, click_mode=ClickMode.LEFT)
         self.health_bar = Bar(Pos(10, 20), "HP", colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND, size=Size(120, 30),)
         self.shield_bar = Bar(
             Pos(10, 60), "Shield", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30),

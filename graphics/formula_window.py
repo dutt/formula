@@ -22,9 +22,8 @@ class FormulaHelpWindow(TextWindow):
 
 class IngredientMarker(ClickableLabel):
     def __init__(self, pos, text, ingredient, parent):
-        super().__init__(pos=pos, text=text, size=Size(100, 30))
+        super().__init__(pos=pos, text=text, size=Size(100, 30), parent=parent)
         self.ingredient = ingredient
-        self.parent = parent
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         left_click = mouse_action.get(EventType.left_click)
@@ -37,10 +36,7 @@ class IngredientMarker(ClickableLabel):
     def is_clicked(self, mouse_action):
         if "left_click" not in mouse_action:
             return False
-        left_click = AttrDict(mouse_action["left_click"])
-        left_click.x -= self.parent.pos.x
-        left_click.y -= self.parent.pos.y
-        return super().is_clicked({"left_click" : left_click})
+        return super().is_clicked(mouse_action)
 
     def draw(self, surface, game_data, gfx_data):
         display_text(surface, self.text, gfx_data.assets.font_message, self.pos.tuple())

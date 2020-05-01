@@ -74,7 +74,7 @@ class ExitAction(Action):
         if game_data.state == GameStates.PLAY and self.ask:
             game_data.prev_state.append(game_data.state)
             game_data.state = GameStates.ASK_QUIT
-            gfx_data.windows.activate_wnd_for_state(game_data.state)
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
         else:
             return self.package(result=[{"quit": True, "keep_playing": self.keep_playing}])
 
@@ -126,7 +126,7 @@ class DescendStairsAction(Action):
             cam_width = min(game_data.map.width, gfx_data.camera.orig_width)
             cam_height = min(game_data.map.height, gfx_data.camera.orig_height)
             gfx_data.camera = Camera(cam_width, cam_height, game_data)
-            gfx_data.windows.activate_wnd_for_state(game_data.state)
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
             gfx_data.camera.initialize_map()
             gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
             game_data.stats.next_level()
@@ -135,7 +135,7 @@ class DescendStairsAction(Action):
             game_data.prev_state.append(game_data.state)
             game_data.state = GameStates.VICTORY
             game_data.story.next_story()
-            gfx_data.windows.activate_wnd_for_state(game_data.state)
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
             game_data.stats.end_time = datetime.datetime.now()
             results.append({"victory": True})
         return self.package(results)
@@ -245,10 +245,13 @@ class PickupConsumableAction(Action):
         self.consumable = consumable_entity
 
     def execute(self, game_data, gfx_data):
-        game_data.map.entities.remove(self.consumable)
-        text = "You found a consumable, {}".format(self.consumable.consumable.name.lower())
+        if game_data.inventory.has_free_spot():
+            game_data.map.entities.remove(self.consumable)
+            text = f"You found a consumable, {self.consumable.consumable.name.lower()}"
+            game_data.inventory.add(self.consumable.consumable)
+        else:
+            text = "Your inventory is full"
         result = [{"message": Message(text)}]
-        game_data.inventory.add(self.consumable.consumable)
         return self.package(result=result)
 
 class UseConsumableAction(Action):

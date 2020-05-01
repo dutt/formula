@@ -1,7 +1,8 @@
 class Inventory():
-    def __init__(self, constants):
+    def __init__(self, max_count, num_quickslots):
         self.items = []
-        self.quickslots = self.setup_quickslots(constants.num_quickslots)
+        self.max_count = max_count
+        self.quickslots = self.setup_quickslots(num_quickslots)
 
     def setup_quickslots(self, count):
         retr = {}
@@ -19,7 +20,13 @@ class Inventory():
             assert item in self.items
         self.quickslots[index] = item
 
+    def has_free_spot(self):
+        return self.max_count > len(self.items)
+
     def add(self, item):
+        if len(self.items) >= self.max_count:
+            return False
+
         self.items.append(item)
 
         # set unused quickslot
@@ -27,6 +34,7 @@ class Inventory():
             if not qsitem:
                 self.set_quickslot(idx, item)
                 break
+        return True
 
     def use(self, item):
         assert item
