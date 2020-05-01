@@ -3,11 +3,12 @@ import datetime
 
 from attrdict import AttrDict as attrdict
 
+import config
 from components.game_states import GameStates
+from components.effect_type import EffectType
 from systems.fov import initialize_fov
 from systems.messages import Message
-import config
-from components.effects import EffectBuilder, EffectType
+from systems.effect_builder import EffectBuilder
 from graphics.camera import Camera
 
 
@@ -264,4 +265,5 @@ class UseConsumableAction(Action):
             gfx_data=gfx_data,
             target=self.targetpos
         )
-        return self.package(result)
+        game_data.inventory.use(self.consumable)
+        return self.package(result=result)

@@ -22,10 +22,22 @@ class Inventory():
     def add(self, item):
         self.items.append(item)
 
+        # set unused quickslot
+        for idx, qsitem in self.quickslots.items():
+            if not qsitem:
+                self.set_quickslot(idx, item)
+                break
+
     def use(self, item):
         assert item
         assert item in self.items
         self.items.remove(item)
         for qs_index, qs_item in self.quickslots.items():
-            if qs_item == item:
+            if qs_item != item:
+                continue
+            for i in self.items:
+                if type(i) == type(item):
+                    self.set_quickslot(qs_index, i)
+                    break
+            else:
                 self.set_quickslot(qs_index, None)

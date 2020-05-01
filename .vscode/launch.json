@@ -53,7 +53,8 @@
             "pythonPath": "${workspaceFolder}/.venv/bin/python",
             "args": [
                 "--pickup", "find",
-                "--crafting"
+                "--crafting",
+                "--consumables"
             ]
         }
     ]

@@ -339,9 +339,6 @@ class TowerMapGenerator:
                 x = random.randint(c.x + 1, c.x + c.width - 2)
                 y = random.randint(c.y + 1, c.y + c.height - 2)
                 occupied = False
-                for cm in c.monsters:
-                    if cm.pos == Pos(x, y):
-                        occupied = True
                 for ent in m.entities:
                     if ent.pos == Pos(x,y):
                         occupied = True
@@ -376,9 +373,6 @@ class TowerMapGenerator:
                 x = random.randint(c.x + 1, c.x + c.width - 2)
                 y = random.randint(c.y + 1, c.y + c.height - 2)
                 occupied = False
-                for cm in c.monsters:
-                    if cm.pos == Pos(x, y):
-                        occupied = True
                 for ent in m.entities:
                     if ent.pos == Pos(x,y):
                         occupied = True
@@ -388,7 +382,7 @@ class TowerMapGenerator:
             drawable_component = Drawable(Assets.get().consumable)
             consumable_component = get_consumable()
             name = consumable_component.name.capitalize()
-            consumable = Entity(x, y, f"{name}", render_order=RenderOrder.ITEM, drawable=drawable_component, consumable=consumable_component)
+            consumable = Entity(x, y, name, render_order=RenderOrder.ITEM, drawable=drawable_component, consumable=consumable_component)
             m.entities.append(consumable)
 
     @staticmethod

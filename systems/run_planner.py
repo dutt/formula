@@ -89,10 +89,10 @@ class RunPlanner:
         }
         key_ratio = 0.4
         consumable_count = {
-            Firebomb : 10,
-            Freezebomb : 10,
-            CooldownClear : 10,
-            Teleporter : 10
+            Firebomb : 1,
+            Freezebomb : 1,
+            CooldownClear : 1,
+            Teleporter : 1
         }
         return TowerMapGenerator.make_map(self.constants, current_level, monster_chances, key_ratio,
                                           ingredient_count=ingredient_count, consumable_count=consumable_count)

@@ -257,9 +257,15 @@ def handle_player_turn_keys(key, modifiers):
         return {EventType.start_throwing_vial: 8}
     elif key == pygame.K_TAB:
         return {EventType.show_help: True}
-    elif key == pygame.K_c:
+    elif key == pygame.K_v:
         return {EventType.start_crafting : True}
     elif key == pygame.K_i:
         return {EventType.inventory: True}
+    elif key == pygame.K_z:
+        return {EventType.use_consumable: 0}
+    elif key == pygame.K_x:
+        return {EventType.use_consumable: 1}
+    elif key == pygame.K_c:
+        return {EventType.use_consumable: 2}
 
     return handle_general_keys(key, modifiers)

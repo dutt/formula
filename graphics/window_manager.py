@@ -87,6 +87,7 @@ class WindowManager:
         wnd = self.get_wnd_for_state(state)
         assert wnd
         wnd.visible = True
+        self.windows = sorted(self.windows, key=lambda wnd : wnd.drawing_priority)
 
     def get_state_for_wnd(self, wnd):
         for state, w in self.state_wnd_mapping.items():

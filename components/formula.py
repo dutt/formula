@@ -1,6 +1,6 @@
 import tcod
 
-from components.effects import EffectType
+from components.effect_type import EffectType
 from systems.messages import Message
 
 

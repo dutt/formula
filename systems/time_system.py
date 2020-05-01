@@ -18,7 +18,7 @@ class TimeSystem:
         if len(self.travellers) > 0:
             actor = self.travellers[0]
             self.travellers.rotate()
-            if not actor.ai and not actor == game_data.player:
+            if not actor.fighter:
                 # neither monster nor player, skip
                 return self.tick(game_data, gfx_data)
             actor.round_init()

@@ -16,6 +16,11 @@ class Widget:
 
 
 class Clickable(Widget):
+    def is_inside(self, x, y):
+        x_inside = self.pos.x <= x <= (self.pos.x + self.size.width)
+        y_inside = self.pos.y <= y <= (self.pos.y + self.size.height)
+        return x_inside and y_inside
+
     def is_clicked(self, mouse_action):
         if "left_click" in mouse_action:
             val = mouse_action["left_click"]
@@ -28,9 +33,7 @@ class Clickable(Widget):
         else:
             return False
         x, y = val.x, val.y
-        x_inside = self.pos.x <= x <= (self.pos.x + self.size.width)
-        y_inside = self.pos.y <= y <= (self.pos.y + self.size.height)
-        return x_inside and y_inside
+        return self.is_inside(x, y)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         pass
@@ -45,6 +48,7 @@ class Window(Clickable):
         self._visible = visible
         self.children = []
         self.parent = parent
+        self.drawing_priority = 1
         if parent:
             parent.children.append(self)
 

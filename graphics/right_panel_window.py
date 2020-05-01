@@ -40,20 +40,31 @@ class FormulaMarker(Clickable):
             return {EventType.start_throwing_vial: self.formula_idx}
 
 class ConsumableMarker(Clickable):
-    def __init__(self, pos, consumable_index, size=Size(90, 30)):
+    def __init__(self, pos, consumable_index, size=Size(130, 30)):
         super().__init__(pos, size)
         self.consumable_index = consumable_index
+        self.shortcut = self.get_shortcut(self.consumable_index)
         self.font = Assets.get().font_message
 
+    def get_shortcut(self, consumable_index):
+        if consumable_index == 0:
+            return "Z"
+        elif consumable_index == 1:
+            return "X"
+        elif consumable_index == 2:
+            return "C"
+        else:
+            raise ValueError(f"Unknown consumable index {consumable_index}")
+
     def draw(self, surface, game_data, gfx_data):
-        #x, y = self.pos.tuple()
-        #w, h = self.size.tuple()
-        #pygame.draw.rect(surface, (100, 50, 50), (x,y,w,h), 5)
+        x, y = self.pos.tuple()
+        w, h = self.size.tuple()
+        pygame.draw.rect(surface, (100, 50, 50), (x,y,w,h), 1)
         item = game_data.inventory.get_quickslot(self.consumable_index)
         if item:
-            display_text(surface, item.name, self.font, self.pos.tuple())
+            display_text(surface, f"{self.shortcut}: {item.name}", self.font, self.pos.tuple())
         else:
-            display_text(surface, "-", self.font, self.pos.tuple())
+            display_text(surface, f"{self.shortcut}: -", self.font, self.pos.tuple())
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         print(f"consumable {self.consumable_index} clicked")
@@ -80,6 +91,7 @@ class RightPanelWindow(Window):
         self.formula_label = Label(Pos(10, 180), "Formulas")
         self.formula_markers = []
         self.setup_consumables(constants.num_quickslots)
+        self.drawing_priority = 2
 
     def setup_consumables(self, count):
         self.consumable_markers = []
@@ -111,6 +123,25 @@ class RightPanelWindow(Window):
             marker = FormulaMarker(Pos(20, y), idx, player)
             self.formula_markers.append(marker)
             y += 40
+
+    def draw_mouse_over_info(self, surface, game_data, gfx_data):
+        mx, my = pygame.mouse.get_pos()
+        if self.health_bar.is_inside(mx, my):
+            display_text(surface, "This is how much health you have", Assets.get().font_message, (mx, my))
+        elif self.shield_bar.is_inside(mx, my):
+            display_text(surface, "This is how much shield you have", Assets.get().font_message, (mx, my))
+        for fm in self.formula_markers:
+            if fm.is_inside(mx, my):
+                display_text(surface, "A formula", Assets.get().font_message, (mx, my))
+                return
+        for cm in self.consumable_markers:
+            if cm.is_inside(mx, my):
+                item = game_data.inventory.get_quickslot(cm.consumable_index)
+                if item:
+                    display_text(gfx_data.main, item.DESCRIPTION, Assets.get().font_message, (mx, my))
+                else:
+                    display_text(gfx_data.main, "No item equipped", Assets.get().font_message, (mx, my))
+                return
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(game_data.constants.right_panel_size.tuple())
@@ -162,3 +193,5 @@ class RightPanelWindow(Window):
         )
 
         gfx_data.main.blit(surface, self.pos.tuple())
+
+        self.draw_mouse_over_info(gfx_data.main, game_data, gfx_data)

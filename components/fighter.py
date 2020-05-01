@@ -31,7 +31,7 @@ class Fighter:
 
         text_surface = [Assets.get().font_title.render(str(dmg), True, colors.RED)]
         VisualEffectSystem.get().add_temporary(
-            self.owner.pos, above, lifespan=0.5, asset=text_surface, color=colors.RED
+            self.owner.pos, above, lifespan=0.75, asset=text_surface, color=colors.RED
         )
 
     @property

@@ -64,8 +64,8 @@ class FormulaWindow(Window):
         ingredient_lines = []
         ingredient_to_key_map = [
             [ [Ingredient.EMPTY], "Q" ],
-            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
-            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "E"],
+            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "W"],
+            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "E"],
             [ [Ingredient.RANGE], "R"],
             [ [Ingredient.AREA], "A"],
             [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
@@ -96,8 +96,8 @@ class FormulaWindow(Window):
         ingredient_lines = []
         ingredient_to_key_map = [
             [ [Ingredient.EMPTY], "Q" ],
-            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "W"],
-            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "E"],
+            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "W"],
+            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "E"],
             [ [Ingredient.RANGE], "R"],
             [ [Ingredient.AREA], "A"],
             [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],

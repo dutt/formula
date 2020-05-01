@@ -2,10 +2,10 @@ import math
 
 import config
 from components.damage_type import DamageType
-from components.effects import EffectType, EffectBuilder
+from components.effect_type import EffectType
 from components.formula import Formula
 from components.ingredients import Ingredient, IngredientState
-
+from systems.effect_builder import EffectBuilder
 
 class FormulaBuilder:
     def __init__(self, num_slots, num_formula, run_tutorial):

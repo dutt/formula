@@ -178,7 +178,7 @@ class Player(Entity):
             inventory = key_action.get(EventType.inventory)
 
             use_consumable = None
-            if key_action.get(EventType.start_throwing_vial) is not None:
+            if key_action.get(EventType.use_consumable) is not None:
                 use_consumable = key_action.get(EventType.use_consumable)
             elif mouse_action.get(EventType.use_consumable) is not None:
                 use_consumable = mouse_action.get(EventType.use_consumable)
@@ -323,7 +323,6 @@ class Player(Entity):
                                 self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
                             )
                             game_data.state = game_data.prev_state.pop()
-                            game_data.inventory.use(game_data.targeting_consumable)
                             game_data.targeting_consumable = None
 
                 elif right_click:
