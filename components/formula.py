@@ -24,13 +24,13 @@ class Formula:
 
     def serialize(self):
         return {
-            "slots" : [s.name for s in self.slots],
-            "distance" : self.distance,
-            "area" : self.area,
-            "effects" : [e.serialize() for e in self.effects],
-            "targeted" : self.targeted,
-            "suboptimal" : self.suboptimal,
-            "trap" : self.trap
+            "slots": [s.name for s in self.slots],
+            "distance": self.distance,
+            "area": self.area,
+            "effects": [e.serialize() for e in self.effects],
+            "targeted": self.targeted,
+            "suboptimal": self.suboptimal,
+            "trap": self.trap,
         }
 
     def set_texts(self):
@@ -43,9 +43,13 @@ class Formula:
         postfix = "range={}, area={}".format(self.distance, self.area)
         if text_msg:
             if self.trap:
-                self.targeting_message_text = "Place trap, {}, area={}".format(text_msg[:-2], self.area)
+                self.targeting_message_text = "Place trap, {}, area={}".format(
+                    text_msg[:-2], self.area
+                )
             else:
-                self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
+                self.targeting_message_text = "Targeting, {}, {}".format(
+                    text_msg[:-2], postfix
+                )
             self.text_stats_text = "{}, {}".format(text_msg[:-2], postfix)
             self.applied_text = "{} " + applied_msg[:-2]
         else:
@@ -108,12 +112,18 @@ class Formula:
         results = []
 
         if caster.distance(target_x, target_y) > self.distance:
-            results.append({"cast": False, "message": Message("Target out of range", tcod.yellow)})
+            results.append(
+                {"cast": False, "message": Message("Target out of range", tcod.yellow)}
+            )
             return results
         elif self.trap and not triggered_trap:
             game_map.tiles[target_x][target_y].trap = self
             results.append(
-                {"cast": True, "message": Message("Formula cast as trap"), "formula": self,}
+                {
+                    "cast": True,
+                    "message": Message("Formula cast as trap"),
+                    "formula": self,
+                }
             )
         elif self.area < 1.5:  # no aoe
             for e in entities:
@@ -121,7 +131,12 @@ class Formula:
                     continue
                 if e.pos.x == target_x and e.pos.y == target_y:
                     results.append(
-                        {"cast": True, "message": Message(get_msg(e)), "targets": [e], "formula": self,}
+                        {
+                            "cast": True,
+                            "message": Message(get_msg(e)),
+                            "targets": [e],
+                            "formula": self,
+                        }
                     )
                     for effect in self.effects:
                         results.extend(effect.apply(e))
@@ -130,12 +145,22 @@ class Formula:
                     break
             else:
                 results.append(
-                    {"cast": False, "message": Message("No target"), "targets": [], "formula": self,}
+                    {
+                        "cast": False,
+                        "message": Message("No target"),
+                        "targets": [],
+                        "formula": self,
+                    }
                 )
         else:  # aoe formula
             targets = []
             results.append(
-                {"cast": True, "targets": targets, "formula": self, "message": Message("Splash vial thrown"),}
+                {
+                    "cast": True,
+                    "targets": targets,
+                    "formula": self,
+                    "message": Message("Splash vial thrown"),
+                }
             )
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):

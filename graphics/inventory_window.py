@@ -8,11 +8,15 @@ from graphics.textwindow import TextWindow
 from graphics.display_helpers import display_text
 from util import Pos, Size, resource_path
 
+
 class InventoryHelpWindow(TextWindow):
     PATH = resource_path("data/help/inventory_window.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(constants, visible, path=InventoryHelpWindow.PATH, next_window=None)
+        super().__init__(
+            constants, visible, path=InventoryHelpWindow.PATH, next_window=None
+        )
+
 
 class ConsumableMarker(Clickable):
     def __init__(self, consumable, consumable_index, pos, size, parent):
@@ -22,12 +26,17 @@ class ConsumableMarker(Clickable):
         self.parent = parent
 
     def draw(self, surface, game_data, gfx_data):
-        coords = (self.pos.x-5, self.pos.y-5, 140, 40)
+        coords = (self.pos.x - 5, self.pos.y - 5, 140, 40)
         if self.consumable_index == self.parent.selected:
             pygame.draw.rect(surface, (100, 150, 100), coords, 3)
         else:
             pygame.draw.rect(surface, (25, 50, 25), coords, 3)
-        display_text(surface, self.consumable.name, gfx_data.assets.font_message, (self.pos.x,self.pos.y))
+        display_text(
+            surface,
+            self.consumable.name,
+            gfx_data.assets.font_message,
+            (self.pos.x, self.pos.y),
+        )
 
 
 class QuickslotMarker(Clickable):
@@ -37,13 +46,20 @@ class QuickslotMarker(Clickable):
         self.parent = parent
 
     def draw(self, surface, game_data, gfx_data):
-        display_text(surface, "Slot {}".format(self.qs_index+1), gfx_data.assets.font_message, (self.pos.x,self.pos.y))
+        display_text(
+            surface,
+            "Slot {}".format(self.qs_index + 1),
+            gfx_data.assets.font_message,
+            (self.pos.x, self.pos.y),
+        )
         item = game_data.inventory.get_quickslot(self.qs_index)
         square_y = self.pos.y + 35
-        coords = (self.pos.x-5, square_y-5, self.parent.slot_width, 40)
+        coords = (self.pos.x - 5, square_y - 5, self.parent.slot_width, 40)
         pygame.draw.rect(surface, (150, 150, 150), coords, 3)
         if item:
-            display_text(surface, item.name, gfx_data.assets.font_message, (self.pos.x,square_y))
+            display_text(
+                surface, item.name, gfx_data.assets.font_message, (self.pos.x, square_y)
+            )
 
     def is_clicked(self, mouse_action):
         if "left_click" not in mouse_action:
@@ -51,16 +67,21 @@ class QuickslotMarker(Clickable):
         left_click = AttrDict(mouse_action["left_click"])
         left_click.x -= self.parent.pos.x
         left_click.y -= self.parent.pos.y
-        return super().is_clicked({"left_click" : left_click})
+        return super().is_clicked({"left_click": left_click})
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         print(f"Quickslot {self.qs_index} clicked")
-        game_data.inventory.set_quickslot(self.qs_index, game_data.inventory.items[self.parent.selected])
+        game_data.inventory.set_quickslot(
+            self.qs_index, game_data.inventory.items[self.parent.selected]
+        )
+
 
 class InventoryWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
-        self.title = Label(Pos(200,25), "Inventory")
+        super().__init__(
+            constants.helper_window_pos, constants.helper_window_size, visible
+        )
+        self.title = Label(Pos(200, 25), "Inventory")
         self.quickslots_label = Label(Pos(200, 410), "Quickslots")
         self.selected = 0
         self.items_per_row = 2
@@ -75,7 +96,9 @@ class InventoryWindow(Window):
         x = self.pos.x + 30
         y = self.pos.y + 30
         for idx, item in enumerate(game_data.inventory.items):
-            cm = ConsumableMarker(item, idx, pos=Pos(x, y), size=Size(self.slot_width, 50), parent=self)
+            cm = ConsumableMarker(
+                item, idx, pos=Pos(x, y), size=Size(self.slot_width, 50), parent=self
+            )
             self.consumable_markers.append(cm)
             x += 150
             if idx % self.items_per_row == 0:
@@ -87,7 +110,9 @@ class InventoryWindow(Window):
         x = self.pos.x + 10
         y = 410
         for qs in range(self.num_quickslots):
-            qm = QuickslotMarker(qs, pos=Pos(x, y), size=Size(self.slot_width, 50), parent=self)
+            qm = QuickslotMarker(
+                qs, pos=Pos(x, y), size=Size(self.slot_width, 50), parent=self
+            )
             self.quickslot_markers.append(qm)
             x += self.slot_width + 20
 
@@ -98,12 +123,16 @@ class InventoryWindow(Window):
         y += 40
         for qs in range(self.num_quickslots):
             item = game_data.inventory.get_quickslot(qs)
-            display_text(surface, "Slot {}".format(qs+1), gfx_data.assets.font_message, (x,y))
+            display_text(
+                surface, "Slot {}".format(qs + 1), gfx_data.assets.font_message, (x, y)
+            )
             square_y = y + 35
-            coords = (x-5, square_y-5, self.slot_width, 40)
+            coords = (x - 5, square_y - 5, self.slot_width, 40)
             pygame.draw.rect(surface, (150, 150, 150), coords, 3)
             if item:
-                display_text(surface, item.name, gfx_data.assets.font_message, (x,square_y))
+                display_text(
+                    surface, item.name, gfx_data.assets.font_message, (x, square_y)
+                )
             x += self.slot_width + 20
 
     def draw(self, game_data, gfx_data):
@@ -123,7 +152,9 @@ class InventoryWindow(Window):
     def set_quickslot(self, quickslot_index, game_data):
         if quickslot_index >= self.num_quickslots:
             return
-        game_data.inventory.set_quickslot(quickslot_index, game_data.inventory.items[self.selected])
+        game_data.inventory.set_quickslot(
+            quickslot_index, game_data.inventory.items[self.selected]
+        )
 
     def handle_key(self, game_data, gfx_data, key_action):
         close = key_action.get(EventType.exit)
@@ -136,11 +167,13 @@ class InventoryWindow(Window):
 
         down = key_action.get("down")
         if down:
-            self.selected = min(self.selected + self.items_per_row, len(game_data.inventory.items)-1)
+            self.selected = min(
+                self.selected + self.items_per_row, len(game_data.inventory.items) - 1
+            )
 
         right = key_action.get("right")
         if right:
-            self.selected = min(self.selected + 1, len(game_data.inventory.items)-1)
+            self.selected = min(self.selected + 1, len(game_data.inventory.items) - 1)
 
         left = key_action.get("left")
         if left:
@@ -148,7 +181,7 @@ class InventoryWindow(Window):
 
         assign = key_action.get("assign")
         if assign:
-            self.set_quickslot(assign-1, game_data)
+            self.set_quickslot(assign - 1, game_data)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         for cm in self.consumable_markers:

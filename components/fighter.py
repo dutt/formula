@@ -13,7 +13,15 @@ import config
 
 class Fighter:
     def __init__(
-        self, hp, defense, power, xp=0, dmg_type=DamageType.PHYSICAL, resistances=None, immunities=None, shield=None,
+        self,
+        hp,
+        defense,
+        power,
+        xp=0,
+        dmg_type=DamageType.PHYSICAL,
+        resistances=None,
+        immunities=None,
+        shield=None,
     ):
         self.hp = self.base_max_hp = hp
         self.base_defense = defense
@@ -71,14 +79,14 @@ class Fighter:
         if dmg_type in self.immunities:
             dmg_type_name = dmg_type.name.lower()
             text = f"{self.owner.name} is immune to {dmg_type_name} and resisted all damage"
-            results.append({"message" : Message(text)})
+            results.append({"message": Message(text)})
             dmg = 0
 
         if dmg_type in self.resistances:
             resisted = dmg // 2
             dmg_type_name = dmg_type.name.lower()
             text = f"{self.owner.name} has resistance to {dmg_type_name} and resisted {resisted}/{dmg} damage"
-            results.append({"message" : Message(text)})
+            results.append({"message": Message(text)})
             dmg -= resisted
 
         self.hp = max(0, self.hp - dmg)
@@ -107,6 +115,8 @@ class Fighter:
             results.append({"message": Message(text, tcod.white)})
             results.extend(target.fighter.take_damage(self.owner, dmg, self.dmg_type))
         else:
-            text = "{} attacks {} but is too weak to hurt".format(self.owner.name, target.name)
+            text = "{} attacks {} but is too weak to hurt".format(
+                self.owner.name, target.name
+            )
             results.append({"message": Message(text, tcod.white)})
         return results

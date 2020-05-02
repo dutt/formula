@@ -14,11 +14,12 @@ class CraftingHelpWindow(TextWindow):
     PATH = resource_path("data/help/crafting_window.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(constants, visible, path=CraftingHelpWindow.PATH, next_window=None)
+        super().__init__(
+            constants, visible, path=CraftingHelpWindow.PATH, next_window=None
+        )
 
 
-
-class CraftingSlot():
+class CraftingSlot:
     def __init__(self, pos, index=None):
         self.index = index
         self.pos = pos
@@ -34,7 +35,9 @@ class CraftingSlot():
 
 class CraftingWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
+        super().__init__(
+            constants.helper_window_pos, constants.helper_window_size, visible
+        )
         self.current_slot = 0
         self.slot_count = 2
         self.setup_slots()
@@ -45,17 +48,17 @@ class CraftingWindow(Window):
         for idx in range(self.slot_count):
             self.input_slots.append(CraftingSlot(Pos(100, 100 + idx * 40), index=idx))
 
-        self.output_slot = CraftingSlot(Pos(400, 100 + ((40*idx)//2)))
+        self.output_slot = CraftingSlot(Pos(400, 100 + ((40 * idx) // 2)))
 
     def draw_ingredient_choices(self, surface, game_data, gfx_data):
         ingredient_to_key_map = [
-            [ Ingredient.EMPTY, "Q"],
-            [ Ingredient.WATER, "W"],
-            [ Ingredient.FIRE, "E"],
-            [ Ingredient.RANGE, "R"],
-            [ Ingredient.AREA, "A"],
-            [ Ingredient.LIFE, "S"],
-            [ Ingredient.EARTH, "D"]
+            [Ingredient.EMPTY, "Q"],
+            [Ingredient.WATER, "W"],
+            [Ingredient.FIRE, "E"],
+            [Ingredient.RANGE, "R"],
+            [Ingredient.AREA, "A"],
+            [Ingredient.LIFE, "S"],
+            [Ingredient.EARTH, "D"],
         ]
         x_base = 100
         y_base = 200
@@ -69,14 +72,15 @@ class CraftingWindow(Window):
                     count -= self.ingredient_counts[ing]
                 text = "{} : {}".format(ing.name.capitalize(), count)
             display_text(surface, text, gfx_data.assets.font_message, (x_base, y_base))
-            display_text(surface, key, gfx_data.assets.font_message, (x_base, y_base + 30))
+            display_text(
+                surface, key, gfx_data.assets.font_message, (x_base, y_base + 30)
+            )
             x_base += 90
             ing_count += 1
             if ing_count > 3:
                 y_base += 60
                 x_base = 100
                 ing_count = 0
-
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(self.size.tuple())
@@ -88,7 +92,12 @@ class CraftingWindow(Window):
 
         self.draw_ingredient_choices(surface, game_data, gfx_data)
 
-        display_text(surface, "Press Space to confirm, Escape to quit, Tab for help", gfx_data.assets.font_message, (140, 500))
+        display_text(
+            surface,
+            "Press Space to confirm, Escape to quit, Tab for help",
+            gfx_data.assets.font_message,
+            (140, 500),
+        )
 
         gfx_data.main.blit(surface, self.pos.tuple())
 
@@ -131,25 +140,27 @@ class CraftingWindow(Window):
                 counts[i] = 0
             counts[i] += 1
         for i, num in counts.items():
-            if num > game_data.ingredient_storage.count_left(i, game_data.formula_builder):
+            if num > game_data.ingredient_storage.count_left(
+                i, game_data.formula_builder
+            ):
                 return False
         return True
 
     def apply_craft(self, game_data):
         if self.output_slot.ingredient == Ingredient.EMPTY:
-            return # no crafting
+            return  # no crafting
         inputs = [slot.ingredient for slot in self.input_slots]
         game_data.ingredient_storage.remove_multiple(inputs)
         game_data.ingredient_storage.add(self.output_slot.ingredient)
 
         if not self.has_all_needed(inputs, game_data):
-            for s in self.input_slots: # lacking one, reset
+            for s in self.input_slots:  # lacking one, reset
                 s.ingredient = Ingredient.EMPTY
             inputs = [slot.ingredient for slot in self.input_slots]
             self.update_ingredient_counts(inputs)
 
         logname = self.output_slot.ingredient.name.capitalize()
-        return {"message" : Message(f"You crafted a {logname}") }
+        return {"message": Message(f"You crafted a {logname}")}
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)

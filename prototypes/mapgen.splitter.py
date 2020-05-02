@@ -128,14 +128,18 @@ def chunkify(m):
             end = curr.x + curr.width - max(minlength, int(curr.width * 0.2))
             hallway = random.randint(start, end)
             first = Rect(curr.x, curr.y, hallway - curr.x, curr.height)
-            second = Rect(hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height)
+            second = Rect(
+                hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height
+            )
             new_direction = Dir.horizontal
         elif direction == Dir.horizontal and curr.height > minsize:  # horizontal
             start = curr.y + max(minlength, int(curr.height * 0.2))
             end = curr.y + curr.height - max(minlength, int(curr.height * 0.2))
             hallway = random.randint(start, end)
             first = Rect(curr.x, curr.y, curr.width, hallway - curr.y)
-            second = Rect(curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1)
+            second = Rect(
+                curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1
+            )
             new_direction = Dir.vertical
         else:  # chunk too small, done. just re-add the chunk
             chunks.append(curr)

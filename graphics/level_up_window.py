@@ -9,9 +9,15 @@ from graphics.window import Window
 from systems.input_handlers import EventType
 from graphics.window import ClickMode
 
+
 class LevelUpWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible, click_mode=ClickMode.SCROLL)
+        super().__init__(
+            constants.helper_window_pos,
+            constants.helper_window_size,
+            visible,
+            click_mode=ClickMode.SCROLL,
+        )
         self.choices = []
         self.slots_message = "Bigger vials (+1 slot per vial)"
         self.formulas_message = "More vials (+1 prepared formula)"
@@ -48,7 +54,10 @@ class LevelUpWindow(Window):
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
         display_text(
-            surface, "W/S to change selection, space to choose", gfx_data.assets.font_message, (50, 500),
+            surface,
+            "W/S to change selection, space to choose",
+            gfx_data.assets.font_message,
+            (50, 500),
         )
         gfx_data.main.blit(surface, self.pos.tuple())
 
@@ -79,7 +88,9 @@ class LevelUpWindow(Window):
         game_data.menu_data.currchoice = max(0, game_data.menu_data.currchoice - 1)
 
     def next_choice(self, game_data):
-        game_data.menu_data.currchoice = min(len(self.choices) - 1, game_data.menu_data.currchoice + 1)
+        game_data.menu_data.currchoice = min(
+            len(self.choices) - 1, game_data.menu_data.currchoice + 1
+        )
 
     def handle_key(self, game_data, gfx_data, key_action):
         choice = key_action.get("choice")
@@ -92,7 +103,9 @@ class LevelUpWindow(Window):
         level_up = key_action.get(EventType.level_up)
         if level_up:
             self.apply_choice(game_data.menu_data.currchoice, game_data)
-            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate_entity(game_data.player))
+            game_data.player.caster.set_formulas(
+                game_data.formula_builder.evaluate_entity(game_data.player)
+            )
             self.choices = []
             return self.close(game_data, activate_for_new_state=True)
 

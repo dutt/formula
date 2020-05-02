@@ -13,11 +13,14 @@ from systems.input_handlers import EventType
 from util import resource_path, Pos, Size
 import config
 
+
 class FormulaHelpWindow(TextWindow):
     PATH = resource_path("data/help/formula_window.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(constants, visible, path=FormulaHelpWindow.PATH, next_window=None)
+        super().__init__(
+            constants, visible, path=FormulaHelpWindow.PATH, next_window=None
+        )
 
 
 class IngredientMarker(ClickableLabel):
@@ -29,7 +32,9 @@ class IngredientMarker(ClickableLabel):
         left_click = mouse_action.get(EventType.left_click)
         if left_click:
             print(f"{self.ingredient} clicked")
-            game_data.formula_builder.set_slot(game_data.formula_builder.currslot, self.ingredient)
+            game_data.formula_builder.set_slot(
+                game_data.formula_builder.currslot, self.ingredient
+            )
             self.parent.change_slot(game_data, 1)
         return {}
 
@@ -46,26 +51,52 @@ class IngredientMarker(ClickableLabel):
         y1 = self.pos.y
         y2 = self.pos.y + self.size.height
         color = (255, 0, 0)
-        #pygame.draw.line(surface, color, (x1, y1), (x1, y2), 2)
-        #pygame.draw.line(surface, color, (x1, y1), (x2, y1), 2)
-        #pygame.draw.line(surface, color, (x2, y1), (x2, y2), 2)
-        #pygame.draw.line(surface, color, (x1, y2), (x2, y2), 2)
+        # pygame.draw.line(surface, color, (x1, y1), (x1, y2), 2)
+        # pygame.draw.line(surface, color, (x1, y1), (x2, y1), 2)
+        # pygame.draw.line(surface, color, (x2, y1), (x2, y2), 2)
+        # pygame.draw.line(surface, color, (x1, y2), (x2, y2), 2)
+
 
 class FormulaWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible, click_mode=ClickMode.LEFT | ClickMode.SCROLL)
+        super().__init__(
+            constants.helper_window_pos,
+            constants.helper_window_size,
+            visible,
+            click_mode=ClickMode.LEFT | ClickMode.SCROLL,
+        )
         self.ingredient_markers = []
 
     def draw_ingredient_list(self, surface, game_data, gfx_data):
         ingredient_lines = []
         ingredient_to_key_map = [
-            [ [Ingredient.EMPTY], "Q" ],
-            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "W"],
-            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "E"],
-            [ [Ingredient.RANGE], "R"],
-            [ [Ingredient.AREA], "A"],
-            [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
-            [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
+            [[Ingredient.EMPTY], "Q"],
+            [
+                [
+                    Ingredient.WATER,
+                    Ingredient.SLEET,
+                    Ingredient.ICE,
+                    Ingredient.ICE_VORTEX,
+                    Ingredient.ICEBOLT,
+                ],
+                "W",
+            ],
+            [
+                [
+                    Ingredient.FIRE,
+                    Ingredient.INFERNO,
+                    Ingredient.FIREBOLT,
+                    Ingredient.FIRESPRAY,
+                ],
+                "E",
+            ],
+            [[Ingredient.RANGE], "R"],
+            [[Ingredient.AREA], "A"],
+            [[Ingredient.LIFE, Ingredient.VITALITY], "S"],
+            [
+                [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK],
+                "D",
+            ],
         ]
         choices = game_data.formula_builder.current_ingredient_choices()
         for ing in choices:
@@ -91,13 +122,33 @@ class FormulaWindow(Window):
     def draw_counted_ingredient_list(self, surface, game_data, gfx_data):
         ingredient_lines = []
         ingredient_to_key_map = [
-            [ [Ingredient.EMPTY], "Q" ],
-            [ [Ingredient.WATER, Ingredient.SLEET, Ingredient.ICE, Ingredient.ICE_VORTEX, Ingredient.ICEBOLT], "W"],
-            [ [Ingredient.FIRE, Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY], "E"],
-            [ [Ingredient.RANGE], "R"],
-            [ [Ingredient.AREA], "A"],
-            [ [Ingredient.LIFE, Ingredient.VITALITY], "S"],
-            [ [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK], "D"]
+            [[Ingredient.EMPTY], "Q"],
+            [
+                [
+                    Ingredient.WATER,
+                    Ingredient.SLEET,
+                    Ingredient.ICE,
+                    Ingredient.ICE_VORTEX,
+                    Ingredient.ICEBOLT,
+                ],
+                "W",
+            ],
+            [
+                [
+                    Ingredient.FIRE,
+                    Ingredient.INFERNO,
+                    Ingredient.FIREBOLT,
+                    Ingredient.FIRESPRAY,
+                ],
+                "E",
+            ],
+            [[Ingredient.RANGE], "R"],
+            [[Ingredient.AREA], "A"],
+            [[Ingredient.LIFE, Ingredient.VITALITY], "S"],
+            [
+                [Ingredient.EARTH, Ingredient.MUD, Ingredient.MAGMA, Ingredient.ROCK],
+                "D",
+            ],
         ]
         choices = game_data.formula_builder.current_ingredient_choices()
         for ing in choices:
@@ -106,7 +157,9 @@ class FormulaWindow(Window):
                     if ing == Ingredient.EMPTY:
                         ingredient_lines.append(f"{key}: {ing.name}")
                     else:
-                        count = game_data.ingredient_storage.count_left(ing, game_data.formula_builder)
+                        count = game_data.ingredient_storage.count_left(
+                            ing, game_data.formula_builder
+                        )
                         ingredient_lines.append(f"{key}: {ing.name}, {count} left")
 
         def get_ingredient_list_key(item):
@@ -131,13 +184,17 @@ class FormulaWindow(Window):
         y = 120
 
         self.ingredient_markers = []
-        self.ingredient_markers.append(IngredientMarker(Pos(x, y), "Empty", Ingredient.EMPTY, parent=self))
+        self.ingredient_markers.append(
+            IngredientMarker(Pos(x, y), "Empty", Ingredient.EMPTY, parent=self)
+        )
         y += 40
         for ing, count in counts.items():
             if count <= 0:
                 continue
             text = "{}, {} left".format(ing.name.capitalize(), count)
-            self.ingredient_markers.append(IngredientMarker(Pos(x, y), text, ing, parent=self))
+            self.ingredient_markers.append(
+                IngredientMarker(Pos(x, y), text, ing, parent=self)
+            )
             y += 40
 
         for im in self.ingredient_markers:
@@ -155,9 +212,13 @@ class FormulaWindow(Window):
                 "TUTORIAL: This is just to show you your current formulas for the tutorial",
             ]
             if not config.conf.pickup:
-                lines.append("After this tutorial you'll be able to select these as you want")
+                lines.append(
+                    "After this tutorial you'll be able to select these as you want"
+                )
             else:
-                lines.append("After this tutorial you'll be able to find ingredients on the levels")
+                lines.append(
+                    "After this tutorial you'll be able to find ingredients on the levels"
+                )
 
             display_lines(surface, gfx_data.assets.font_message, lines, 00, 20)
 
@@ -165,7 +226,10 @@ class FormulaWindow(Window):
         display_text(surface, "Formulas", gfx_data.assets.font_message, (50, y))
 
         y += 3 * linediff
-        text = "Formula {}/{}".format(game_data.formula_builder.currformula + 1, game_data.formula_builder.num_formula,)
+        text = "Formula {}/{}".format(
+            game_data.formula_builder.currformula + 1,
+            game_data.formula_builder.num_formula,
+        )
         display_text(surface, text, gfx_data.assets.font_message, (50, y))
 
         y += 2 * linediff
@@ -195,21 +259,32 @@ class FormulaWindow(Window):
         display_text(surface, cooldown_text, gfx_data.assets.font_message, (50, y))
 
         y += linediff * 2
-        lines = textwrap.wrap(formulas[game_data.formula_builder.currformula].text_stats, 60)
+        lines = textwrap.wrap(
+            formulas[game_data.formula_builder.currformula].text_stats, 60
+        )
         display_lines(surface, gfx_data.assets.font_message, lines, 50, y)
         y += len(lines) * linediff
 
         y += 2 * linediff
         display_text(
-            surface, "Arrow left/right or 1,2,3,...: select formula", gfx_data.assets.font_message, (50, y),
+            surface,
+            "Arrow left/right or 1,2,3,...: select formula",
+            gfx_data.assets.font_message,
+            (50, y),
         )
         y += linediff
         display_text(
-            surface, "Arrow up/down or Mouse scroll: select slot", gfx_data.assets.font_message, (50, y),
+            surface,
+            "Arrow up/down or Mouse scroll: select slot",
+            gfx_data.assets.font_message,
+            (50, y),
         )
         y += linediff
         display_text(
-            surface, "Press Tab for help, or Space to confirm selection", gfx_data.assets.font_message, (50, y),
+            surface,
+            "Press Tab for help, or Space to confirm selection",
+            gfx_data.assets.font_message,
+            (50, y),
         )
 
         if config.conf.pickup:
@@ -223,11 +298,15 @@ class FormulaWindow(Window):
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def change_slot(self, game_data, pos_diff):
-        next_num = (game_data.formula_builder.currslot + pos_diff) % game_data.formula_builder.num_slots
+        next_num = (
+            game_data.formula_builder.currslot + pos_diff
+        ) % game_data.formula_builder.num_slots
         game_data.formula_builder.currslot = next_num
 
     def change_formula(self, game_data, pos_diff):
-        next_num = (game_data.formula_builder.currformula + pos_diff) % game_data.formula_builder.num_formula
+        next_num = (
+            game_data.formula_builder.currformula + pos_diff
+        ) % game_data.formula_builder.num_formula
         game_data.formula_builder.currformula = next_num
         # go to first slot
         game_data.formula_builder.currslot = 0
@@ -235,7 +314,9 @@ class FormulaWindow(Window):
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)
         if do_quit:
-            game_data.player.caster.set_formulas(game_data.formula_builder.evaluate_entity(game_data.player))
+            game_data.player.caster.set_formulas(
+                game_data.formula_builder.evaluate_entity(game_data.player)
+            )
             game_data.formula_builder.currformula = 0
             return self.close(game_data, activate_for_new_state=True)
 
@@ -244,12 +325,20 @@ class FormulaWindow(Window):
             game_data.formula_builder.currformula = formula
 
         ingredient = key_action.get("ingredient")
-        if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient) and not game_data.map.tutorial:
+        if (
+            ingredient
+            and game_data.formula_builder.ingredient_unlocked(ingredient)
+            and not game_data.map.tutorial
+        ):
             if config.conf.pickup and ingredient != Ingredient.EMPTY:
-                count = game_data.ingredient_storage.count_left(ingredient, game_data.formula_builder)
+                count = game_data.ingredient_storage.count_left(
+                    ingredient, game_data.formula_builder
+                )
                 if count < 1:
                     return
-            game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
+            game_data.formula_builder.set_slot(
+                game_data.formula_builder.currslot, ingredient
+            )
             self.change_slot(game_data, 1)
 
         next_formula = key_action.get("next_formula")

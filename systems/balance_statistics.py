@@ -9,8 +9,10 @@ from components.effect_type import EffectType
 
 from util import Rect, Size
 
+
 def get_monsters(level):
     game_map = GameMap(Size(10, 10), dungeon_level=1)
+
     def helper(name):
         room = Rect(2, 2, 10, 10)
         return get_monster(0, 0, game_map, room, name, [])[0]
@@ -22,17 +24,14 @@ def get_monsters(level):
             "dog_group",
         ]
     elif level == 2:
-        monster_names = [
-            "mercenary",
-            "rifleman",
-            "boar_group"
-        ]
+        monster_names = ["mercenary", "rifleman", "boar_group"]
     else:
         raise ValueError(f"No monsters specified for level {level}")
     retr = []
     for name in monster_names:
         retr.append(helper(name))
     return retr
+
 
 def get_formula_stats():
     ingredient_lists = [
@@ -41,25 +40,25 @@ def get_formula_stats():
         [Ingredient.FIRE] * 3,
         [Ingredient.FIRE, Ingredient.FIRE, Ingredient.RANGE],
         [Ingredient.FIRE, Ingredient.RANGE, Ingredient.RANGE],
-
         # water
         [Ingredient.WATER] * 3,
         [Ingredient.EMPTY, Ingredient.WATER, Ingredient.WATER],
         [Ingredient.WATER, Ingredient.RANGE, Ingredient.RANGE],
-
         # fire upgrade
         [Ingredient.INFERNO, Ingredient.EMPTY, Ingredient.EMPTY],
         [Ingredient.INFERNO, Ingredient.INFERNO, Ingredient.EMPTY],
         [Ingredient.INFERNO] * 3,
-
-
         #
     ]
 
     builder = FormulaBuilder(10, 10, run_tutorial=False)
-    formulas = [builder.evaluate_formula(f, 0, IngredientState(), caster="bob")[0] for f in ingredient_lists]
+    formulas = [
+        builder.evaluate_formula(f, 0, IngredientState(), caster="bob")[0]
+        for f in ingredient_lists
+    ]
     formula_data = [f.serialize() for f in formulas]
     return formula_data
+
 
 def calculate_results(monsters, formula_data):
     retr = []
@@ -78,6 +77,7 @@ def calculate_results(monsters, formula_data):
             assert dmg
             retr.append((m, fd, dmg >= m.fighter.max_hp))
     return retr
+
 
 def print_stats():
     Assets.setup(mock=True)

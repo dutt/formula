@@ -17,7 +17,14 @@ class Spritesheet:
             self.sheets = [pygame.image.load(f).convert() for f in files]
 
     def get_image(
-        self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None, rotate=None, sheet=None,
+        self,
+        col,
+        row,
+        width=constants.CELL_WIDTH,
+        height=constants.CELL_HEIGHT,
+        scale=None,
+        rotate=None,
+        sheet=None,
     ):
         if not sheet:
             sheet = self.sheets[0]
@@ -34,7 +41,13 @@ class Spritesheet:
         return [image]
 
     def get_animation(
-        self, col, row, width=constants.CELL_WIDTH, height=constants.CELL_HEIGHT, scale=None, rotate=None,
+        self,
+        col,
+        row,
+        width=constants.CELL_WIDTH,
+        height=constants.CELL_HEIGHT,
+        scale=None,
+        rotate=None,
     ):
         images = []
         for sheet in self.sheets:

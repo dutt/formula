@@ -1,4 +1,4 @@
-class Inventory():
+class Inventory:
     def __init__(self, max_count, num_quickslots):
         self.items = []
         self.max_count = max_count

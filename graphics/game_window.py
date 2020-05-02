@@ -18,7 +18,10 @@ from systems.tutorial import Tutorial
 class GameWindow(Window):
     def __init__(self, constants, visible=False, parent=None):
         super().__init__(
-            Pos(constants.right_panel_size.width, 0), constants.game_window_size, visible, parent=parent
+            Pos(constants.right_panel_size.width, 0),
+            constants.game_window_size,
+            visible,
+            parent=parent,
         )
         self.show_all = False
         self.drawing_priority = 2
@@ -58,13 +61,15 @@ class GameWindow(Window):
                     visible = tcod.map_is_in_fov(game_data.fov_map, x, y)
                     if not visible:
                         continue
-                    distance = int((e.pos - Pos(x,y)).length())
+                    distance = int((e.pos - Pos(x, y)).length())
                     distance = max(1, distance)
                     if distance < e.light.brightness:
                         game_data.map.tiles[x][y].light += 60 // distance
 
     def draw_terrain(self, game_data, gfx_data, main):
-        surface = pygame.Surface(game_data.constants.game_window_size.tuple(), pygame.SRCALPHA)
+        surface = pygame.Surface(
+            game_data.constants.game_window_size.tuple(), pygame.SRCALPHA
+        )
         surface.fill(colors.BACKGROUND)
         for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
             for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
@@ -87,7 +92,7 @@ class GameWindow(Window):
                     else:
                         darken = 80
 
-                    #if visible:
+                    # if visible:
                     darken -= game_data.map.tiles[x][y].light
 
                     darken = max(0, min(255, darken))
@@ -99,18 +104,28 @@ class GameWindow(Window):
                     if game_data.map.tiles[x][y].decor:
                         for decor_drawable in game_data.map.tiles[x][y].decor:
                             drawable = Drawable(decor_drawable.asset)
-                            drawable.colorize((darken, darken, darken), pygame.BLEND_RGB_SUB)
-                            surface.blit(drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
+                            drawable.colorize(
+                                (darken, darken, darken), pygame.BLEND_RGB_SUB
+                            )
+                            surface.blit(
+                                drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT)
+                            )
 
                     if game_data.map.tiles[x][y].trap:
                         drawable = Drawable(gfx_data.assets.trap)
-                        drawable.colorize((darken, darken, darken), pygame.BLEND_RGB_SUB)
-                        surface.blit(drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
+                        drawable.colorize(
+                            (darken, darken, darken), pygame.BLEND_RGB_SUB
+                        )
+                        surface.blit(
+                            drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT)
+                        )
 
         main.blit(surface, (0, 0))
 
     def draw_entities(self, game_data, gfx_data, main):
-        rendering_sorted = sorted(game_data.map.entities, key=lambda e: e.render_order.value)
+        rendering_sorted = sorted(
+            game_data.map.entities, key=lambda e: e.render_order.value
+        )
         for e in rendering_sorted:
             if not e.drawable:
                 continue
@@ -127,7 +142,9 @@ class GameWindow(Window):
                 # health bar for monsters
                 bar_height = 6
                 if e.fighter and e.ai and e.fighter.hp != e.fighter.max_hp:
-                    bar_pos = Pos(sx * CELL_WIDTH, (CELL_HEIGHT - bar_height) + sy * CELL_HEIGHT,)
+                    bar_pos = Pos(
+                        sx * CELL_WIDTH, (CELL_HEIGHT - bar_height) + sy * CELL_HEIGHT,
+                    )
                     display_bar(
                         main,
                         assets=None,
@@ -179,17 +196,23 @@ class GameWindow(Window):
         pos = pygame.mouse.get_pos()
         px, py = pos
 
-        targeting_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+        targeting_surface = pygame.Surface(
+            game_data.constants.window_size.tuple(), pygame.SRCALPHA
+        )
 
         # find targeted tile
         map_screen_pos = self.global_screen_pos_to_map_screen_pos(px, py, game_data)
-        tile = self.map_screen_pos_to_tile(map_screen_pos[0], map_screen_pos[1], gfx_data)
+        tile = self.map_screen_pos_to_tile(
+            map_screen_pos[0], map_screen_pos[1], gfx_data
+        )
 
         rect = self.get_tile_rect(tile[0], tile[1], gfx_data)
         rect_center = rect[0] + CELL_WIDTH / 2, rect[1] + CELL_HEIGHT / 2
 
         # find player position
-        s_player_x, s_player_y = gfx_data.camera.map_to_screen(game_data.player.pos.x, game_data.player.pos.y)
+        s_player_x, s_player_y = gfx_data.camera.map_to_screen(
+            game_data.player.pos.x, game_data.player.pos.y
+        )
         orig = (s_player_x * CELL_WIDTH, s_player_y * CELL_HEIGHT)
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
@@ -206,7 +229,9 @@ class GameWindow(Window):
             )
             pygame.draw.line(targeting_surface, (150, 0, 0), orig, red_part)
             pygame.draw.line(targeting_surface, (100, 100, 100), red_part, rect_center)
-            draw_rect_boundary(targeting_surface, (150, 100, 100), rect, draw_cross=True)
+            draw_rect_boundary(
+                targeting_surface, (150, 100, 100), rect, draw_cross=True
+            )
         elif item.area == 1:  # no aoe
             pygame.draw.line(targeting_surface, (255, 0, 0), orig, rect_center)
             draw_rect_boundary(targeting_surface, (255, 0, 0), rect, draw_cross=False)
@@ -214,8 +239,7 @@ class GameWindow(Window):
             pygame.draw.line(main, (255, 0, 0), orig, rect_center)
 
             for x in range(
-                math.ceil(tile[0] - item.distance),
-                math.ceil(tile[0] + item.distance),
+                math.ceil(tile[0] - item.distance), math.ceil(tile[0] + item.distance),
             ):
                 for y in range(
                     math.ceil(tile[1] - item.distance),
@@ -233,7 +257,9 @@ class GameWindow(Window):
 
     def draw_targeting_boundary(self, game_data, gfx_data, main):
         # find player position
-        s_player_x, s_player_y = gfx_data.camera.map_to_screen(game_data.player.pos.x, game_data.player.pos.y)
+        s_player_x, s_player_y = gfx_data.camera.map_to_screen(
+            game_data.player.pos.x, game_data.player.pos.y
+        )
         orig = (s_player_x * CELL_WIDTH, s_player_y * CELL_HEIGHT)
         orig = (orig[0] + CELL_WIDTH / 2, orig[1] + CELL_HEIGHT / 2)  # centered
 
@@ -243,7 +269,6 @@ class GameWindow(Window):
         elif game_data.targeting_consumable:
             item = game_data.targeting_consumable
         assert item
-
 
         for x in range(gfx_data.camera.x1, gfx_data.camera.x2):
             for y in range(gfx_data.camera.y1, gfx_data.camera.y2):
@@ -264,7 +289,9 @@ class GameWindow(Window):
                 main.blit(drawable.asset, (sx * CELL_WIDTH, sy * CELL_HEIGHT))
 
     def draw_effects(self, game_data, gfx_data, main):
-        surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+        surface = pygame.Surface(
+            game_data.constants.window_size.tuple(), pygame.SRCALPHA
+        )
         for effect in gfx_data.visuals.effects:
             if not effect.visible:
                 continue
@@ -273,15 +300,21 @@ class GameWindow(Window):
         main.blit(surface, (0, 0))
 
     def draw_mouse_over_info(self, game_data, gfx_data, main):
-        info_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+        info_surface = pygame.Surface(
+            game_data.constants.window_size.tuple(), pygame.SRCALPHA
+        )
         pos = pygame.mouse.get_pos()
         px, py = pos
         map_screen_pos = self.global_screen_pos_to_map_screen_pos(px, py, game_data)
-        tile_x, tile_y = self.map_screen_pos_to_tile(map_screen_pos[0], map_screen_pos[1], gfx_data)
+        tile_x, tile_y = self.map_screen_pos_to_tile(
+            map_screen_pos[0], map_screen_pos[1], gfx_data
+        )
         tile_pos = Pos(tile_x, tile_y)
         names = []
         for e in game_data.map.entities:
-            if e.pos == tile_pos and tcod.map_is_in_fov(game_data.fov_map, tile_pos.x, tile_pos.y):
+            if e.pos == tile_pos and tcod.map_is_in_fov(
+                game_data.fov_map, tile_pos.x, tile_pos.y
+            ):
                 names.append(e.raw_name)
         if not names:
             return
@@ -298,11 +331,15 @@ class GameWindow(Window):
 
     def draw_help(self, game_data, gfx_data, main):
 
-        help_surface = pygame.Surface(game_data.constants.window_size.tuple(), pygame.SRCALPHA)
+        help_surface = pygame.Surface(
+            game_data.constants.window_size.tuple(), pygame.SRCALPHA
+        )
 
         if not game_data.run_planner.has_next:  # last level
             for e in game_data.map.entities:
-                if e.name == "Remains of Arina" and tcod.map_is_in_fov(game_data.fov_map, e.pos.x, e.pos.y):
+                if e.name == "Remains of Arina" and tcod.map_is_in_fov(
+                    game_data.fov_map, e.pos.x, e.pos.y
+                ):
                     sx, sy = gfx_data.camera.map_to_screen(e.pos.x, e.pos.y)
                     sx, sy = sx * CELL_WIDTH + 40, sy * CELL_HEIGHT
                     display_text(

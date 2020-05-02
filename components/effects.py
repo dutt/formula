@@ -28,7 +28,7 @@ class Effect:
 
     def serialize(self):
         retr = {
-            "rounds" : self.rounds,
+            "rounds": self.rounds,
         }
         stats = self.stats_func()
         for key in stats:

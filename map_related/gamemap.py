@@ -14,7 +14,6 @@ class GameMap:
         self.num_keys_total = 0
         self.stairs_found = False
 
-
     def initialize_tiles(self):
         tiles = [[Tile(False) for y in range(self.height)] for x in range(self.width)]
         return tiles

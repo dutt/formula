@@ -8,12 +8,13 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 import systems.input_recorder
 import config
 
+
 def get_current_modifier_keys():
     pressed_keys = pygame.key.get_pressed()
-    modifier_keys = [ pygame.K_LALT, pygame.K_RALT,
-                      pygame.K_RSHIFT, pygame.K_LSHIFT ]
+    modifier_keys = [pygame.K_LALT, pygame.K_RALT, pygame.K_RSHIFT, pygame.K_LSHIFT]
     modifiers = [key for key in modifier_keys if pressed_keys[key]]
     return modifiers
+
 
 def handle_keys(events, state):
     modifiers = get_current_modifier_keys()
@@ -33,7 +34,7 @@ def handle_keys(events, state):
             GameStates.FORMULA_HELP_SCEEN,
             GameStates.STORY_HELP_SCREEN,
             GameStates.CRAFTING_HELP,
-            GameStates.INVENTORY_HELP
+            GameStates.INVENTORY_HELP,
         ]:
             return handle_general_keys(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
@@ -64,12 +65,13 @@ def handle_inventory(key, modifiers):
         return {"left": 1}
     elif key in [pygame.K_RIGHT, pygame.K_d]:
         return {"right": 1}
-    elif key >= pygame.K_1 and key <= pygame.K_9: # quickslot assignments
-        return {"assign" : int(chr(key)) }
+    elif key >= pygame.K_1 and key <= pygame.K_9:  # quickslot assignments
+        return {"assign": int(chr(key))}
     elif key == pygame.K_TAB:
         return {EventType.show_help: True}
 
     return handle_general_keys(key, modifiers)
+
 
 def handle_crafting(key, modifiers):
     if key == pygame.K_q:
@@ -91,39 +93,42 @@ def handle_crafting(key, modifiers):
     elif key == pygame.K_UP:
         return {"next_slot": -1}
     elif key == pygame.K_SPACE:
-        return {"apply" : True}
+        return {"apply": True}
     elif key == pygame.K_TAB:
         return {EventType.show_help: True}
 
     return handle_general_keys(key, modifiers)
 
+
 def handle_console(key, modifiers):
     if pygame.K_RSHIFT in modifiers:
         if key == pygame.K_MINUS:
-            return {"key" : pygame.K_UNDERSCORE }
+            return {"key": pygame.K_UNDERSCORE}
         elif key == pygame.K_0:
-            return {"key" : pygame.K_EQUALS}
+            return {"key": pygame.K_EQUALS}
         elif key == pygame.K_8:
-            return {"key" : pygame.K_LEFTPAREN}
+            return {"key": pygame.K_LEFTPAREN}
         elif key == pygame.K_9:
-            return {"key" : pygame.K_RIGHTPAREN}
-    if key >= pygame.K_a and key <= pygame.K_z: #alphabet lowercase
-        return { "key" : key,
-                "uppercase" : pygame.K_RSHIFT in modifiers,
-                }
-    elif key >= pygame.K_0 and key <= pygame.K_9: # numbers
-        return {"key" : key }
+            return {"key": pygame.K_RIGHTPAREN}
+    if key >= pygame.K_a and key <= pygame.K_z:  # alphabet lowercase
+        return {
+            "key": key,
+            "uppercase": pygame.K_RSHIFT in modifiers,
+        }
+    elif key >= pygame.K_0 and key <= pygame.K_9:  # numbers
+        return {"key": key}
     elif key in [pygame.K_PERIOD, pygame.K_SPACE, pygame.K_COMMA]:
-        return {"key" : key }
+        return {"key": key}
     elif key == pygame.K_RETURN:
-        return {"apply" : True }
+        return {"apply": True}
     elif key == pygame.K_BACKSPACE:
-        return {"backspace" : True }
+        return {"backspace": True}
     elif key == pygame.K_UP:
-        return {"history" : -1 }
+        return {"history": -1}
     elif key == pygame.K_DOWN:
-        return {"history" : 1 }
+        return {"history": 1}
     return handle_general_keys(key, modifiers)
+
 
 def handle_ask_quit(key, modifiers):
     if key == pygame.K_SPACE:
@@ -191,13 +196,15 @@ def handle_formula_screen_keys(key, modifiers):
 def handle_general_keys(key, modifiers):
     if key in [pygame.K_ESCAPE, pygame.K_TAB, pygame.K_SPACE]:
         return {EventType.exit: True}
-    elif key == pygame.K_RETURN and (pygame.K_RALT in modifiers or pygame.K_LALT in modifiers):
+    elif key == pygame.K_RETURN and (
+        pygame.K_RALT in modifiers or pygame.K_LALT in modifiers
+    ):
         return {EventType.fullscreen: True}
     elif key in [pygame.K_UP, pygame.K_w]:
         return {EventType.scroll_up: 1}
     elif key in [pygame.K_DOWN, pygame.K_s]:
         return {EventType.scroll_down: 1}
-    elif key == 167: # paragraph sign key, left of 1
+    elif key == 167:  # paragraph sign key, left of 1
         return {EventType.console: True}
     return {}
 
@@ -220,7 +227,9 @@ def handle_mouse(events, constants, camera):
         cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
         cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
-        data = AttrDict({"x": pos.x, "y": pos.y, "cx": cx, "cy": cy, "alternate" :  shift_pressed })
+        data = AttrDict(
+            {"x": pos.x, "y": pos.y, "cx": cx, "cy": cy, "alternate": shift_pressed}
+        )
         if not config.conf.is_replaying:
             e.data.pos.cx = cx
             e.data.pos.cy = cy
@@ -268,7 +277,7 @@ def handle_player_turn_keys(key, modifiers):
     elif key == pygame.K_TAB:
         return {EventType.show_help: True}
     elif key == pygame.K_v:
-        return {EventType.start_crafting : True}
+        return {EventType.start_crafting: True}
     elif key == pygame.K_i:
         return {EventType.inventory: True}
     elif key == pygame.K_z:

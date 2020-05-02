@@ -28,6 +28,7 @@ class EventType:
     use_consumable = "use_consumable"
     inventory = "inventory"
 
+
 class InputType(Enum):
     KEY = auto()
     MOUSE = auto()
@@ -76,7 +77,9 @@ class MouseEvent(Event):
 
     def parse_raw(self, raw_event):
         mouse_pos = Pos(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-        return attrdict.AttrDict({"type": InputType.MOUSE.name, "pos": mouse_pos, "button": raw_event.button})
+        return attrdict.AttrDict(
+            {"type": InputType.MOUSE.name, "pos": mouse_pos, "button": raw_event.button}
+        )
 
     def serialize(self):
         return {

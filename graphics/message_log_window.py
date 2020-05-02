@@ -25,18 +25,32 @@ class MessageLogWindow(Window):
         surface.fill(colors.BACKGROUND)
         messages = game_data.log.messages
         y = 0
-        start = max(0, min(len(messages) - self.num_messages, len(messages) - self.num_messages + self.offset,),)
+        start = max(
+            0,
+            min(
+                len(messages) - self.num_messages,
+                len(messages) - self.num_messages + self.offset,
+            ),
+        )
         end = min(len(messages), start + self.num_messages)
         for idx, msg in enumerate(messages[start:end]):
             display_text(
-                surface, msg.text, Assets.get().font_message, (50, y + idx * 20), msg.color,
+                surface,
+                msg.text,
+                Assets.get().font_message,
+                (50, y + idx * 20),
+                msg.color,
             )
         gfx_data.main.blit(surface, self.pos.tuple())
 
     def handle_click(self, game_data, gfx_data, mouse_action):
         scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
-            self.offset = max(-len(game_data.log.messages) + self.num_messages, self.offset - 2, 0)
+            self.offset = max(
+                -len(game_data.log.messages) + self.num_messages, self.offset - 2, 0
+            )
         scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
-            self.offset = min(len(game_data.log.messages) - self.num_messages, self.offset + 2)
+            self.offset = min(
+                len(game_data.log.messages) - self.num_messages, self.offset + 2
+            )

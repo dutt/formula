@@ -16,6 +16,7 @@ from graphics.console_window import ConsoleWindow
 from graphics.crafting_window import CraftingWindow, CraftingHelpWindow
 from graphics.inventory_window import InventoryWindow, InventoryHelpWindow
 
+
 class WindowManager:
     def __init__(self):
         self.windows = []
@@ -32,10 +33,10 @@ class WindowManager:
             GameStates.VICTORY: VictoryWindow,
             GameStates.PLAY: RightPanelWindow,
             GameStates.CONSOLE: ConsoleWindow,
-            GameStates.CRAFTING : CraftingWindow,
-            GameStates.CRAFTING_HELP : CraftingHelpWindow,
-            GameStates.INVENTORY : InventoryWindow,
-            GameStates.INVENTORY_HELP : InventoryHelpWindow,
+            GameStates.CRAFTING: CraftingWindow,
+            GameStates.CRAFTING_HELP: CraftingHelpWindow,
+            GameStates.INVENTORY: InventoryWindow,
+            GameStates.INVENTORY_HELP: InventoryHelpWindow,
         }
 
     def push(self, window):
@@ -91,7 +92,9 @@ class WindowManager:
         assert wnd
         wnd.visible = True
         wnd.init(game_data, gfx_data)
-        self.windows = sorted(self.windows, key=lambda wnd : wnd.drawing_priority, reverse=True)
+        self.windows = sorted(
+            self.windows, key=lambda wnd: wnd.drawing_priority, reverse=True
+        )
 
     def get_state_for_wnd(self, wnd):
         for state, w in self.state_wnd_mapping.items():

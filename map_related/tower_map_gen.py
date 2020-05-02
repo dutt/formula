@@ -34,7 +34,14 @@ class DoorDirection(Enum):
 
 class TowerMapGenerator:
     @staticmethod
-    def make_map(constants, level, monster_chances, key_ratio, ingredient_count={}, consumable_count={}):
+    def make_map(
+        constants,
+        level,
+        monster_chances,
+        key_ratio,
+        ingredient_count={},
+        consumable_count={},
+    ):
         retr = GameMap(constants.map_size, level)
         retr.chunks = TowerMapGenerator.chunkify(retr)
         TowerMapGenerator.cleanup_walls(retr)
@@ -120,23 +127,33 @@ class TowerMapGenerator:
                 end = curr.x + curr.width - max(minlength, int(curr.width * 0.2))
                 hallway = random.randint(start, end)
                 first = Rect(curr.x, curr.y, hallway - curr.x, curr.height)
-                second = Rect(hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height)
+                second = Rect(
+                    hallway + 1, curr.y, curr.x + curr.width - hallway - 1, curr.height
+                )
                 new_direction = WallDirection.horizontal
-            elif direction == WallDirection.horizontal and curr.height > minsize:  # horizontal
+            elif (
+                direction == WallDirection.horizontal and curr.height > minsize
+            ):  # horizontal
                 start = curr.y + max(minlength, int(curr.height * 0.2))
                 end = curr.y + curr.height - max(minlength, int(curr.height * 0.2))
                 hallway = random.randint(start, end)
                 first = Rect(curr.x, curr.y, curr.width, hallway - curr.y)
-                second = Rect(curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1)
+                second = Rect(
+                    curr.x, hallway + 1, curr.width, curr.y + curr.height - hallway - 1
+                )
                 new_direction = WallDirection.vertical
             else:  # chunk too small, done. just re-add the chunk
                 chunks.append(curr)
                 break
 
-            TowerMapGenerator.mark_room(m, first, TowerMapGenerator.first_unused_room_id(m))
+            TowerMapGenerator.mark_room(
+                m, first, TowerMapGenerator.first_unused_room_id(m)
+            )
             chunks.append(first)
 
-            TowerMapGenerator.mark_room(m, second, TowerMapGenerator.first_unused_room_id(m))
+            TowerMapGenerator.mark_room(
+                m, second, TowerMapGenerator.first_unused_room_id(m)
+            )
             chunks.append(second)
 
             TowerMapGenerator.mark_hallway(m, curr, hallway, direction)
@@ -272,7 +289,11 @@ class TowerMapGenerator:
                 if skip_room:
                     continue
 
-                already_there = [entity for entity in entities if entity.pos.x == x and entity.pos.y == y]
+                already_there = [
+                    entity
+                    for entity in entities
+                    if entity.pos.x == x and entity.pos.y == y
+                ]
                 if not any(already_there) and not m.tiles[x][y].blocked:
                     monster_choice = random_choice_from_dict(monster_chances)
                     monster_data = get_monster(x, y, m, c, monster_choice, entities)
@@ -288,7 +309,12 @@ class TowerMapGenerator:
         posx = chunks[-1].x + chunks[-1].width // 2
         posy = chunks[-1].y + chunks[-1].height // 2
         down_stairs = Entity(
-            posx, posy, "Stairs", render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component,
+            posx,
+            posy,
+            "Stairs",
+            render_order=RenderOrder.STAIRS,
+            stairs=stairs_component,
+            drawable=drawable_component,
         )
         m.entities.append(down_stairs)
 
@@ -299,7 +325,7 @@ class TowerMapGenerator:
             num_rooms_with_keys = len(chunks[1:-1])
         # sample random rooms but not in the first room, not in the room with stairs
         rooms_with_keys = random.sample(chunks[1:-1], k=num_rooms_with_keys)
-        placed_keys = [] # not two keys in the same square
+        placed_keys = []  # not two keys in the same square
         for _, c in enumerate(rooms_with_keys):
             occupied = True
             while occupied:
@@ -309,11 +335,18 @@ class TowerMapGenerator:
                 for cm in c.monsters:
                     if cm.pos == Pos(x, y):
                         occupied = True
-                if (x,y) in placed_keys:
+                if (x, y) in placed_keys:
                     occupied = True
-            placed_keys.append((x,y))
+            placed_keys.append((x, y))
             drawable_component = Drawable(Assets.get().key)
-            key = Entity(x, y, "Key", render_order=RenderOrder.ITEM, key=Key(), drawable=drawable_component,)
+            key = Entity(
+                x,
+                y,
+                "Key",
+                render_order=RenderOrder.ITEM,
+                key=Key(),
+                drawable=drawable_component,
+            )
             m.entities.append(key)
         m.num_keys_total = num_rooms_with_keys
 
@@ -331,7 +364,7 @@ class TowerMapGenerator:
                     ingredient_count[ingredient] -= 1
                     return ingredient
 
-        placed_ingredients = [] # not two ingredients in the same square
+        placed_ingredients = []  # not two ingredients in the same square
         while has_ingredients_left():
             c = random.choice(chunks)
             occupied = True
@@ -340,15 +373,22 @@ class TowerMapGenerator:
                 y = random.randint(c.y + 1, c.y + c.height - 2)
                 occupied = False
                 for ent in m.entities:
-                    if ent.pos == Pos(x,y):
+                    if ent.pos == Pos(x, y):
                         occupied = True
-                if (x,y) in placed_ingredients:
+                if (x, y) in placed_ingredients:
                     occupied = True
-            placed_ingredients.append((x,y))
+            placed_ingredients.append((x, y))
             drawable_component = Drawable(Assets.get().ingredient)
             ingredient_component = get_ingredient()
             name = ingredient_component.name.capitalize()
-            ingredient = Entity(x, y, f"{name} ingredient", render_order=RenderOrder.ITEM, drawable=drawable_component, ingredient=ingredient_component)
+            ingredient = Entity(
+                x,
+                y,
+                f"{name} ingredient",
+                render_order=RenderOrder.ITEM,
+                drawable=drawable_component,
+                ingredient=ingredient_component,
+            )
             m.entities.append(ingredient)
 
     @staticmethod
@@ -365,7 +405,7 @@ class TowerMapGenerator:
                     consumable_count[itemtype] -= 1
                     return itemtype()
 
-        placed_consumables = [] # not two consumables in the same square
+        placed_consumables = []  # not two consumables in the same square
         while has_consumables_left():
             c = random.choice(chunks)
             occupied = True
@@ -374,45 +414,54 @@ class TowerMapGenerator:
                 y = random.randint(c.y + 1, c.y + c.height - 2)
                 occupied = False
                 for ent in m.entities:
-                    if ent.pos == Pos(x,y):
+                    if ent.pos == Pos(x, y):
                         occupied = True
-                if (x,y) in placed_consumables:
+                if (x, y) in placed_consumables:
                     occupied = True
-            placed_consumables.append((x,y))
+            placed_consumables.append((x, y))
             drawable_component = Drawable(Assets.get().consumable)
             consumable_component = get_consumable()
             name = consumable_component.name.capitalize()
-            consumable = Entity(x, y, name, render_order=RenderOrder.ITEM, drawable=drawable_component, consumable=consumable_component)
+            consumable = Entity(
+                x,
+                y,
+                name,
+                render_order=RenderOrder.ITEM,
+                drawable=drawable_component,
+                consumable=consumable_component,
+            )
             m.entities.append(consumable)
 
     @staticmethod
     def place_decorations(m, chunks):
         for c in chunks:
             drawable_component = Drawable(Assets.get().red_carpet["topleft"])
-            m.tiles[c.x+1][c.y+1].decor.append(drawable_component)
+            m.tiles[c.x + 1][c.y + 1].decor.append(drawable_component)
 
             drawable_component = Drawable(Assets.get().red_carpet["topright"])
-            m.tiles[c.x+c.width-2][c.y+1].decor.append(drawable_component)
+            m.tiles[c.x + c.width - 2][c.y + 1].decor.append(drawable_component)
 
             drawable_component = Drawable(Assets.get().red_carpet["bottomleft"])
-            m.tiles[c.x+1][c.y+c.height-2].decor.append(drawable_component)
+            m.tiles[c.x + 1][c.y + c.height - 2].decor.append(drawable_component)
 
             drawable_component = Drawable(Assets.get().red_carpet["bottomright"])
-            m.tiles[c.x+c.width-2][c.y+c.height-2].decor.append(drawable_component)
+            m.tiles[c.x + c.width - 2][c.y + c.height - 2].decor.append(
+                drawable_component
+            )
 
-            for x in range(c.x+2, c.x + c.width-2):
+            for x in range(c.x + 2, c.x + c.width - 2):
                 drawable_component = Drawable(Assets.get().red_carpet["top"])
-                m.tiles[x][c.y+1].decor.append(drawable_component)
+                m.tiles[x][c.y + 1].decor.append(drawable_component)
 
                 drawable_component = Drawable(Assets.get().red_carpet["bottom"])
-                m.tiles[x][c.y + c.height-2].decor.append(drawable_component)
+                m.tiles[x][c.y + c.height - 2].decor.append(drawable_component)
 
-            for y in range(c.y+2, c.y + c.height-2):
+            for y in range(c.y + 2, c.y + c.height - 2):
                 drawable_component = Drawable(Assets.get().red_carpet["left"])
-                m.tiles[c.x+1][y].decor.append(drawable_component)
+                m.tiles[c.x + 1][y].decor.append(drawable_component)
 
                 drawable_component = Drawable(Assets.get().red_carpet["right"])
-                m.tiles[c.x+c.width-2][y].decor.append(drawable_component)
+                m.tiles[c.x + c.width - 2][y].decor.append(drawable_component)
 
             for x in range(c.x + 2, c.x + c.width - 2):
                 for y in range(c.y + 2, c.y + c.height - 2):
@@ -424,14 +473,21 @@ class TowerMapGenerator:
         def add_light(x, y):
             drawable_component = Drawable(Assets.get().light)
             light_component = Light(brightness=4)
-            light = Entity(x, y, "Light", render_order=RenderOrder.DECOR, drawable=drawable_component, light=light_component)
+            light = Entity(
+                x,
+                y,
+                "Light",
+                render_order=RenderOrder.DECOR,
+                drawable=drawable_component,
+                light=light_component,
+            )
             m.entities.append(light)
 
         for c in chunks:
-            if c.width > c.height: # horizontal room, lights  top + bottom middle
+            if c.width > c.height:  # horizontal room, lights  top + bottom middle
                 add_light(c.x + c.width // 2, c.y + 1)
-                add_light(c.x + c.width // 2, c.y + c.height-2)
-            else: # horizontal room, lights  top + bottom middle
+                add_light(c.x + c.width // 2, c.y + c.height - 2)
+            else:  # horizontal room, lights  top + bottom middle
                 add_light(c.x + 1, c.y + c.height // 2)
                 add_light(c.x + c.width - 2, c.y + c.height // 2)
 

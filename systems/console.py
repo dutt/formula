@@ -1,17 +1,14 @@
 from util import Pos
 
-class Console():
 
+class Console:
     @staticmethod
     def parse(command):
         return command
 
     @staticmethod
     def run(data, game):
-        global_data = {
-            "game" : game,
-            "Pos" : Pos
-        }
+        global_data = {"game": game, "Pos": Pos}
         try:
             if "=" in data and "==" not in data:
                 return exec(data, global_data)

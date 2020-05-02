@@ -2,6 +2,7 @@ from enum import Enum, auto
 
 import config
 
+
 class Ingredient(Enum):
     EMPTY = auto()
     FIRE = auto()
@@ -93,24 +94,19 @@ class Ingredient(Enum):
             Ingredient.WATER,
             Ingredient.LIFE,
             Ingredient.EARTH,
-
             Ingredient.RANGE,
             Ingredient.AREA,
-
             Ingredient.INFERNO,
             Ingredient.FIRESPRAY,
             Ingredient.FIREBOLT,
-
             Ingredient.SLEET,
             Ingredient.ICE,
             Ingredient.ICEBOLT,
             Ingredient.ICE_VORTEX,
-
             Ingredient.VITALITY,
-
             Ingredient.ROCK,
             Ingredient.MAGMA,
-            Ingredient.MUD
+            Ingredient.MUD,
         ]
         if config.conf.trap:
             retr.append(Ingredient.TRAP)
@@ -122,17 +118,14 @@ class Ingredient(Enum):
             Ingredient.INFERNO,
             Ingredient.FIRESPRAY,
             Ingredient.FIREBOLT,
-
             Ingredient.SLEET,
             Ingredient.ICE,
             Ingredient.ICEBOLT,
             Ingredient.ICE_VORTEX,
-
             Ingredient.VITALITY,
-
             Ingredient.ROCK,
             Ingredient.MAGMA,
-            Ingredient.MUD
+            Ingredient.MUD,
         ]
 
     @staticmethod
@@ -168,20 +161,18 @@ class Ingredient(Enum):
         return self in [
             Ingredient.FIRE,
             Ingredient.WATER,
-
             Ingredient.TRAP,
             Ingredient.RANGE,
             Ingredient.AREA,
-
             Ingredient.INFERNO,
             Ingredient.FIREBOLT,
             Ingredient.FIRESPRAY,
-
             Ingredient.SLEET,
             Ingredient.ICE,
             Ingredient.ICEBOLT,
             Ingredient.ICE_VORTEX,
         ]
+
 
 class IngredientState:
     def __init__(self):
@@ -194,27 +185,24 @@ class IngredientState:
         self.shield_per_step = 2
 
 
-class IngredientMeta():
+class IngredientMeta:
     UPGRADE_TO_BASE_MAP = {
-        Ingredient.INFERNO : Ingredient.FIRE,
-        Ingredient.FIRESPRAY : Ingredient.FIRE,
-        Ingredient.FIREBOLT : Ingredient.FIRE,
-
-        Ingredient.SLEET : Ingredient.WATER,
-        Ingredient.ICE : Ingredient.WATER,
-        Ingredient.ICEBOLT : Ingredient.WATER,
-        Ingredient.ICE_VORTEX : Ingredient.WATER,
-
-        Ingredient.VITALITY : Ingredient.LIFE,
-
-        Ingredient.ROCK : Ingredient.EARTH,
-        Ingredient.MAGMA : Ingredient.EARTH,
-        Ingredient.MUD : Ingredient.EARTH
+        Ingredient.INFERNO: Ingredient.FIRE,
+        Ingredient.FIRESPRAY: Ingredient.FIRE,
+        Ingredient.FIREBOLT: Ingredient.FIRE,
+        Ingredient.SLEET: Ingredient.WATER,
+        Ingredient.ICE: Ingredient.WATER,
+        Ingredient.ICEBOLT: Ingredient.WATER,
+        Ingredient.ICE_VORTEX: Ingredient.WATER,
+        Ingredient.VITALITY: Ingredient.LIFE,
+        Ingredient.ROCK: Ingredient.EARTH,
+        Ingredient.MAGMA: Ingredient.EARTH,
+        Ingredient.MUD: Ingredient.EARTH,
     }
 
     UPGRADE_GROUPS = [
-        [ Ingredient.INFERNO, Ingredient.FIRESPRAY, Ingredient.FIREBOLT ],
-        [ Ingredient.SLEET,  Ingredient.ICE,  Ingredient.ICEBOLT,  Ingredient.ICE_VORTEX ],
-        [ Ingredient.VITALITY ],
-        [ Ingredient.ROCK, Ingredient.MAGMA, Ingredient.MUD ]
+        [Ingredient.INFERNO, Ingredient.FIRESPRAY, Ingredient.FIREBOLT],
+        [Ingredient.SLEET, Ingredient.ICE, Ingredient.ICEBOLT, Ingredient.ICE_VORTEX],
+        [Ingredient.VITALITY],
+        [Ingredient.ROCK, Ingredient.MAGMA, Ingredient.MUD],
     ]
