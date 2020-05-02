@@ -17,8 +17,8 @@ from graphics.right_panel_window import RightPanelWindow
 from graphics.story_window import StoryWindow, StoryHelpWindow
 from graphics.level_up_window import LevelUpWindow
 from graphics.console_window import ConsoleWindow
-from graphics.crafting_window import CraftingWindow
-from graphics.inventory_window import InventoryWindow
+from graphics.crafting_window import CraftingWindow, CraftingHelpWindow
+from graphics.inventory_window import InventoryWindow, InventoryHelpWindow
 from graphics.visual_effect import VisualEffectSystem
 from graphics.window_manager import WindowManager
 from util import Size, Pos
@@ -128,10 +128,10 @@ def setup_data_state(constants):
     clock = pygame.time.Clock()
 
     windows = WindowManager()
-    gw = GameWindow(constants)
-    windows.push(gw)
-    windows.push(RightPanelWindow(constants, parent=gw))
-    windows.push(MessageLogWindow(constants, parent=gw))
+    rpw = RightPanelWindow(constants)
+    windows.push(rpw)
+    windows.push(GameWindow(constants, parent=rpw))
+    windows.push(MessageLogWindow(constants, parent=rpw))
 
     windows.push(StoryWindow(constants, story_data, visible=True))
     windows.push(StoryHelpWindow(constants))
@@ -144,7 +144,9 @@ def setup_data_state(constants):
     windows.push(VictoryWindow(constants))
     windows.push(ConsoleWindow(constants))
     windows.push(CraftingWindow(constants))
+    windows.push(CraftingHelpWindow(constants))
     windows.push(InventoryWindow(constants))
+    windows.push(InventoryHelpWindow(constants))
 
     text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
@@ -164,16 +166,20 @@ def setup_data_state(constants):
             Ingredient.EARTH : 2,
             Ingredient.RANGE : 1,
             Ingredient.AREA : 1,
+            #Ingredient.TRAP : 2,
         })
     else:
         for ing in Ingredient.all():
             ingredient_storage.add_multiple({ ing : config.conf.pickupstartcount} )
+
     menu_data = AttrDict({"currchoice": 0})
 
-    inventory = Inventory(constants)
-    #from components.consumable import Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig
+    inventory = Inventory(max_count=constants.num_consumables, num_quickslots=constants.num_quickslots)
+    from components.consumable import Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig
     #for t in [Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig]:
     #    inventory.add(t())
+    inventory.add(Firebomb())
+    inventory.add(Teleporter())
 
     initial_state = GameStates.STORY_SCREEN
 
@@ -209,7 +215,7 @@ def setup_data_state(constants):
 
     if not run_tutorial:
         game_data.prev_state = [GameStates.FORMULA_SCREEN, GameStates.PLAY]
-        windows.activate_wnd_for_state(game_data.state)
+        windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
         story_data.next_story()
 
     # create default formulas

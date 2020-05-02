@@ -169,6 +169,7 @@ class FormulaBuilder:
         targeted = True
         attack_modifier = False
         attack_ingredient = False
+        trap = 0
         for slot in slots:
             if slot != Ingredient.EMPTY and not slot.targeted:
                 targeted = False
@@ -176,12 +177,6 @@ class FormulaBuilder:
             if slot == Ingredient.FIRE:
                 fire_dmg += state.dmg_per_step * 2
                 attack_ingredient = True
-            elif slot == Ingredient.RANGE:
-                attack_modifier = True
-                distance += state.distance_per_step * 2
-            elif slot == Ingredient.AREA:
-                attack_modifier = True
-                area += state.area_per_step * 2
             elif slot == Ingredient.WATER:
                 slow_rounds += state.slow_per_step
                 attack_ingredient = True
@@ -190,6 +185,18 @@ class FormulaBuilder:
                 healing += state.heal_per_step * 2
             elif slot == Ingredient.EARTH:
                 shield += state.shield_per_step * 2
+
+            # modifiers
+            elif slot == Ingredient.TRAP:
+                attack_modifier = True
+                #distance += state.distance_per_step
+                trap += 1
+            elif slot == Ingredient.RANGE:
+                attack_modifier = True
+                distance += state.distance_per_step * 2
+            elif slot == Ingredient.AREA:
+                attack_modifier = True
+                area += state.area_per_step * 2
 
             # fire upgrades
             elif slot == Ingredient.INFERNO:
@@ -258,9 +265,14 @@ class FormulaBuilder:
             suboptimal = "Both damage and heal"
         elif area > 1 and distance < 2:
             suboptimal = "Area but no range"
+        elif trap > 1:
+            suboptimal = "Multiple trap have no benefit"
+        elif shield and trap:
+            suboptimal = "Shield and trap does not combine well"
         else:
             suboptimal = None
         effects = []
+
         if shield:
             strikebacks = []
             if fire_dmg > 0:
@@ -311,6 +323,7 @@ class FormulaBuilder:
                 effects=effects,
                 targeted=targeted,
                 suboptimal=suboptimal,
+                trap= trap >= 1
             ),
             state,
         )

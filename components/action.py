@@ -149,11 +149,19 @@ class MoveToPositionAction(Action):
         self.targetpos = targetpos
 
     def execute(self, game_data, _):
+        result = []
         if game_data.player.pos != self.targetpos:
             self.actor.move_towards(
                 self.targetpos.x, self.targetpos.y, game_data.map.entities, game_data.map,
             )
-        result = [{"moved": True}]
+            x,y = self.actor.pos.tuple()
+            if game_data.map.tiles[x][y].trap:
+                result.extend(game_data.map.tiles[x][y].trap.apply(caster=game_data.player, target_x=x, target_y=y,
+                                                                   entities=game_data.map.entities,
+                                                                   game_map=game_data.map, fov_map=game_data.fov_map,
+                                                                   triggered_trap=True))
+                game_data.map.tiles[x][y].trap = None
+        result.append({"moved": True})
         return self.package(result)
 
 
@@ -165,8 +173,16 @@ class MoveToTargetAction(Action):
         self.target = target
 
     def execute(self, game_data, _):
+        result = []
         self.actor.move_astar(self.target.pos, game_data.map.entities, game_data.map)
-        result = [{"moved": True}]
+        x,y = self.actor.pos.tuple()
+        if game_data.map.tiles[x][y].trap:
+            result.extend(game_data.map.tiles[x][y].trap.apply(caster=game_data.player, target_x=x, target_y=y,
+                                                                   entities=game_data.map.entities,
+                                                                   game_map=game_data.map, fov_map=game_data.fov_map,
+                                                                   triggered_trap=True))
+            game_data.map.tiles[x][y].trap = None
+        result.append({"moved": True})
         return self.package(result)
 
 
@@ -197,7 +213,11 @@ class ThrowVialAction(Action):
             caster=self.actor,
             target_x=self.targetpos.x,
             target_y=self.targetpos.y,
+            game_map=game_data.map,
         )
+        if config.conf.trapcast:
+            self.formula.trap = False
+            self.formula.set_texts()
         return self.package(result)
 
 

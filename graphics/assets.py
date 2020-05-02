@@ -79,21 +79,24 @@ class Assets:
         graphics_file_tile_size = util.Size(16, 16)
 
         self.reptile_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Reptile"))
-        self.dog_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Dog"))
-        self.wall_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Wall.png"))
         self.undead_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Undead"))
-        self.decor_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Decor"))
-        self.floor_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Floor.png"))
-        self.potion_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Potion.png"))
-        self.medium_weapons_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/MedWep.png"))
-        self.effect_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Effect"))
-        self.ammo_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Ammo.png"))
         self.humanoid_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Humanoid"))
         self.quadraped_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Quadraped"))
         self.player_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Player"))
-        self.money_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Money.png"))
-        self.key_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Key.png"))
-        self.scroll_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike//Items/Scroll.png"))
+        self.dog_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Characters/Dog"))
+
+        self.wall_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Wall.png"))
+        self.decor_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Decor"))
+        self.floor_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Floor.png"))
+        self.effect_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Effect"))
+        self.trap_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Objects/Trap"))
+
+        self.potion_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Potion.png"))
+        self.medium_weapons_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/MedWep.png"))
+        self.ammo_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Ammo.png"))
+        self.money_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Money.png"))
+        self.key_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Key.png"))
+        self.scroll_sheet = Spritesheet(util.resource_path("data/graphics/DawnLike/Items/Scroll.png"))
 
         if graphics_file_tile_size.width != CELL_WIDTH or graphics_file_tile_size.height != CELL_HEIGHT:
             scale = (CELL_WIDTH, CELL_HEIGHT)
@@ -211,6 +214,8 @@ class Assets:
         self.key = get_img(self.key_sheet, 0, 0)
         self.ingredient = get_img(self.decor_sheet, 4, 3)
         self.consumable = get_img(self.scroll_sheet, 4, 0)
+
+        self.trap = get_animation(self.trap_sheet, 4, 0)
 
         self.font_title = pygame.font.Font(util.resource_path("data/font/CutiveMono-Regular.ttf"), 20)
         # self.font_message = pygame.font.Font(util.resource_path("data/font/joystix.ttf"), 14)

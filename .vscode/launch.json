@@ -54,7 +54,8 @@
             "args": [
                 "--pickup", "find",
                 "--crafting",
-                "--consumables"
+                "--consumables",
+                "--trapcast",
             ]
         }
     ]

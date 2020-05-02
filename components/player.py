@@ -300,6 +300,12 @@ class Player(Entity):
                     targetx, targety = left_click.cx, left_click.cy
                     distance = (self.pos - Vec(targetx, targety)).length()
                     if game_data.targeting_formula:
+
+                        alternate = left_click.alternate
+                        if alternate and config.conf.trapcast:
+                            game_data.targeting_formula.trap = True
+                            game_data.targeting_formula.set_texts()
+
                         if distance > game_data.targeting_formula.distance:
                             turn_results.append(
                                 {"target_out_of_range": True, "targeting_formula": game_data.targeting_formula,}

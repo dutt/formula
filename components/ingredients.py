@@ -1,14 +1,18 @@
 from enum import Enum, auto
 
+import config
 
 class Ingredient(Enum):
     EMPTY = auto()
     FIRE = auto()
-    RANGE = auto()
-    AREA = auto()
     WATER = auto()
     LIFE = auto()
     EARTH = auto()
+
+    # modifiers
+    AREA = auto()
+    RANGE = auto()
+    TRAP = auto()
 
     # leveled up fire
     INFERNO = auto()
@@ -40,16 +44,19 @@ class Ingredient(Enum):
     def description(self):
         if self == Ingredient.FIRE:
             return "Fire ingredient, increase formula damage"
-        elif self == Ingredient.RANGE:
-            return "Range ingredient, increase formula range"
-        elif self == Ingredient.AREA:
-            return "Area ingredient, increase area of the formula"
         elif self == Ingredient.WATER:
             return "Water ingredient, add minor damage and slow down targets"
         elif self == Ingredient.LIFE:
             return "Life ingredient, heals the target HP"
         elif self == Ingredient.EARTH:
             return "Earth ingredient, add shield points, makes the formula defensive"
+
+        elif self == Ingredient.RANGE:
+            return "Range ingredient, increase formula range"
+        elif self == Ingredient.AREA:
+            return "Area ingredient, increase area of the formula"
+        elif self == Ingredient.TRAP:
+            return "Trap ingredient, turns the formula into a trap"
 
         elif self == Ingredient.INFERNO:
             return "Level up Fire to Inferno, twice the damage"
@@ -81,13 +88,14 @@ class Ingredient(Enum):
 
     @staticmethod
     def all():
-        return [
+        retr = [
             Ingredient.FIRE,
-            Ingredient.RANGE,
-            Ingredient.AREA,
             Ingredient.WATER,
             Ingredient.LIFE,
             Ingredient.EARTH,
+
+            Ingredient.RANGE,
+            Ingredient.AREA,
 
             Ingredient.INFERNO,
             Ingredient.FIRESPRAY,
@@ -104,6 +112,9 @@ class Ingredient(Enum):
             Ingredient.MAGMA,
             Ingredient.MUD
         ]
+        if config.conf.trap:
+            retr.append(Ingredient.TRAP)
+        return retr
 
     @staticmethod
     def upgrades():
@@ -128,11 +139,11 @@ class Ingredient(Enum):
     def basics():
         return [
             Ingredient.FIRE,
-            Ingredient.RANGE,
-            Ingredient.AREA,
             Ingredient.WATER,
             Ingredient.LIFE,
-            Ingredient.EARTH
+            Ingredient.EARTH,
+            Ingredient.RANGE,
+            Ingredient.AREA,
         ]
 
     def get_base_form(self):
@@ -156,12 +167,16 @@ class Ingredient(Enum):
     def targeted(self):
         return self in [
             Ingredient.FIRE,
+            Ingredient.WATER,
+
+            Ingredient.TRAP,
             Ingredient.RANGE,
             Ingredient.AREA,
-            Ingredient.WATER,
+
             Ingredient.INFERNO,
             Ingredient.FIREBOLT,
             Ingredient.FIRESPRAY,
+
             Ingredient.SLEET,
             Ingredient.ICE,
             Ingredient.ICEBOLT,

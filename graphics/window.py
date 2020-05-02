@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Flag, auto
 import textwrap
 
 import pygame
@@ -17,7 +17,7 @@ class Widget:
         self.parent = parent
 
 
-class ClickMode(Enum):
+class ClickMode(Flag):
     LEFT = auto()
     RIGHT = auto()
     SCROLL = auto()
@@ -35,22 +35,22 @@ class Clickable(Widget):
     def is_clicked(self, mouse_action):
         if not self.click_mode:
             return False
-        if self.click_mode == ClickMode.LEFT:
+        if ClickMode.LEFT & self.click_mode:
             if "left_click" in mouse_action:
                 val = mouse_action["left_click"]
-            else:
+            elif ClickMode.LEFT == self.click_mode:
                 return False
-        elif self.click_mode == ClickMode.RIGHT:
+        if ClickMode.RIGHT & self.click_mode:
             if "right_click" in mouse_action:
                 val = mouse_action["right_click"]
-            else:
+            elif ClickMode.RIGHT == self.click_mode:
                 return False
-        elif self.click_mode == ClickMode.SCROLL:
+        if ClickMode.SCROLL & self.click_mode:
             if "scroll_up" in mouse_action:
                 val = mouse_action["scroll_up"]
             elif "scroll_down" in mouse_action:
                 val = mouse_action["scroll_down"]
-            else:
+            elif ClickMode.SCROLL == self.click_mode:
                 return False
 
         x, y = val.x, val.y
@@ -136,8 +136,8 @@ class Label(Widget):
         display_text(surface, self.text, self.font, self.pos.tuple())
 
 class ClickableLabel(Clickable):
-    def __init__(self, pos, text, size, font=None, parent=None):
-        super().__init__(pos, size, parent=parent)
+    def __init__(self, pos, text, size, font=None, parent=None, click_mode=ClickMode.LEFT):
+        super().__init__(pos, size, parent=parent, click_mode=click_mode)
         self.text = text
         self.font = font if font else Assets.get().font_title
 

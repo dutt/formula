@@ -14,6 +14,7 @@ class Tile:
         self.hallway = False
         self.symbol = None  # debugging
         self.decor = []
+        self.trap = None
 
     def get_drawable(self, visible):
         if visible:

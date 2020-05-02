@@ -17,6 +17,7 @@ class Formula:
         self.effects = kwargs["effects"]
         self.targeted = kwargs["targeted"]
         self.suboptimal = kwargs["suboptimal"]
+        self.trap = kwargs["trap"]
 
         self.targeting_message_text = self.text_stats_text = self.applied_text = None
         self.set_texts()
@@ -28,7 +29,8 @@ class Formula:
             "area" : self.area,
             "effects" : [e.serialize() for e in self.effects],
             "targeted" : self.targeted,
-            "suboptimal" : self.suboptimal
+            "suboptimal" : self.suboptimal,
+            "trap" : self.trap
         }
 
     def set_texts(self):
@@ -40,7 +42,10 @@ class Formula:
             applied_msg += e_applied_msg
         postfix = "range={}, area={}".format(self.distance, self.area)
         if text_msg:
-            self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
+            if self.trap:
+                self.targeting_message_text = "Place trap, {}, area={}".format(text_msg[:-2], self.area)
+            else:
+                self.targeting_message_text = "Targeting, {}, {}".format(text_msg[:-2], postfix)
             self.text_stats_text = "{}, {}".format(text_msg[:-2], postfix)
             self.applied_text = "{} " + applied_msg[:-2]
         else:
@@ -97,12 +102,19 @@ class Formula:
         target_x = kwargs.get("target_x")
         target_y = kwargs.get("target_y")
         entities = kwargs.get("entities")
+        game_map = kwargs.get("game_map")
         fov_map = kwargs.get("fov_map")
+        triggered_trap = kwargs.get("triggered_trap")
         results = []
 
         if caster.distance(target_x, target_y) > self.distance:
             results.append({"cast": False, "message": Message("Target out of range", tcod.yellow)})
             return results
+        elif self.trap and not triggered_trap:
+            game_map.tiles[target_x][target_y].trap = self
+            results.append(
+                {"cast": True, "message": Message("Formula cast as trap"), "formula": self,}
+            )
         elif self.area < 1.5:  # no aoe
             for e in entities:
                 if not e.fighter or not tcod.map_is_in_fov(fov_map, target_x, target_y):

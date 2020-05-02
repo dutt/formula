@@ -63,7 +63,8 @@ class EffectBuilder:
             assert rounds
 
             def apply(target):
-                target.round_speed = target.round_speed // 5
+                #target.round_speed = target.round_speed // 5
+                target.round_speed = 0
                 return []
 
             def stats_func():

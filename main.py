@@ -29,7 +29,7 @@ def play_game(game_data, gfx_data):
                 if dead_entity:
                     if dead_entity == game_data.player:
                         msg, game_data = kill_player(game_data, gfx_data.assets)
-                        gfx_data.windows.activate_wnd_for_state(game_data.state)
+                        gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
                     else:
                         game_data.stats.monster_killed(dead_entity)
                         msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
@@ -111,6 +111,7 @@ def set_seed():
     # seed = "2020-03-15 08:47:05.439709"
     # seed = "2020-04-04 21:01:02.999223"
     # seed = "2020-04-09 22:27:51.380348"
+    seed = "2020-04-23 20:50:35.897020"
 
     print("Using seed: <{}>".format(seed))
     random.seed(seed)

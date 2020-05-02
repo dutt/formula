@@ -62,6 +62,8 @@ consumables_help=""" Enable consumables
 Usage:
     --consumables
 """
+trap_help="""Enable trap ingredient"""
+trapcast_help="""Enable casting all formulas as traps"""
 
 formula_description = "Formula, a roguelite game about blending stuff and throwing them at monsters"
 
@@ -84,6 +86,8 @@ parser.add_argument("--pickup", action="store", default="find", help=ingredient_
 parser.add_argument("--pickupstartcount", action="store", default="base", help=ingredient_pickup_startcount_help)
 parser.add_argument("--crafting", action="store_true", help=ingredient_crafting_help)
 parser.add_argument("--consumables", action="store_true", help=consumables_help)
+parser.add_argument("--trap", action="store_true", help=trap_help)
+parser.add_argument("--trapcast", action="store_true", help=trapcast_help)
 
 args = parser.parse_args()
 
@@ -141,6 +145,10 @@ class Config:
 
         self.crafting = args.crafting
         self.consumables = args.consumables
+        self.trap = args.trap
+        self.trapcast = args.trapcast
+        if self.trap and self.trapcast:
+            sys.exit("Can't have both trap and trapcast enabled")
 
     def serialize(self):
         return {

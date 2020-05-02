@@ -7,7 +7,7 @@ from components.game_states import GameStates
 from components.ingredients import Ingredient
 from graphics.display_helpers import display_text, display_lines
 from graphics.story_window import StoryWindow
-from graphics.window import Window, ClickableLabel
+from graphics.window import Window, ClickableLabel, ClickMode
 from graphics.textwindow import TextWindow
 from systems.input_handlers import EventType
 from util import resource_path, Pos, Size
@@ -53,7 +53,7 @@ class IngredientMarker(ClickableLabel):
 
 class FormulaWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible, click_mode=ClickMode.LEFT | ClickMode.SCROLL)
         self.ingredient_markers = []
 
     def draw_ingredient_list(self, surface, game_data, gfx_data):

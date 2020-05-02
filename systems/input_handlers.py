@@ -8,12 +8,15 @@ from graphics.constants import CELL_WIDTH, CELL_HEIGHT
 import systems.input_recorder
 import config
 
-
-def handle_keys(events, state):
+def get_current_modifier_keys():
     pressed_keys = pygame.key.get_pressed()
     modifier_keys = [ pygame.K_LALT, pygame.K_RALT,
                       pygame.K_RSHIFT, pygame.K_LSHIFT ]
     modifiers = [key for key in modifier_keys if pressed_keys[key]]
+    return modifiers
+
+def handle_keys(events, state):
+    modifiers = get_current_modifier_keys()
 
     for e in events:
         if not config.conf.is_replaying:
@@ -160,9 +163,9 @@ def handle_formula_screen_keys(key, modifiers):
     elif key == pygame.K_q:
         return {"ingredient": Ingredient.EMPTY}
     elif key == pygame.K_w:
-        return {"ingredient": Ingredient.FIRE}
-    elif key == pygame.K_e:
         return {"ingredient": Ingredient.WATER}
+    elif key == pygame.K_e:
+        return {"ingredient": Ingredient.FIRE}
     elif key == pygame.K_r:
         return {"ingredient": Ingredient.RANGE}
     elif key == pygame.K_a:
@@ -210,12 +213,14 @@ def handle_level_up_keys(key, modifiers):
 
 
 def handle_mouse(events, constants, camera):
+    modifiers = get_current_modifier_keys()
+    shift_pressed = pygame.K_RSHIFT in modifiers or pygame.K_LSHIFT in modifiers
     for e in events:
         pos = e.pos
         cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
         cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
-        data = AttrDict({"x": pos.x, "y": pos.y, "cx": cx, "cy": cy,})
+        data = AttrDict({"x": pos.x, "y": pos.y, "cx": cx, "cy": cy, "alternate" :  shift_pressed })
         if not config.conf.is_replaying:
             e.data.pos.cx = cx
             e.data.pos.cy = cy
