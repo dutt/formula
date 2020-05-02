@@ -90,6 +90,193 @@ class Player(Entity):
                 self.last_num_explored = game_data.map.num_explored
 
     def take_turn(self, game_data, gfx_data):
+        def handle_fullscreen(fullscreen):
+            display = (
+                game_data.constants.window_size.width,
+                game_data.constants.window_size.height,
+            )
+            if pygame.display.get_driver() == "x11":
+                pygame.display.toggle_fullscreen()
+            else:
+                display_copy = gfx_data.main.copy()
+                if fullscreen:
+                    gfx_data.main = pygame.display.set_mode(display)
+                else:
+                    gfx_data.main = pygame.display.set_mode(display, pygame.FULLSCREEN)
+                    gfx_data.fullscreen = not gfx_data.fullscreen
+                    gfx_data.main.blit(display_copy, (0, 0))
+                    pygame.display.update()
+
+        def handle_interact(turn_results):
+            player_action = None
+
+            for e in game_data.map.entities:
+                if e.pos.x == self.pos.x and e.pos.y == self.pos.y:
+                    if e.stairs:
+                        self.last_num_explored = None
+                        game_data.story.next_story()
+                        self.caster.clear_cooldowns()
+                        player_action = DescendStairsAction(self)
+                        break
+                    elif e.key:
+                        player_action = PickupKeyAction(self, e)
+                        break
+                    elif e.ingredient:
+                        player_action = PickupIngredientAction(self, e)
+                        break
+                    elif e.consumable:
+                        player_action = PickupConsumableAction(self, e)
+                        break
+                    elif e.name.startswith("Remains of"):  # monster
+                        if e.orig_name == "Arina":
+                            game_data.prev_state.append(game_data.state)
+                            game_data.state = GameStates.VICTORY
+                            game_data.story.next_story()
+                            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
+                            game_data.stats.end_time = datetime.datetime.now()
+                        elif not config.conf.keys:
+                            e.name = "Looted r" + e.name[1:]
+                            game_data.stats.loot_monster(e)
+                            player_action = LootAction(self)
+                        break
+            else:
+                if config.conf.cooldown_mode != "always":
+                    player_action = WaitAction(self)
+            return player_action, turn_results
+
+        def handle_show_help():
+            game_data.prev_state.append(game_data.state)
+            if game_data.state == GameStates.FORMULA_SCREEN:
+                game_data.state = GameStates.FORMULA_HELP_SCEEN
+            elif game_data.state == GameStates.STORY_SCREEN:
+                game_data.state = GameStates.STORY_HELP_SCREEN
+            elif game_data.state == GameStates.INVENTORY:
+                game_data.state = GameStates.INVENTORY_HELP
+            elif game_data.state == GameStates.CRAFTING:
+                game_data.state = GameStates.CRAFTING_HELP
+            else:
+                game_data.state = GameStates.GENERAL_HELP_SCREEN
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
+
+        def handle_move(move, turn_results):
+            player_action = None
+
+            dx, dy = move
+            destx = self.pos.x + dx
+            desty = self.pos.y + dy
+
+            if self.godmode:
+                self.pos = Pos(destx, desty)
+                gfx_data.camera.center_on(destx, desty)
+                game_data.stats.move_player(Pos(destx, desty))
+                player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
+            elif not game_data.map.is_blocked(destx, desty):
+                target = get_blocking_entites_at_location(game_data.map.entities, destx, desty)
+                if target and target.fighter:
+                    player_action = AttackAction(self, target=target)
+                else:
+                    gfx_data.camera.center_on(destx, desty)
+                    game_data.stats.move_player(Pos(destx, desty))
+                    player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
+            return player_action, turn_results
+
+        def handle_moving_towards(turn_results):
+            player_action = None
+            if self.pos == self.moving_towards:
+                self.moving_towards = None
+            else:
+                last_moving_towards_pos = Pos(self.pos.x, self.pos.y)
+                self.move_astar(
+                    self.moving_towards, game_data.map.entities, game_data.map, length_limit=False,
+                )
+                if last_moving_towards_pos == self.pos:
+                    self.moving_towards = None
+                else:
+                    gfx_data.camera.center_on(self.pos.x, self.pos.y)
+                    game_data.stats.move_player(self.pos)
+                    time.sleep(0.15)
+                    player_action = MoveToPositionAction(self, targetpos=Pos(self.pos.x, self.pos.y))
+            return player_action, turn_results
+
+
+        def handle_start_throwing_vial(start_throwing_vial, turn_results):
+            player_action = None
+            if start_throwing_vial >= len(self.caster.formulas):
+                game_data.log.add_message(Message("You don't have that formula yet", tcod.yellow))
+            elif self.caster.is_on_cooldown(start_throwing_vial):
+                game_data.log.add_message(Message("That's not ready yet", tcod.yellow))
+            else:
+                formula = self.caster.formulas[start_throwing_vial]
+                if formula.targeted:
+                    start_throwing_vial_results = {
+                        "targeting_formula": formula,
+                        "formula_idx": start_throwing_vial,
+                    }
+                    turn_results.append(start_throwing_vial_results)
+                else:
+                    player_action = ThrowVialAction(self, formula, targetpos=game_data.player.pos)
+            return player_action, turn_results
+
+
+        def handle_use_consumable(use_consumable, turn_results):
+            player_action = None
+            item = game_data.inventory.get_quickslot(use_consumable)
+            if item:
+                if item.targeted:
+                    res = {
+                        "use_consumable" : item,
+                        "use_consumable_index" : use_consumable,
+                    }
+                    turn_results.append(res)
+                else:
+                    player_action = UseConsumableAction(self, item, targetpos=game_data.player.pos)
+            return player_action, turn_results
+
+        def handle_targeting(left_click, right_click, turn_results):
+            player_action = None
+            if left_click:
+                targetx, targety = left_click.cx, left_click.cy
+                distance = (self.pos - Vec(targetx, targety)).length()
+                if game_data.targeting_formula:
+
+                    alternate = left_click.alternate
+                    if alternate and config.conf.trapcast:
+                        game_data.targeting_formula.trap = True
+                        game_data.targeting_formula.set_texts()
+
+                    if distance > game_data.targeting_formula.distance:
+                        turn_results.append(
+                            {"target_out_of_range": True, "targeting_formula": game_data.targeting_formula,}
+                        )
+                    else:
+                        player_action = ThrowVialAction(
+                            self, game_data.targeting_formula, targetpos=(Pos(targetx, targety)),
+                        )
+                        # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
+                        gfx_data.visuals.add_temporary(
+                            self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
+                        )
+                        game_data.state = game_data.prev_state.pop()
+                        game_data.targeting_formula_idx = None
+                elif game_data.targeting_consumable:
+                    if distance > game_data.targeting_consumable.distance:
+                        turn_results.append(
+                            {"target_out_of_range": True, "targeting_consumable": game_data.targeting_consumable,}
+                        )
+                    else:
+                        player_action = UseConsumableAction(
+                            self, game_data.targeting_consumable, targetpos=(Pos(targetx, targety)),
+                        )
+                        gfx_data.visuals.add_temporary(
+                            self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
+                        )
+                        game_data.state = game_data.prev_state.pop()
+                        game_data.targeting_consumable = None
+
+            elif right_click:
+                turn_results.append({"targeting_cancelled": True})
+            return player_action, turn_results
+
         if game_data.stats.start_time is None:
             game_data.stats.start_time = datetime.datetime.now()
 
@@ -190,38 +377,10 @@ class Player(Entity):
                 start_throwing_vial = mouse_action.get(EventType.start_throwing_vial)
 
             if interact:
-                for e in game_data.map.entities:
-                    if e.pos.x == self.pos.x and e.pos.y == self.pos.y:
-                        if e.stairs:
-                            player_action = DescendStairsAction(self)
-                            self.last_num_explored = None
-                            game_data.story.next_story()
-                            self.caster.clear_cooldowns()
-                            break
-                        elif e.key:
-                            player_action = PickupKeyAction(self, e)
-                            break
-                        elif e.ingredient:
-                            player_action = PickupIngredientAction(self, e)
-                            break
-                        elif e.consumable:
-                            player_action = PickupConsumableAction(self, e)
-                            break
-                        elif e.name.startswith("Remains of"):  # monster
-                            if e.orig_name == "Arina":
-                                game_data.prev_state.append(game_data.state)
-                                game_data.state = GameStates.VICTORY
-                                game_data.story.next_story()
-                                gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
-                                game_data.stats.end_time = datetime.datetime.now()
-                            elif not config.conf.keys:
-                                player_action = LootAction(self)
-                                e.name = "Looted r" + e.name[1:]
-                                game_data.stats.loot_monster(e)
-                            break
-                else:
-                    if config.conf.cooldown_mode != "always":
-                        player_action = WaitAction(self)
+                action, turn_results = handle_interact(turn_results)
+                assert turn_results is not None
+                if action:
+                    player_action = action
 
             if start_crafting:
                 game_data.prev_state.append(game_data.state)
@@ -234,37 +393,13 @@ class Player(Entity):
                 gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
 
             if show_help:
-                game_data.prev_state.append(game_data.state)
-                if game_data.state == GameStates.FORMULA_SCREEN:
-                    game_data.state = GameStates.FORMULA_HELP_SCEEN
-                elif game_data.state == GameStates.STORY_SCREEN:
-                    game_data.state = GameStates.STORY_HELP_SCREEN
-                elif game_data.state == GameStates.INVENTORY:
-                    game_data.state = GameStates.INVENTORY_HELP
-                elif game_data.state == GameStates.CRAFTING:
-                    game_data.state = GameStates.CRAFTING_HELP
-                else:
-                    game_data.state = GameStates.GENERAL_HELP_SCREEN
-                gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
+                handle_show_help()
 
             elif move:
-                dx, dy = move
-                destx = self.pos.x + dx
-                desty = self.pos.y + dy
-
-                if self.godmode:
-                    self.pos = Pos(destx, desty)
-                    player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
-                    gfx_data.camera.center_on(destx, desty)
-                    game_data.stats.move_player(Pos(destx, desty))
-                elif not game_data.map.is_blocked(destx, desty):
-                    target = get_blocking_entites_at_location(game_data.map.entities, destx, desty)
-                    if target and target.fighter:
-                        player_action = AttackAction(self, target=target)
-                    else:
-                        player_action = MoveToPositionAction(self, targetpos=Pos(destx, desty))
-                        gfx_data.camera.center_on(destx, desty)
-                        game_data.stats.move_player(Pos(destx, desty))
+                action, turn_results = handle_move(move, turn_results)
+                assert turn_results is not None
+                if action:
+                    player_action = action
 
             if left_click and game_data.state == GameStates.PLAY:
                 monster_there = False
@@ -277,93 +412,31 @@ class Player(Entity):
                     self.moving_towards = Pos(left_click.cx, left_click.cy)
 
             if self.moving_towards:
-                if self.pos == self.moving_towards:
-                    self.moving_towards = None
-                else:
-                    last_moving_towards_pos = Pos(self.pos.x, self.pos.y)
-                    self.move_astar(
-                        self.moving_towards, game_data.map.entities, game_data.map, length_limit=False,
-                    )
-                    if last_moving_towards_pos == self.pos:
-                        self.moving_towards = None
-                    else:
-                        gfx_data.camera.center_on(self.pos.x, self.pos.y)
-                        game_data.stats.move_player(self.pos)
-                        time.sleep(0.15)
-                        player_action = MoveToPositionAction(self, targetpos=Pos(self.pos.x, self.pos.y))
+                action, turn_results = handle_moving_towards(turn_results)
+                assert turn_results is not None
+                if action:
+                    player_action = action
 
             if game_data.state == GameStates.LEVEL_UP:
                 gfx_data.windows.get(LevelUpWindow).visible = True
 
             elif game_data.state == GameStates.TARGETING:
-                if left_click:
-                    targetx, targety = left_click.cx, left_click.cy
-                    distance = (self.pos - Vec(targetx, targety)).length()
-                    if game_data.targeting_formula:
-
-                        alternate = left_click.alternate
-                        if alternate and config.conf.trapcast:
-                            game_data.targeting_formula.trap = True
-                            game_data.targeting_formula.set_texts()
-
-                        if distance > game_data.targeting_formula.distance:
-                            turn_results.append(
-                                {"target_out_of_range": True, "targeting_formula": game_data.targeting_formula,}
-                            )
-                        else:
-                            player_action = ThrowVialAction(
-                                self, game_data.targeting_formula, targetpos=(Pos(targetx, targety)),
-                            )
-                            # gfx_data.visuals.add_temporary(self.pos, Pos(targetx, targety), lifespan=distance * 0.1,
-                            gfx_data.visuals.add_temporary(
-                                self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
-                            )
-                            game_data.state = game_data.prev_state.pop()
-                            game_data.targeting_formula_idx = None
-                    elif game_data.targeting_consumable:
-                        if distance > game_data.targeting_consumable.distance:
-                            turn_results.append(
-                                {"target_out_of_range": True, "targeting_consumable": game_data.targeting_consumable,}
-                            )
-                        else:
-                            player_action = UseConsumableAction(
-                                self, game_data.targeting_consumable, targetpos=(Pos(targetx, targety)),
-                            )
-                            gfx_data.visuals.add_temporary(
-                                self.pos, Pos(targetx, targety), lifespan=0.2, asset=gfx_data.assets.throwing_bottle,
-                            )
-                            game_data.state = game_data.prev_state.pop()
-                            game_data.targeting_consumable = None
-
-                elif right_click:
-                    turn_results.append({"targeting_cancelled": True})
+                action, turn_results = handle_targeting(left_click, right_click, turn_results)
+                assert turn_results is not None
+                if action:
+                    player_action = action
 
             if start_throwing_vial is not None:
-                if start_throwing_vial >= len(self.caster.formulas):
-                    game_data.log.add_message(Message("You don't have that formula yet", tcod.yellow))
-                elif self.caster.is_on_cooldown(start_throwing_vial):
-                    game_data.log.add_message(Message("That's not ready yet", tcod.yellow))
-                else:
-                    formula = self.caster.formulas[start_throwing_vial]
-                    if formula.targeted:
-                        start_throwing_vial_results = {
-                            "targeting_formula": formula,
-                            "formula_idx": start_throwing_vial,
-                        }
-                        turn_results.append(start_throwing_vial_results)
-                    else:
-                        player_action = ThrowVialAction(self, formula, targetpos=game_data.player.pos)
+                action, turn_results = handle_start_throwing_vial(start_throwing_vial, turn_results)
+                assert turn_results is not None
+                if action:
+                    player_action = action
 
             if use_consumable is not None:
-                item = game_data.inventory.get_quickslot(use_consumable)
-                if item.targeted:
-                    res = {
-                        "use_consumable" : item,
-                        "use_consumable_index" : use_consumable,
-                    }
-                    turn_results.append(res)
-                else:
-                    player_action = UseConsumableAction(self, item, targetpos=game_data.player.pos)
+                action, turn_results = handle_use_consumable(use_consumable, turn_results)
+                assert turn_results is not None
+                if action:
+                    player_action = action
 
             if do_exit:
                 if game_data.state == GameStates.TARGETING:
@@ -373,21 +446,7 @@ class Player(Entity):
                     player_action = ExitAction(keep_playing)
 
             if fullscreen:
-                display = (
-                    game_data.constants.window_size.width,
-                    game_data.constants.window_size.height,
-                )
-                if pygame.display.get_driver() == "x11":
-                    pygame.display.toggle_fullscreen()
-                else:
-                    display_copy = gfx_data.main.copy()
-                    if fullscreen:
-                        gfx_data.main = pygame.display.set_mode(display)
-                    else:
-                        gfx_data.main = pygame.display.set_mode(display, pygame.FULLSCREEN)
-                        gfx_data.fullscreen = not gfx_data.fullscreen
-                        gfx_data.main.blit(display_copy, (0, 0))
-                        pygame.display.update()
+                handle_fullscreen(fullscreen)
 
 
             key_action = mouse_action = None  # clear them for next round
@@ -417,7 +476,7 @@ class Player(Entity):
                 if use_consumable:
                     if use_consumable.targeted:
                         game_data.targeting_consumable = use_consumable
-                        print(f"{item.name} is a targeted consumable, targeting...")
+                        print(f"{use_consumable.name} is a targeted consumable, targeting...")
                         game_data.prev_state.append(game_data.state)
                         game_data.state = GameStates.TARGETING
 
