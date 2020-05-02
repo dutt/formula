@@ -40,8 +40,8 @@
             "console": "integratedTerminal",
             "pythonPath": "${workspaceFolder}/.venv/bin/python",
             "args": [
-                "--pickup",
-                "unlimited"
+                "--pickup", "unlimited",
+                "--trapcast"
             ]
         },
         {
@@ -55,7 +55,7 @@
                 "--pickup", "find",
                 "--crafting",
                 "--consumables",
-                "--trapcast",
+                "--trap",
             ]
         }
     ]

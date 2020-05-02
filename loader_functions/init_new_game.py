@@ -113,7 +113,7 @@ def setup_data_state(constants):
 
     assets = Assets.setup()
 
-    run_tutorial = False
+    run_tutorial = True
     godmode = False
 
     fps_per_second = 30
@@ -166,8 +166,11 @@ def setup_data_state(constants):
             Ingredient.EARTH : 2,
             Ingredient.RANGE : 1,
             Ingredient.AREA : 1,
-            #Ingredient.TRAP : 2,
         })
+        if config.conf.trap:
+            ingredient_storage.add_multiple({
+                Ingredient.TRAP : 2,
+            })
     else:
         for ing in Ingredient.all():
             ingredient_storage.add_multiple({ ing : config.conf.pickupstartcount} )
@@ -175,7 +178,7 @@ def setup_data_state(constants):
     menu_data = AttrDict({"currchoice": 0})
 
     inventory = Inventory(max_count=constants.num_consumables, num_quickslots=constants.num_quickslots)
-    from components.consumable import Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig
+    from components.consumable import Firebomb, Freezebomb, Teleporter, CooldownClear
     #for t in [Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig]:
     #    inventory.add(t())
     inventory.add(Firebomb())

@@ -18,6 +18,7 @@ class MessageLogWindow(Window):
         )
         self.offset = 0
         self.num_messages = 9
+        self.drawing_priority = 2
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(game_data.constants.message_log_size.tuple())

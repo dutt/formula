@@ -21,6 +21,7 @@ class GameWindow(Window):
             Pos(constants.right_panel_size.width, 0), constants.game_window_size, visible, parent=parent
         )
         self.show_all = False
+        self.drawing_priority = 2
 
     def draw(self, game_data, gfx_data):
         main = pygame.Surface(self.size.tuple())

@@ -60,7 +60,7 @@ class WindowManager:
             if console and game_data.state != GameStates.CONSOLE:
                 console_wnd = self.get_wnd_for_state(GameStates.CONSOLE)
                 console_wnd.activate(game_data, gfx_data)
-                self.activate_wnd_for_state(GameStates.CONSOLE)
+                self.activate_wnd_for_state(GameStates.CONSOLE, game_data, gfx_data)
                 return True, {}
 
             res = wnd.handle_key(game_data, gfx_data, key_action)
@@ -91,7 +91,7 @@ class WindowManager:
         assert wnd
         wnd.visible = True
         wnd.init(game_data, gfx_data)
-        self.windows = sorted(self.windows, key=lambda wnd : wnd.drawing_priority)
+        self.windows = sorted(self.windows, key=lambda wnd : wnd.drawing_priority, reverse=True)
 
     def get_state_for_wnd(self, wnd):
         for state, w in self.state_wnd_mapping.items():

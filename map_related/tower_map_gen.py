@@ -42,6 +42,9 @@ class TowerMapGenerator:
         TowerMapGenerator.place_monsters(retr, retr.chunks, monster_chances, level)
         TowerMapGenerator.place_stairs(retr, retr.chunks)
 
+        TowerMapGenerator.place_decorations(retr, retr.chunks)
+        TowerMapGenerator.place_lights(retr, retr.chunks)
+
         if config.conf.keys:
             TowerMapGenerator.place_keys(retr, retr.chunks, key_ratio)
 
@@ -50,9 +53,6 @@ class TowerMapGenerator:
 
         if config.conf.consumables:
             TowerMapGenerator.place_consumables(retr, retr.chunks, consumable_count)
-
-        TowerMapGenerator.place_decorations(retr, retr.chunks)
-        TowerMapGenerator.place_lights(retr, retr.chunks)
 
         retr.set_tile_info(retr.tiles)
 

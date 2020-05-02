@@ -7,11 +7,11 @@ from components.ingredients import Ingredient
 from graphics.display_helpers import display_text, display_lines
 from graphics.window import Window
 from systems.input_handlers import EventType
-
+from graphics.window import ClickMode
 
 class LevelUpWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible, click_mode=ClickMode.SCROLL)
         self.choices = []
         self.slots_message = "Bigger vials (+1 slot per vial)"
         self.formulas_message = "More vials (+1 prepared formula)"
