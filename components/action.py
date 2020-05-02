@@ -112,6 +112,9 @@ class DescendStairsAction(Action):
                 game_data.formula_builder.run_tutorial = False
                 game_data.formula_builder.set_initial_slots()
                 game_data.player.caster.clear_cooldowns()
+                # reset shield
+                if game_data.player.fighter.shield:
+                    game_data.player.fighter.shield = None
             elif config.conf.keys:
                 results.append({"xp" : game_data.player.level.xp_to_next_level})
 

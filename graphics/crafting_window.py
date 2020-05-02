@@ -50,10 +50,10 @@ class CraftingWindow(Window):
     def draw_ingredient_choices(self, surface, game_data, gfx_data):
         ingredient_to_key_map = [
             [ Ingredient.EMPTY, "Q"],
-            [ Ingredient.FIRE, "W"],
-            [ Ingredient.RANGE, "E"],
-            [ Ingredient.AREA, "R"],
-            [ Ingredient.WATER, "A"],
+            [ Ingredient.WATER, "W"],
+            [ Ingredient.FIRE, "E"],
+            [ Ingredient.RANGE, "R"],
+            [ Ingredient.AREA, "A"],
             [ Ingredient.LIFE, "S"],
             [ Ingredient.EARTH, "D"]
         ]
