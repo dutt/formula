@@ -1,1 +1,17 @@
 Crafting!
+
+Recipies:
+Craft inferno: FIRE + FIRE
+Craft firebolt: FIRE + RANGE
+Craft firespray: FIRE + AREA
+Craft sleet: WATER + EARTH
+Craft icebolt: WATER + RANGE
+Craft ice vortex: WATER + AREA
+Craft ice: WATER + WATER
+Craft vitality: LIFE + LIFE
+Craft rock: EARTH + EARTH
+Craft magma: EARTH + FIRE
+Craft mud: EARTH + WATER
+
+Optional:
+Craft trap: EARTH + RANGE

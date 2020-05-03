@@ -27,6 +27,8 @@ class Clickable(Widget):
     def __init__(self, pos, size, parent=None, click_mode=None):
         super().__init__(pos, size, parent)
         self.click_mode = click_mode
+        if self.parent and click_mode:
+            assert self.parent.click_mode
 
     def is_inside(self, x, y):
         x_inside = self.pos.x <= x <= (self.pos.x + self.size.width)

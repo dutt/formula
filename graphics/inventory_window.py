@@ -3,7 +3,7 @@ from attrdict import AttrDict
 
 from components.events import EventType
 from graphics.assets import Assets
-from graphics.window import Window, Label, Clickable
+from graphics.window import Window, Label, Clickable, ClickMode
 from graphics.textwindow import TextWindow
 from graphics.display_helpers import display_text
 from util import Pos, Size, resource_path
@@ -20,7 +20,7 @@ class InventoryHelpWindow(TextWindow):
 
 class ConsumableMarker(Clickable):
     def __init__(self, consumable, consumable_index, pos, size, parent):
-        super().__init__(pos, size)
+        super().__init__(pos, size, parent=parent, click_mode=ClickMode.LEFT)
         self.consumable = consumable
         self.consumable_index = consumable_index
         self.parent = parent
@@ -38,10 +38,14 @@ class ConsumableMarker(Clickable):
             (self.pos.x, self.pos.y),
         )
 
+    def handle_click(self, game_data, gfx_data, mouse_action):
+        print(f"Consumable {self.consumable_index} clicked")
+        self.parent.selected = self.consumable_index
+
 
 class QuickslotMarker(Clickable):
     def __init__(self, qs_index, pos, size, parent):
-        super().__init__(pos, size, parent)
+        super().__init__(pos, size, parent=parent, click_mode=ClickMode.LEFT)
         self.qs_index = qs_index
         self.parent = parent
 
@@ -61,14 +65,6 @@ class QuickslotMarker(Clickable):
                 surface, item.name, gfx_data.assets.font_message, (self.pos.x, square_y)
             )
 
-    def is_clicked(self, mouse_action):
-        if "left_click" not in mouse_action:
-            return False
-        left_click = AttrDict(mouse_action["left_click"])
-        left_click.x -= self.parent.pos.x
-        left_click.y -= self.parent.pos.y
-        return super().is_clicked({"left_click": left_click})
-
     def handle_click(self, game_data, gfx_data, mouse_action):
         print(f"Quickslot {self.qs_index} clicked")
         game_data.inventory.set_quickslot(
@@ -79,7 +75,7 @@ class QuickslotMarker(Clickable):
 class InventoryWindow(Window):
     def __init__(self, constants, visible=False):
         super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
+            constants.helper_window_pos, constants.helper_window_size, visible, click_mode=ClickMode.LEFT
         )
         self.title = Label(Pos(200, 25), "Inventory")
         self.quickslots_label = Label(Pos(200, 410), "Quickslots")
