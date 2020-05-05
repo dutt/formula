@@ -4,7 +4,7 @@ import pygame
 from attrdict import AttrDict
 
 from components.game_states import GameStates
-from components.ingredients import Ingredient
+from components.ingredients import Ingredient, IngredientMeta
 from graphics.display_helpers import display_text, display_lines
 from graphics.story_window import StoryWindow
 from graphics.window import Window, ClickableLabel, ClickMode
@@ -44,7 +44,7 @@ class IngredientMarker(ClickableLabel):
         return super().is_clicked(mouse_action)
 
     def draw(self, surface, game_data, gfx_data):
-        display_text(surface, self.text, gfx_data.assets.font_message, self.pos.tuple())
+        display_text(surface, self.text, gfx_data.assets.font_message, self.pos.tuple(), text_color=IngredientMeta.INGREDIENT_COLORS[self.ingredient])
 
         x1 = self.pos.x
         x2 = self.pos.x + self.size.width
@@ -102,7 +102,7 @@ class FormulaWindow(Window):
         for ing in choices:
             for group, key in ingredient_to_key_map:
                 if ing in group:
-                    ingredient_lines.append(f"{key}: {ing.name}")
+                    ingredient_lines.append((key, ing))
 
         def get_ingredient_list_key(item):
             mapping = {
@@ -117,7 +117,12 @@ class FormulaWindow(Window):
             return mapping[item[0]]
 
         ingredient_lines = sorted(ingredient_lines, key=get_ingredient_list_key)
-        display_lines(surface, gfx_data.assets.font_message, ingredient_lines, 400, 120)
+        y = 120
+        linediff = 30
+        for key, ing in ingredient_lines:
+            display_text(surface, f"{key}", gfx_data.assets.font_message, (400, y))
+            display_text(surface, ing.name, gfx_data.assets.font_message, (435, y), IngredientMeta.INGREDIENT_COLORS[ing])
+            y += linediff
 
     def draw_counted_ingredient_list(self, surface, game_data, gfx_data):
         ingredient_lines = []
@@ -235,11 +240,11 @@ class FormulaWindow(Window):
         y += 2 * linediff
         display_text(surface, "Vial slots:", gfx_data.assets.font_message, (50, y))
         y += linediff
-        for idx, form in enumerate(game_data.formula_builder.current_slots):
-            text = "Slot {}: {}".format(idx + 1, form.name)
+        for idx, ing in enumerate(game_data.formula_builder.current_slots):
             if idx == game_data.formula_builder.currslot:
-                text += "<-- "
-            display_text(surface, text, gfx_data.assets.font_message, (50, y))
+                display_text(surface, "-->", gfx_data.assets.font_message, (5, y))
+            display_text(surface, f"Slot {idx+1}:", gfx_data.assets.font_message,(50, y))
+            display_text(surface, ing.name, gfx_data.assets.font_message,(120, y), text_color=IngredientMeta.INGREDIENT_COLORS[ing])
             y += linediff
 
         y += linediff
