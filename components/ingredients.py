@@ -2,7 +2,6 @@ from enum import Enum, auto
 
 import config
 
-
 class Ingredient(Enum):
     EMPTY = auto()
     FIRE = auto()
@@ -92,7 +91,6 @@ class Ingredient(Enum):
         retr = [
             Ingredient.FIRE,
             Ingredient.WATER,
-            Ingredient.LIFE,
             Ingredient.EARTH,
             Ingredient.RANGE,
             Ingredient.AREA,
@@ -103,13 +101,14 @@ class Ingredient(Enum):
             Ingredient.ICE,
             Ingredient.ICEBOLT,
             Ingredient.ICE_VORTEX,
-            Ingredient.VITALITY,
             Ingredient.ROCK,
             Ingredient.MAGMA,
             Ingredient.MUD,
         ]
         if config.conf.trap:
             retr.append(Ingredient.TRAP)
+        if config.conf.heal:
+            retr.extend([Ingredient.LIFE, Ingredient.VITALITY])
         return retr
 
     @staticmethod
@@ -130,14 +129,16 @@ class Ingredient(Enum):
 
     @staticmethod
     def basics():
-        return [
+        retr = [
             Ingredient.FIRE,
             Ingredient.WATER,
-            Ingredient.LIFE,
             Ingredient.EARTH,
             Ingredient.RANGE,
             Ingredient.AREA,
         ]
+        if config.conf.heal:
+            retr.append(Ingredient.LIFE)
+        return retr
 
     def get_base_form(self):
         if self in IngredientMeta.UPGRADE_TO_BASE_MAP:
@@ -186,23 +187,34 @@ class IngredientState:
 
 
 class IngredientMeta:
-    UPGRADE_TO_BASE_MAP = {
-        Ingredient.INFERNO: Ingredient.FIRE,
-        Ingredient.FIRESPRAY: Ingredient.FIRE,
-        Ingredient.FIREBOLT: Ingredient.FIRE,
-        Ingredient.SLEET: Ingredient.WATER,
-        Ingredient.ICE: Ingredient.WATER,
-        Ingredient.ICEBOLT: Ingredient.WATER,
-        Ingredient.ICE_VORTEX: Ingredient.WATER,
-        Ingredient.VITALITY: Ingredient.LIFE,
-        Ingredient.ROCK: Ingredient.EARTH,
-        Ingredient.MAGMA: Ingredient.EARTH,
-        Ingredient.MUD: Ingredient.EARTH,
-    }
 
-    UPGRADE_GROUPS = [
-        [Ingredient.INFERNO, Ingredient.FIRESPRAY, Ingredient.FIREBOLT],
-        [Ingredient.SLEET, Ingredient.ICE, Ingredient.ICEBOLT, Ingredient.ICE_VORTEX],
-        [Ingredient.VITALITY],
-        [Ingredient.ROCK, Ingredient.MAGMA, Ingredient.MUD],
-    ]
+    def setup_upgrade_to_base_map():
+        retr = {
+            Ingredient.INFERNO: Ingredient.FIRE,
+            Ingredient.FIRESPRAY: Ingredient.FIRE,
+            Ingredient.FIREBOLT: Ingredient.FIRE,
+            Ingredient.SLEET: Ingredient.WATER,
+            Ingredient.ICE: Ingredient.WATER,
+            Ingredient.ICEBOLT: Ingredient.WATER,
+            Ingredient.ICE_VORTEX: Ingredient.WATER,
+            Ingredient.ROCK: Ingredient.EARTH,
+            Ingredient.MAGMA: Ingredient.EARTH,
+            Ingredient.MUD: Ingredient.EARTH,
+        }
+        if config.conf.heal:
+            retr[Ingredient.VITALITY] = Ingredient.LIFE
+        return retr
+
+    UPGRADE_TO_BASE_MAP = setup_upgrade_to_base_map()
+
+    def setup_upgrade_groups():
+        retr = [
+            [Ingredient.INFERNO, Ingredient.FIRESPRAY, Ingredient.FIREBOLT],
+            [Ingredient.SLEET, Ingredient.ICE, Ingredient.ICEBOLT, Ingredient.ICE_VORTEX],
+            [Ingredient.ROCK, Ingredient.MAGMA, Ingredient.MUD],
+        ]
+        if config.conf.heal:
+            retr.append([Ingredient.VITALITY])
+        return retr
+
+    UPGRADE_GROUPS = setup_upgrade_groups()

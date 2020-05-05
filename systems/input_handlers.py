@@ -84,7 +84,7 @@ def handle_crafting(key, modifiers):
         return {"ingredient": Ingredient.AREA}
     elif key == pygame.K_a:
         return {"ingredient": Ingredient.WATER}
-    elif key == pygame.K_s:
+    elif key == pygame.K_s and config.conf.heal:
         return {"ingredient": Ingredient.LIFE}
     elif key == pygame.K_d:
         return {"ingredient": Ingredient.EARTH}
@@ -175,7 +175,7 @@ def handle_formula_screen_keys(key, modifiers):
         return {"ingredient": Ingredient.RANGE}
     elif key == pygame.K_a:
         return {"ingredient": Ingredient.AREA}
-    elif key == pygame.K_s:
+    elif key == pygame.K_s and config.conf.heal:
         return {"ingredient": Ingredient.LIFE}
     elif key == pygame.K_d:
         return {"ingredient": Ingredient.EARTH}

@@ -64,7 +64,7 @@ Usage:
 """
 trap_help = """Enable trap ingredient"""
 trapcast_help = """Enable casting all formulas as traps"""
-
+heal_help="""Enable life ingredient"""
 formula_description = (
     "Formula, a roguelite game about blending stuff and throwing them at monsters"
 )
@@ -109,7 +109,7 @@ parser.add_argument("--crafting", action="store_true", help=ingredient_crafting_
 parser.add_argument("--consumables", action="store_true", help=consumables_help)
 parser.add_argument("--trap", action="store_true", help=trap_help)
 parser.add_argument("--trapcast", action="store_true", help=trapcast_help)
-
+parser.add_argument("--heal", action="store_true", help=heal_help)
 args = parser.parse_args()
 
 
@@ -183,10 +183,13 @@ class Config:
 
         self.crafting = args.crafting
         self.consumables = args.consumables
+
         self.trap = args.trap
         self.trapcast = args.trapcast
         if self.trap and self.trapcast:
             sys.exit("Can't have both trap and trapcast enabled")
+
+        self.heal = args.heal
 
     def serialize(self):
         return {
@@ -195,6 +198,13 @@ class Config:
             "random_seed": self.random_seed,
             "starting_mode": self.starting_mode,
             "keys": self.keys,
+            "pickup" : self.pickup,
+            "pickupstartcount" : self.pickupstartcount,
+            "crafting" : self.crafting,
+            "consumables" : self.consumables,
+            "trap" : self.trap,
+            "trapcast" : self.trapcast,
+            "heal" : self.heal,
         }
 
     def deserialize(self, data):
@@ -203,6 +213,13 @@ class Config:
         self.random_seed = data["random_seed"]
         self.starting_mode = data["starting_mode"]
         self.keys = data["keys"]
+        self.pickup = data["pickup"]
+        self.pickupstartcount = data["pickupstartcount"]
+        self.crafting = data["crafting"]
+        self.consumables = data["consumables"]
+        self.trap = data["trap"]
+        self.trapcast = data["trapcast"]
+        self.heal = data["heal"]
 
     def parse_test(self, filepath):
         self.test_file = os.path.abspath(filepath)

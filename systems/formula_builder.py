@@ -187,7 +187,7 @@ class FormulaBuilder:
                 slow_rounds += state.slow_per_step
                 attack_ingredient = True
                 water_dmg += state.dmg_per_step
-            elif slot == Ingredient.LIFE:
+            elif config.conf.heal and slot == Ingredient.LIFE:
                 healing += state.heal_per_step * 2
             elif slot == Ingredient.EARTH:
                 shield += state.shield_per_step * 2
@@ -238,7 +238,7 @@ class FormulaBuilder:
                 attack_ingredient = True
 
             # life upgrades
-            elif slot == Ingredient.VITALITY:
+            elif config.conf.heal and slot == Ingredient.VITALITY:
                 healing += state.heal_per_step * 3
 
             # earth upgrades
