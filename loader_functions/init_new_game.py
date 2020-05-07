@@ -29,20 +29,12 @@ def get_constants():
 
     map_size = Size(40, 30)
     camera_size = Size(25, 20)
-    game_window_size = Size(
-        (camera_size.width + 1) * CELL_WIDTH, (camera_size.height + 1) * CELL_HEIGHT
-    )
+    game_window_size = Size((camera_size.width + 1) * CELL_WIDTH, (camera_size.height + 1) * CELL_HEIGHT)
     window_size = Size(150 + game_window_size.width, 900)
 
     right_panel_size = Size(150, window_size.height)
-    message_log_size = Size(
-        window_size.width - right_panel_size.width,
-        window_size.height - game_window_size.height,
-    )
-    message_log_text_size = Size(
-        message_log_size.width - 2 * CELL_WIDTH,
-        message_log_size.height - 2 * CELL_HEIGHT,
-    )
+    message_log_size = Size(window_size.width - right_panel_size.width, window_size.height - game_window_size.height,)
+    message_log_text_size = Size(message_log_size.width - 2 * CELL_WIDTH, message_log_size.height - 2 * CELL_HEIGHT,)
 
     helper_window_size = Size(800, 600)
     helper_window_pos = Pos(100, 100)
@@ -85,9 +77,7 @@ def get_constants():
 
 
 class GfxState:
-    def __init__(
-        self, main, assets, camera, fullscreen, visuals, fps_per_second, clock, windows
-    ):
+    def __init__(self, main, assets, camera, fullscreen, visuals, fps_per_second, clock, windows):
         self.main = main
         self.assets = assets
         self.camera = camera
@@ -119,9 +109,7 @@ def setup_data_state(constants):
     pygame.display.set_caption("Formula")
     pygame.mixer.quit()
     pygame.key.set_repeat(200)
-    main = pygame.display.set_mode(
-        (constants.window_size.width, constants.window_size.height)
-    )
+    main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
 
     assets = Assets.setup()
 
@@ -160,15 +148,11 @@ def setup_data_state(constants):
     windows.push(InventoryWindow(constants))
     windows.push(InventoryHelpWindow(constants))
 
-    text_width = constants.message_log_text_size.width / get_width(
-        Assets.get().font_message
-    )
+    text_width = constants.message_log_text_size.width / get_width(Assets.get().font_message)
     log = MessageLog(text_width)  # for some margin on the sides
 
     player = Player(godmode)
-    formula_builder = FormulaBuilder(
-        player.caster.num_slots, player.caster.num_formulas, run_tutorial
-    )
+    formula_builder = FormulaBuilder(player.caster.num_slots, player.caster.num_formulas, run_tutorial)
 
     levels = 9
     planner = RunPlanner(levels, player, constants, timesystem, run_tutorial)
@@ -177,13 +161,7 @@ def setup_data_state(constants):
     ingredient_storage = IngredientStorage()
     if config.conf.pickupstartcount == "base":
         ingredient_storage.add_multiple(
-            {
-                Ingredient.FIRE: 2,
-                Ingredient.WATER: 2,
-                Ingredient.EARTH: 2,
-                Ingredient.RANGE: 1,
-                Ingredient.AREA: 1,
-            }
+            {Ingredient.FIRE: 2, Ingredient.WATER: 2, Ingredient.EARTH: 2, Ingredient.RANGE: 1, Ingredient.AREA: 1,}
         )
         if config.conf.trap:
             ingredient_storage.add_multiple(
@@ -195,9 +173,7 @@ def setup_data_state(constants):
 
     menu_data = AttrDict({"currchoice": 0})
 
-    inventory = Inventory(
-        max_count=constants.num_consumables, num_quickslots=constants.num_quickslots
-    )
+    inventory = Inventory(max_count=constants.num_consumables, num_quickslots=constants.num_quickslots)
     from components.consumable import Firebomb, Freezebomb, Teleporter, CooldownClear
 
     # for t in [Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig]:
@@ -224,9 +200,7 @@ def setup_data_state(constants):
         inventory=inventory,
     )
 
-    camera = Camera(
-        constants.camera_size.width, constants.camera_size.height, game_data
-    )
+    camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)
 
     gfx_data = GfxState(
         main=main,

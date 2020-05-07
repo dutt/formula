@@ -189,7 +189,6 @@ class IngredientState:
 
 
 class IngredientMeta:
-
     def setup_upgrade_to_base_map():
         retr = {
             Ingredient.INFERNO: Ingredient.FIRE,
@@ -222,23 +221,23 @@ class IngredientMeta:
     UPGRADE_GROUPS = setup_upgrade_groups()
 
     INGREDIENT_COLORS = {
-            Ingredient.EMPTY : colors.WHITE,
-            Ingredient.FIRE : colors.RED,
-            Ingredient.WATER : colors.BLUE,
-            Ingredient.LIFE : colors.YELLOW,
-            Ingredient.EARTH : colors.GREY,
-            Ingredient.AREA : colors.BROWN,
-            Ingredient.RANGE : colors.BROWN,
-            Ingredient.TRAP : colors.BROWN,
-            Ingredient.INFERNO : colors.RED,
-            Ingredient.FIRESPRAY : colors.RED,
-            Ingredient.FIREBOLT : colors.RED,
-            Ingredient.SLEET : colors.BLUE,
-            Ingredient.ICE : colors.BLUE,
-            Ingredient.ICEBOLT : colors.BLUE,
-            Ingredient.ICE_VORTEX : colors.BLUE,
-            Ingredient.VITALITY : colors.YELLOW,
-            Ingredient.ROCK : colors.GREY,
-            Ingredient.MAGMA : colors.GREY,
-            Ingredient.MUD : colors.GREY,
+        Ingredient.EMPTY: colors.WHITE,
+        Ingredient.FIRE: colors.RED,
+        Ingredient.WATER: colors.BLUE,
+        Ingredient.LIFE: colors.YELLOW,
+        Ingredient.EARTH: colors.GREY,
+        Ingredient.AREA: colors.BROWN,
+        Ingredient.RANGE: colors.BROWN,
+        Ingredient.TRAP: colors.BROWN,
+        Ingredient.INFERNO: colors.RED,
+        Ingredient.FIRESPRAY: colors.RED,
+        Ingredient.FIREBOLT: colors.RED,
+        Ingredient.SLEET: colors.BLUE,
+        Ingredient.ICE: colors.BLUE,
+        Ingredient.ICEBOLT: colors.BLUE,
+        Ingredient.ICE_VORTEX: colors.BLUE,
+        Ingredient.VITALITY: colors.YELLOW,
+        Ingredient.ROCK: colors.GREY,
+        Ingredient.MAGMA: colors.GREY,
+        Ingredient.MUD: colors.GREY,
     }

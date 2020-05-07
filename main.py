@@ -29,14 +29,10 @@ def play_game(game_data, gfx_data):
                 if dead_entity:
                     if dead_entity == game_data.player:
                         msg, game_data = kill_player(game_data, gfx_data.assets)
-                        gfx_data.windows.activate_wnd_for_state(
-                            game_data.state, game_data, gfx_data
-                        )
+                        gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
                     else:
                         game_data.stats.monster_killed(dead_entity)
-                        msg, game_data = kill_monster(
-                            dead_entity, game_data, gfx_data.assets
-                        )
+                        msg, game_data = kill_monster(dead_entity, game_data, gfx_data.assets)
                     game_data.log.add_message(msg)
 
                 cast = res.get("cast")
@@ -45,13 +41,9 @@ def play_game(game_data, gfx_data):
                         formula = res.get("formula")
                         game_data.stats.throw_vial(formula)
                         if config.conf.cooldown_mode == "always":
-                            game_data.player.caster.add_cooldown(
-                                formula.formula_idx, formula.cooldown + 1
-                            )
+                            game_data.player.caster.add_cooldown(formula.formula_idx, formula.cooldown + 1)
                         else:
-                            game_data.player.caster.add_cooldown(
-                                formula.formula_idx, formula.cooldown
-                            )
+                            game_data.player.caster.add_cooldown(formula.formula_idx, formula.cooldown)
                 do_quit = res.get("quit")
                 if do_quit:
                     keep_playing = res.get("keep_playing")
@@ -66,9 +58,7 @@ def play_game(game_data, gfx_data):
                     if leveled_up:
                         game_data.log.add_message(
                             Message(
-                                "You grow stronger, reached level {}".format(
-                                    game_data.player.level.current_level
-                                ),
+                                "You grow stronger, reached level {}".format(game_data.player.level.current_level),
                                 (0, 255, 0),
                             )
                         )
@@ -159,9 +149,7 @@ def write_logs(game_data, seed, start_time, crashed):
     data = {
         "seed": seed,
         "config": config.conf.serialize(),
-        "messages": [msg.text for msg in game_data.log.messages]
-        if game_data
-        else ["no game_data"],
+        "messages": [msg.text for msg in game_data.log.messages] if game_data else ["no game_data"],
         "input_events": input_recorder.serialize_input(input_recorder.events),
         "crashed": crashed,
         "game_modes": {

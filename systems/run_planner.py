@@ -78,9 +78,7 @@ class RunPlanner:
         return self.current_map
 
     def make_tutorial_map(self):
-        m = MapFileLoader.make_map(
-            self.constants, 0, resource_path("data/maps/tutorial")
-        )
+        m = MapFileLoader.make_map(self.constants, 0, resource_path("data/maps/tutorial"))
         m.tutorial = True
         return m
 
@@ -113,50 +111,34 @@ class RunPlanner:
         return ingredient_count
 
     def sample_all(
-        self,
-        fire_count,
-        water_count,
-        earth_count,
-        life_count,
-        modifier_count,
-        basics=True,
+        self, fire_count, water_count, earth_count, life_count, modifier_count, basics=True,
     ):
         ingredient_count = {}
 
         all_fires = [Ingredient.INFERNO, Ingredient.FIREBOLT, Ingredient.FIRESPRAY]
         if basics:
             all_fires.append(Ingredient.FIRE)
-        ingredient_count = self.sample_ingredients(
-            ingredient_count, count=fire_count, choices=all_fires
-        )
+        ingredient_count = self.sample_ingredients(ingredient_count, count=fire_count, choices=all_fires)
 
         all_waters = [Ingredient.SLEET, Ingredient.ICEBOLT, Ingredient.ICE_VORTEX]
         if basics:
             all_waters.append(Ingredient.WATER)
-        ingredient_count = self.sample_ingredients(
-            ingredient_count, count=water_count, choices=all_waters
-        )
+        ingredient_count = self.sample_ingredients(ingredient_count, count=water_count, choices=all_waters)
 
         all_earths = [Ingredient.ROCK, Ingredient.MUD, Ingredient.MAGMA]
         if basics:
             all_earths.append(Ingredient.EARTH)
-        ingredient_count = self.sample_ingredients(
-            ingredient_count, count=earth_count, choices=all_earths
-        )
+        ingredient_count = self.sample_ingredients(ingredient_count, count=earth_count, choices=all_earths)
 
         all_lifes = [Ingredient.VITALITY]
         if basics:
             all_lifes.append(Ingredient.LIFE)
-        ingredient_count = self.sample_ingredients(
-            ingredient_count, count=life_count, choices=all_lifes
-        )
+        ingredient_count = self.sample_ingredients(ingredient_count, count=life_count, choices=all_lifes)
 
         all_modifiers = [Ingredient.RANGE, Ingredient.AREA]
         if config.conf.trap:
             all_modifiers.append(Ingredient.TRAP)
-        ingredient_count = self.sample_ingredients(
-            ingredient_count, count=modifier_count, choices=all_modifiers
-        )
+        ingredient_count = self.sample_ingredients(ingredient_count, count=modifier_count, choices=all_modifiers)
 
         return ingredient_count
 
@@ -168,9 +150,7 @@ class RunPlanner:
             "rifleman": 30,
         }
 
-        ingredient_count = self.sample_all(
-            fire_count=2, water_count=2, earth_count=2, life_count=2, modifier_count=2
-        )
+        ingredient_count = self.sample_all(fire_count=2, water_count=2, earth_count=2, life_count=2, modifier_count=2)
 
         consumable_count = {Firebomb: 1, Freezebomb: 1, CooldownClear: 1, Teleporter: 1}
         key_ratio = 0.6
@@ -192,12 +172,7 @@ class RunPlanner:
         }
 
         ingredient_count = self.sample_all(
-            fire_count=3,
-            water_count=3,
-            earth_count=3,
-            life_count=2,
-            modifier_count=2,
-            basics=False,
+            fire_count=3, water_count=3, earth_count=3, life_count=2, modifier_count=2, basics=False,
         )
 
         consumable_count = {Firebomb: 1, Freezebomb: 1, CooldownClear: 1, Teleporter: 1}
@@ -212,6 +187,4 @@ class RunPlanner:
         )
 
     def make_final_map(self, current_level):
-        return MapFileLoader.make_map(
-            self.constants, current_level, resource_path("data/maps/final")
-        )
+        return MapFileLoader.make_map(self.constants, current_level, resource_path("data/maps/final"))

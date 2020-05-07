@@ -106,13 +106,7 @@ class Window(Clickable):
 
 class Bar(Clickable):
     def __init__(
-        self,
-        pos,
-        text=None,
-        color=colors.WHITE,
-        bgcolor=colors.BACKGROUND,
-        size=Size(100, 30),
-        show_numbers=True,
+        self, pos, text=None, color=colors.WHITE, bgcolor=colors.BACKGROUND, size=Size(100, 30), show_numbers=True,
     ):
         super().__init__(pos, size)
         self.color = color
@@ -146,9 +140,7 @@ class Label(Widget):
 
 
 class ClickableLabel(Clickable):
-    def __init__(
-        self, pos, text, size, font=None, parent=None, click_mode=ClickMode.LEFT
-    ):
+    def __init__(self, pos, text, size, font=None, parent=None, click_mode=ClickMode.LEFT):
         super().__init__(pos, size, parent=parent, click_mode=click_mode)
         self.text = text
         self.font = font if font else Assets.get().font_title

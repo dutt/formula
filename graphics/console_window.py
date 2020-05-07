@@ -11,9 +11,7 @@ from util import Size, Pos
 class ConsoleWindow(Window):
     def __init__(self, constants, visible=False):
         super().__init__(
-            Pos(0, 0),
-            Size(constants.window_size.width, constants.window_size.height * 0.5),
-            visible=visible,
+            Pos(0, 0), Size(constants.window_size.width, constants.window_size.height * 0.5), visible=visible,
         )
         self.line = ""
         self.linepos = (20, self.size.height - 30)
@@ -36,9 +34,7 @@ class ConsoleWindow(Window):
         display_text(surface, self.line, gfx_data.assets.font_console, self.linepos)
 
         line_y = self.linepos[1] - 5
-        pygame.draw.line(
-            surface, (200, 200, 200), (0, line_y), (self.size.width, line_y)
-        )
+        pygame.draw.line(surface, (200, 200, 200), (0, line_y), (self.size.width, line_y))
 
         gfx_data.main.blit(surface, self.pos.tuple())
 

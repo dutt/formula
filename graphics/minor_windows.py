@@ -18,9 +18,7 @@ class GeneralHelpWindow(TextWindow):
 
 class AskQuitWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
-        )
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(self.size.tuple())
@@ -44,9 +42,7 @@ class AskQuitWindow(Window):
 
 class DeadWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
-        )
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
 
     def draw(self, game_data, gfx_data):
         surface = pygame.Surface(self.size.tuple())
@@ -54,16 +50,11 @@ class DeadWindow(Window):
         hours, minutes, seconds = game_data.stats.total_play_time
         playtime_text = "{}h {}m {}s".format(hours, minutes, seconds)
         display_text(
-            surface,
-            "You died after {}".format(playtime_text),
-            gfx_data.assets.font_message,
-            (300, 100),
+            surface, "You died after {}".format(playtime_text), gfx_data.assets.font_message, (300, 100),
         )
         display_text(
             surface,
-            "Killed by a {} after killing...".format(
-                game_data.player.fighter.killed_by.name
-            ),
+            "Killed by a {} after killing...".format(game_data.player.fighter.killed_by.name),
             gfx_data.assets.font_message,
             (120, 150),
         )
@@ -78,10 +69,7 @@ class DeadWindow(Window):
         display_lines(surface, gfx_data.assets.font_message, lines, x=120, starty=180)
 
         display_text(
-            surface,
-            "Press Escape again to quit, press Space to restart",
-            gfx_data.assets.font_message,
-            (120, 500),
+            surface, "Press Escape again to quit, press Space to restart", gfx_data.assets.font_message, (120, 500),
         )
         gfx_data.main.blit(surface, self.pos.tuple())
 
@@ -117,16 +105,10 @@ class VictoryWindow(TextWindow):
         hours, minutes, seconds = game_data.stats.total_play_time
         playtime_text = "{}h {}m {}s".format(hours, minutes, seconds)
         display_text(
-            surface,
-            "This took you {}".format(playtime_text),
-            gfx_data.assets.font_message,
-            (150, 475),
+            surface, "This took you {}".format(playtime_text), gfx_data.assets.font_message, (150, 475),
         )
         display_text(
-            surface,
-            "Press Escape to quit, press Space to play again",
-            gfx_data.assets.font_message,
-            (150, 500),
+            surface, "Press Escape to quit, press Space to play again", gfx_data.assets.font_message, (150, 500),
         )
 
         gfx_data.main.blit(surface, self.pos.tuple())

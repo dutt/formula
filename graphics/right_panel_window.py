@@ -15,20 +15,14 @@ class FormulaMarker(Clickable):
         self.formula_idx = formula_idx
         self.player = player
         self.cooldown_bar = Bar(
-            pos,
-            None,
-            colors.COOLDOWN_BAR_FRONT,
-            colors.COOLDOWN_BAR_BACKGROUND,
-            show_numbers=False,
+            pos, None, colors.COOLDOWN_BAR_FRONT, colors.COOLDOWN_BAR_BACKGROUND, show_numbers=False,
         )
         self.font = Assets.get().font_message
 
     def draw(self, surface, game_data, formula):
         if self.player.caster.is_on_cooldown(self.formula_idx):
             self.cooldown_bar.draw(
-                surface,
-                self.player.caster.get_cooldown(self.formula_idx),
-                formula.cooldown,
+                surface, self.player.caster.get_cooldown(self.formula_idx), formula.cooldown,
             )
         elif self.formula_idx == game_data.targeting_formula_idx:
             msg = "{}: {}".format(self.formula_idx + 1, formula.text_repr)
@@ -69,9 +63,7 @@ class ConsumableMarker(Clickable):
         pygame.draw.rect(surface, (100, 50, 50), (x, y, w, h), 1)
         item = game_data.inventory.get_quickslot(self.consumable_index)
         if item:
-            display_text(
-                surface, f"{self.shortcut}: {item.name}", self.font, self.pos.tuple()
-            )
+            display_text(surface, f"{self.shortcut}: {item.name}", self.font, self.pos.tuple())
         else:
             display_text(surface, f"{self.shortcut}: -", self.font, self.pos.tuple())
 
@@ -85,25 +77,11 @@ class ConsumableMarker(Clickable):
 class RightPanelWindow(Window):
     def __init__(self, constants, parent=None):
         super().__init__(
-            Pos(0, 0),
-            constants.right_panel_size,
-            visible=False,
-            parent=parent,
-            click_mode=ClickMode.LEFT,
+            Pos(0, 0), constants.right_panel_size, visible=False, parent=parent, click_mode=ClickMode.LEFT,
         )
-        self.health_bar = Bar(
-            Pos(10, 20),
-            "HP",
-            colors.HP_BAR_FRONT,
-            colors.HP_BAR_BACKGROUND,
-            size=Size(120, 30),
-        )
+        self.health_bar = Bar(Pos(10, 20), "HP", colors.HP_BAR_FRONT, colors.HP_BAR_BACKGROUND, size=Size(120, 30),)
         self.shield_bar = Bar(
-            Pos(10, 60),
-            "Shield",
-            colors.SHIELD_BAR_FRONT,
-            colors.SHIELD_BAR_BACKGROUND,
-            size=Size(120, 30),
+            Pos(10, 60), "Shield", colors.SHIELD_BAR_FRONT, colors.SHIELD_BAR_BACKGROUND, size=Size(120, 30),
         )
         self.xp_bar = Bar(
             Pos(10, 130),
@@ -153,17 +131,11 @@ class RightPanelWindow(Window):
         mx, my = pygame.mouse.get_pos()
         if self.health_bar.is_inside(mx, my):
             display_text(
-                surface,
-                "This is how much health you have",
-                Assets.get().font_message,
-                (mx, my),
+                surface, "This is how much health you have", Assets.get().font_message, (mx, my),
             )
         elif self.shield_bar.is_inside(mx, my):
             display_text(
-                surface,
-                "This is how much shield you have",
-                Assets.get().font_message,
-                (mx, my),
+                surface, "This is how much shield you have", Assets.get().font_message, (mx, my),
             )
         for fm in self.formula_markers:
             if fm.is_inside(mx, my):
@@ -174,17 +146,11 @@ class RightPanelWindow(Window):
                 item = game_data.inventory.get_quickslot(cm.consumable_index)
                 if item:
                     display_text(
-                        gfx_data.main,
-                        item.DESCRIPTION,
-                        Assets.get().font_message,
-                        (mx, my),
+                        gfx_data.main, item.DESCRIPTION, Assets.get().font_message, (mx, my),
                     )
                 else:
                     display_text(
-                        gfx_data.main,
-                        "No item equipped",
-                        Assets.get().font_message,
-                        (mx, my),
+                        gfx_data.main, "No item equipped", Assets.get().font_message, (mx, my),
                     )
                 return
 
@@ -193,27 +159,19 @@ class RightPanelWindow(Window):
         surface.fill(colors.BACKGROUND)
 
         if len(self.formula_markers) != len(game_data.player.caster.formulas):
-            self.update_formula_markers(
-                game_data.player, start_y=self.formula_label.pos.y + 40
-            )
+            self.update_formula_markers(game_data.player, start_y=self.formula_label.pos.y + 40)
 
-        self.health_bar.draw(
-            surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp
-        )
+        self.health_bar.draw(surface, game_data.player.fighter.hp, game_data.player.fighter.max_hp)
         if game_data.player.fighter.shield:
             self.shield_bar.draw(
-                surface,
-                game_data.player.fighter.shield.level,
-                game_data.player.fighter.shield.max_level,
+                surface, game_data.player.fighter.shield.level, game_data.player.fighter.shield.max_level,
             )
         else:
             self.shield_bar.draw(surface, 0, 10)
 
         if config.conf.keys:
             if game_data.map.stairs_found:
-                text = "Found {}/{} keys".format(
-                    game_data.map.num_keys_found, game_data.map.num_keys_total
-                )
+                text = "Found {}/{} keys".format(game_data.map.num_keys_found, game_data.map.num_keys_total)
             else:
                 text = "Found {}/? keys".format(game_data.map.num_keys_found)
             display_text(
@@ -221,16 +179,11 @@ class RightPanelWindow(Window):
             )
         else:
             display_text(
-                surface,
-                "Level {}".format(game_data.player.level.current_level),
-                Assets.get().font_message,
-                (10, 105),
+                surface, "Level {}".format(game_data.player.level.current_level), Assets.get().font_message, (10, 105),
             )
             if config.conf.keys:
                 self.xp_bar.draw(
-                    surface,
-                    game_data.player.level.current_xp,
-                    game_data.player.level.xp_to_next_level,
+                    surface, game_data.player.level.current_xp, game_data.player.level.xp_to_next_level,
                 )
 
         self.formula_label.draw(surface)

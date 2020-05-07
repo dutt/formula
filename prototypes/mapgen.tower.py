@@ -362,9 +362,7 @@ def make_doors(m, origins, paths):
         print(possible_removed)
         m.tiles[possible_removed.x][possible_removed.y].wall = False
         possible_valid_count = validate()
-        if (
-            possible_valid_count == current_failures
-        ):  # removing a wall added a valid path
+        if possible_valid_count == current_failures:  # removing a wall added a valid path
             m.tiles[possible_removed.x][possible_removed.y].wall = True
         current_failures = possible_valid_count
 

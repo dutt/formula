@@ -50,9 +50,7 @@ class Firebomb(Consumable):
         # create graphcs
         target_tiles = get_tiles_within(game_data.map, self.area, target)
         for pos in target_tiles:
-            gfx_data.visuals.add_temporary(
-                pos, pos, lifespan=0.2, asset=Assets.get().spark_effect, wait=0.2
-            )
+            gfx_data.visuals.add_temporary(pos, pos, lifespan=0.2, asset=Assets.get().spark_effect, wait=0.2)
         # cause effect
         targets = []
         for e in game_data.map.entities:
@@ -60,19 +58,11 @@ class Firebomb(Consumable):
                 targets.append(e)
 
         effect = EffectBuilder.create(
-            EffectType.DAMAGE,
-            amount=Firebomb.DAMAGE,
-            dmg_type=DamageType.FIRE,
-            rounds=1,
-            caster=game_data.player,
+            EffectType.DAMAGE, amount=Firebomb.DAMAGE, dmg_type=DamageType.FIRE, rounds=1, caster=game_data.player,
         )
         for t in targets:
             results.append(
-                {
-                    "message": Message(
-                        f"Hit {t.name.lower()} with firebomb for {Firebomb.DAMAGE} fire damage"
-                    )
-                }
+                {"message": Message(f"Hit {t.name.lower()} with firebomb for {Firebomb.DAMAGE} fire damage")}
             )
             results.extend(effect.apply(t))
         return results
@@ -94,9 +84,7 @@ class Freezebomb(Consumable):
         # create graphcs
         target_tiles = get_tiles_within(game_data.map, self.area, target)
         for pos in target_tiles:
-            gfx_data.visuals.add_temporary(
-                pos, pos, lifespan=0.2, asset=Assets.get().spark_effect, wait=0.2
-            )
+            gfx_data.visuals.add_temporary(pos, pos, lifespan=0.2, asset=Assets.get().spark_effect, wait=0.2)
         # cause effect
         targets = []
         for e in game_data.map.entities:
@@ -112,11 +100,7 @@ class Freezebomb(Consumable):
         )
         for t in targets:
             results.append(
-                {
-                    "message": Message(
-                        f"Hit {t.name.lower()} with freezebomb, slowed for {Freezebomb.ROUNDS} rounds"
-                    )
-                }
+                {"message": Message(f"Hit {t.name.lower()} with freezebomb, slowed for {Freezebomb.ROUNDS} rounds")}
             )
             results.extend(effect.apply(t))
         return results
@@ -134,10 +118,7 @@ class Teleporter(Consumable):
         explored_tiles = []
         for x in range(game_data.map.width):
             for y in range(game_data.map.height):
-                if (
-                    game_data.map.tiles[x][y].explored
-                    and not game_data.map.tiles[x][y].blocked
-                ):
+                if game_data.map.tiles[x][y].explored and not game_data.map.tiles[x][y].blocked:
                     explored_tiles.append((x, y))
 
         x, y = random.choice(explored_tiles)
@@ -156,9 +137,7 @@ class CooldownClear(Consumable):
 
     def apply(self, game_data, gfx_data, target):
         game_data.player.caster.clear_cooldowns()
-        results = [
-            {"message": Message("Your cooldowns have been cleared, have at'em!")}
-        ]
+        results = [{"message": Message("Your cooldowns have been cleared, have at'em!")}]
         return results
 
 

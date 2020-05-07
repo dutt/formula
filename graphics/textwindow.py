@@ -9,9 +9,7 @@ from components.events import EventType
 
 class TextWindow(Window):
     def __init__(self, constants, visible, lines=None, path=None, next_window=None):
-        super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
-        )
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
         self.next_window = next_window
         self.lines = lines
         self.num_lines = 20
@@ -38,17 +36,12 @@ class TextWindow(Window):
         surface = pygame.Surface(self.size.tuple())
 
         show_lines = self.lines[self.offset : self.offset + self.num_lines]
-        display_menu(
-            gfx_data, show_lines, self.size.tuple(), surface=surface, x=self.pos.x + 10
-        )
+        display_menu(gfx_data, show_lines, self.size.tuple(), surface=surface, x=self.pos.x + 10)
 
         if len(self.lines) > self.num_lines:
             pygame.draw.line(surface, (255, 255, 255), (100, 520), (500, 520))
             display_text(
-                surface,
-                "Use W, S or mouse scroll to see more",
-                gfx_data.assets.font_message,
-                (130, 530),
+                surface, "Use W, S or mouse scroll to see more", gfx_data.assets.font_message, (130, 530),
             )
 
         gfx_data.main.blit(surface, self.pos.tuple())
@@ -57,17 +50,13 @@ class TextWindow(Window):
         if self.num_lines > len(self.lines):
             self.offset = max(self.offset - self.offset_jump, 0)
         else:
-            self.offset = max(
-                -len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0
-            )
+            self.offset = max(-len(self.lines) + self.num_lines, self.offset - self.offset_jump, 0)
 
     def scroll_down(self):
         if self.num_lines > len(self.lines):
             self.offset = min(self.offset + self.offset_jump, len(self.lines))
         else:
-            self.offset = min(
-                len(self.lines) - self.num_lines, self.offset + self.offset_jump
-            )
+            self.offset = min(len(self.lines) - self.num_lines, self.offset + self.offset_jump)
 
     def handle_key(self, game_data, gfx_data, key_action):
         do_quit = key_action.get(EventType.exit)

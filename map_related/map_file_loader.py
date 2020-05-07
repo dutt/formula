@@ -85,11 +85,6 @@ class MapFileLoader:
         stairs_component = Stairs(game_map.dungeon_level + 1)
         drawable_component = Drawable(Assets.get().stairs)
         stairs = Entity(
-            x,
-            y,
-            "Stairs",
-            render_order=RenderOrder.STAIRS,
-            stairs=stairs_component,
-            drawable=drawable_component,
+            x, y, "Stairs", render_order=RenderOrder.STAIRS, stairs=stairs_component, drawable=drawable_component,
         )
         return [stairs]

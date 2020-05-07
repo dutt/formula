@@ -33,13 +33,7 @@ def do_looting(game_data, gfx_data, prefix):
     if val <= 40 and can_heal:
         amount = 3
         game_data.player.fighter.heal(amount)
-        result = [
-            {
-                "message": Message(
-                    f"{prefix} your wounds close, you've been healed {amount} points"
-                )
-            }
-        ]
+        result = [{"message": Message(f"{prefix} your wounds close, you've been healed {amount} points")}]
     elif val <= 70 and game_data.player.caster.has_cooldown():
         cooldown_reduction = 5
         for _ in range(0, cooldown_reduction):
@@ -55,9 +49,7 @@ def do_looting(game_data, gfx_data, prefix):
                 shield.max_level = shield.level
             text = f"{prefix} your shield strengthens"
         else:
-            shield_effect = EffectBuilder.create(
-                EffectType.DEFENSE, level=shield_strength, strikebacks=[], distance=0,
-            )
+            shield_effect = EffectBuilder.create(EffectType.DEFENSE, level=shield_strength, strikebacks=[], distance=0,)
             shield_effect.apply(game_data.player)
             text = f"{prefix} a shield appears around you"
         result = [{"message": Message(text)}]
@@ -69,11 +61,7 @@ class LootAction(Action):
         super().__init__(actor=actor, cost=100)
 
     def execute(self, game_data, gfx_data):
-        return self.package(
-            result=do_looting(
-                game_data, gfx_data, prefix="You found a jewel, when you touch it"
-            )
-        )
+        return self.package(result=do_looting(game_data, gfx_data, prefix="You found a jewel, when you touch it"))
 
 
 class ExitAction(Action):
@@ -86,13 +74,9 @@ class ExitAction(Action):
         if game_data.state == GameStates.PLAY and self.ask:
             game_data.prev_state.append(game_data.state)
             game_data.state = GameStates.ASK_QUIT
-            gfx_data.windows.activate_wnd_for_state(
-                game_data.state, game_data, gfx_data
-            )
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
         else:
-            return self.package(
-                result=[{"quit": True, "keep_playing": self.keep_playing}]
-            )
+            return self.package(result=[{"quit": True, "keep_playing": self.keep_playing}])
 
 
 class WaitAction(Action):
@@ -109,17 +93,13 @@ class DescendStairsAction(Action):
     COST = 100
 
     def __init__(self, actor):
-        super(DescendStairsAction, self).__init__(
-            actor=actor, cost=DescendStairsAction.COST
-        )
+        super(DescendStairsAction, self).__init__(actor=actor, cost=DescendStairsAction.COST)
 
     def execute(self, game_data, gfx_data):
         all_keys = game_data.map.num_keys_found == game_data.map.num_keys_total
         if not all_keys:
             num_remaining = game_data.map.num_keys_total - game_data.map.num_keys_found
-            text = "You haven't found all the keys on this level yet, {} keys left".format(
-                num_remaining
-            )
+            text = "You haven't found all the keys on this level yet, {} keys left".format(num_remaining)
             game_data.map.stairs_found = True
             result = [{"message": Message(text)}]
             return self.package(result=result)
@@ -149,9 +129,7 @@ class DescendStairsAction(Action):
             cam_width = min(game_data.map.width, gfx_data.camera.orig_width)
             cam_height = min(game_data.map.height, gfx_data.camera.orig_height)
             gfx_data.camera = Camera(cam_width, cam_height, game_data)
-            gfx_data.windows.activate_wnd_for_state(
-                game_data.state, game_data, gfx_data
-            )
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
             gfx_data.camera.initialize_map()
             gfx_data.camera.center_on(game_data.player.pos.x, game_data.player.pos.y)
             game_data.stats.next_level()
@@ -160,9 +138,7 @@ class DescendStairsAction(Action):
             game_data.prev_state.append(game_data.state)
             game_data.state = GameStates.VICTORY
             game_data.story.next_story()
-            gfx_data.windows.activate_wnd_for_state(
-                game_data.state, game_data, gfx_data
-            )
+            gfx_data.windows.activate_wnd_for_state(game_data.state, game_data, gfx_data)
             game_data.stats.end_time = datetime.datetime.now()
             results.append({"victory": True})
         return self.package(results)
@@ -179,10 +155,7 @@ class MoveToPositionAction(Action):
         result = []
         if game_data.player.pos != self.targetpos:
             self.actor.move_towards(
-                self.targetpos.x,
-                self.targetpos.y,
-                game_data.map.entities,
-                game_data.map,
+                self.targetpos.x, self.targetpos.y, game_data.map.entities, game_data.map,
             )
             x, y = self.actor.pos.tuple()
             if game_data.map.tiles[x][y].trap:
@@ -282,9 +255,7 @@ class PickupKeyAction(Action):
                 game_data.map.num_keys_found, game_data.map.num_keys_total
             )
         else:
-            text = "You found a key, {} keys found, wonder how many are left?".format(
-                game_data.map.num_keys_found
-            )
+            text = "You found a key, {} keys found, wonder how many are left?".format(game_data.map.num_keys_found)
         result = [{"message": Message(text)}]
         result.extend(do_looting(game_data, gfx_data, prefix="You pick up the key and"))
         return self.package(result=result)
@@ -299,9 +270,7 @@ class PickupIngredientAction(Action):
 
     def execute(self, game_data, gfx_data):
         game_data.map.entities.remove(self.ingredient)
-        text = "You found an ingredient, some {}".format(
-            self.ingredient.ingredient.name.lower()
-        )
+        text = "You found an ingredient, some {}".format(self.ingredient.ingredient.name.lower())
         result = [{"message": Message(text)}]
         game_data.ingredient_storage.add(self.ingredient.ingredient)
         return self.package(result=result)
@@ -334,8 +303,6 @@ class UseConsumableAction(Action):
         self.targetpos = targetpos
 
     def execute(self, game_data, gfx_data):
-        result = self.consumable.apply(
-            game_data=game_data, gfx_data=gfx_data, target=self.targetpos
-        )
+        result = self.consumable.apply(game_data=game_data, gfx_data=gfx_data, target=self.targetpos)
         game_data.inventory.use(self.consumable)
         return self.package(result=result)

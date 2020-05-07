@@ -14,9 +14,7 @@ class CraftingHelpWindow(TextWindow):
     PATH = resource_path("data/help/crafting_window.txt")
 
     def __init__(self, constants, visible=False):
-        super().__init__(
-            constants, visible, path=CraftingHelpWindow.PATH, next_window=None
-        )
+        super().__init__(constants, visible, path=CraftingHelpWindow.PATH, next_window=None)
 
 
 class CraftingSlot:
@@ -35,9 +33,7 @@ class CraftingSlot:
 
 class CraftingWindow(Window):
     def __init__(self, constants, visible=False):
-        super().__init__(
-            constants.helper_window_pos, constants.helper_window_size, visible
-        )
+        super().__init__(constants.helper_window_pos, constants.helper_window_size, visible)
         self.current_slot = 0
         self.slot_count = 2
         self.setup_slots()
@@ -72,9 +68,7 @@ class CraftingWindow(Window):
                     count -= self.ingredient_counts[ing]
                 text = "{} : {}".format(ing.name.capitalize(), count)
             display_text(surface, text, gfx_data.assets.font_message, (x_base, y_base))
-            display_text(
-                surface, key, gfx_data.assets.font_message, (x_base, y_base + 30)
-            )
+            display_text(surface, key, gfx_data.assets.font_message, (x_base, y_base + 30))
             x_base += 90
             ing_count += 1
             if ing_count > 3:
@@ -93,10 +87,7 @@ class CraftingWindow(Window):
         self.draw_ingredient_choices(surface, game_data, gfx_data)
 
         display_text(
-            surface,
-            "Press Space to confirm, Escape to quit, Tab for help",
-            gfx_data.assets.font_message,
-            (140, 500),
+            surface, "Press Space to confirm, Escape to quit, Tab for help", gfx_data.assets.font_message, (140, 500),
         )
 
         gfx_data.main.blit(surface, self.pos.tuple())
@@ -140,9 +131,7 @@ class CraftingWindow(Window):
                 counts[i] = 0
             counts[i] += 1
         for i, num in counts.items():
-            if num > game_data.ingredient_storage.count_left(
-                i, game_data.formula_builder
-            ):
+            if num > game_data.ingredient_storage.count_left(i, game_data.formula_builder):
                 return False
         return True
 

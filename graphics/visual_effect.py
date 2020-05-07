@@ -43,9 +43,7 @@ class VisualEffectSystem:
         elif visual in self.attached_effects:
             self.attached_effects.remove(visual)
 
-    def add_temporary(
-        self, pos, endpos, lifespan, asset, color=None, wait=None, transform=None
-    ):
+    def add_temporary(self, pos, endpos, lifespan, asset, color=None, wait=None, transform=None):
         fps_lifespan = lifespan * self.fps_per_second
         if wait:
             fps_wait = wait * self.fps_per_second
@@ -95,9 +93,7 @@ def rotation_transform(_=None):
 
 
 class TemporaryVisualEffect:
-    def __init__(
-        self, pos, endpos, lifespan, drawable, color, owner, wait, transform=None
-    ):
+    def __init__(self, pos, endpos, lifespan, drawable, color, owner, wait, transform=None):
         self.pos = pos
         self.endpos = endpos
         self.lifespan = lifespan

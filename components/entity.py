@@ -87,9 +87,7 @@ class Entity:
         return str(self)
 
     def __str__(self):
-        return "<entity id={}, {} at ({},{})>".format(
-            self.id, self.name, self.pos.x, self.pos.y
-        )
+        return "<entity id={}, {} at ({},{})>".format(self.id, self.name, self.pos.x, self.pos.y)
 
     @property
     def raw_name(self):
@@ -146,9 +144,7 @@ class Entity:
 
         if not (
             game_map.is_blocked(self.pos.x + dx, self.pos.y + dy)
-            or get_blocking_entites_at_location(
-                entities, self.pos.x + dx, self.pos.y + dy
-            )
+            or get_blocking_entites_at_location(entities, self.pos.x + dx, self.pos.y + dy)
         ):
             self.move(dx, dy)
 
@@ -167,11 +163,7 @@ class Entity:
         for y1 in range(game_map.height):
             for x1 in range(game_map.width):
                 tcod.map_set_properties(
-                    fov,
-                    x1,
-                    y1,
-                    not game_map.tiles[x1][y1].block_sight,
-                    not game_map.tiles[x1][y1].blocked,
+                    fov, x1, y1, not game_map.tiles[x1][y1].block_sight, not game_map.tiles[x1][y1].blocked,
                 )
 
         # Scan all the objects to see if there are objects that must be navigated around
@@ -193,9 +185,7 @@ class Entity:
         # The path size matters if you want the monster to use alternative longer paths (for example through other
         # rooms) if for example the player is in a corridor. It makes sense to keep path size relatively low to keep
         # the monsters from running around the map if there's an alternative path really far away
-        if not tcod.path_is_empty(my_path) and (
-            not length_limit or tcod.path_size(my_path) < 25
-        ):
+        if not tcod.path_is_empty(my_path) and (not length_limit or tcod.path_size(my_path) < 25):
             # Find the next coordinates in the computed full path
             x, y = tcod.path_walk(my_path, True)
             if x or y:

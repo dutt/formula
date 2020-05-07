@@ -52,10 +52,7 @@ def get_formula_stats():
     ]
 
     builder = FormulaBuilder(10, 10, run_tutorial=False)
-    formulas = [
-        builder.evaluate_formula(f, 0, IngredientState(), caster="bob")[0]
-        for f in ingredient_lists
-    ]
+    formulas = [builder.evaluate_formula(f, 0, IngredientState(), caster="bob")[0] for f in ingredient_lists]
     formula_data = [f.serialize() for f in formulas]
     return formula_data
 

@@ -26,10 +26,7 @@ class FormulaBuilder:
                 [Ingredient.EARTH, Ingredient.EARTH, Ingredient.EARTH],
             ]
         elif config.conf.starting_mode == "choose":
-            self.slots = [
-                [Ingredient.EMPTY for i in range(self.num_slots)]
-                for i in range(self.num_formula)
-            ]
+            self.slots = [[Ingredient.EMPTY for i in range(self.num_slots)] for i in range(self.num_formula)]
 
     def init_lock_state(self):
         upgrades_unlocked = {
@@ -166,9 +163,7 @@ class FormulaBuilder:
         water_dmg = 0
         distance = 1
         area = 0.5
-        cooldown = (
-            len([s for s in slots if s != Ingredient.EMPTY]) * state.cooldown_per_slot
-        )
+        cooldown = len([s for s in slots if s != Ingredient.EMPTY]) * state.cooldown_per_slot
         healing = 0
         slow_rounds = 0
         shield = 0
@@ -284,69 +279,40 @@ class FormulaBuilder:
             if fire_dmg > 0:
                 strikebacks.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=fire_dmg,
-                        dmg_type=DamageType.FIRE,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE,
                     )
                 )
             if water_dmg > 0:
                 strikebacks.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=water_dmg,
-                        dmg_type=DamageType.COLD,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg, dmg_type=DamageType.COLD,
                     )
                 )
             if slow_rounds > 0:
-                strikebacks.append(
-                    EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds)
-                )
+                strikebacks.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
 
             if healing > 0:
-                effects.append(
-                    EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing)
-                )
+                effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
             effects.append(
-                EffectBuilder.create(
-                    EffectType.DEFENSE,
-                    level=shield,
-                    strikebacks=strikebacks,
-                    distance=distance,
-                )
+                EffectBuilder.create(EffectType.DEFENSE, level=shield, strikebacks=strikebacks, distance=distance,)
             )
         else:
             if fire_dmg > 0:
                 effects.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=fire_dmg,
-                        dmg_type=DamageType.FIRE,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=fire_dmg, dmg_type=DamageType.FIRE,
                     )
                 )
             if water_dmg > 0:
                 effects.append(
                     EffectBuilder.create(
-                        EffectType.DAMAGE,
-                        caster=caster,
-                        rounds=1,
-                        amount=water_dmg,
-                        dmg_type=DamageType.COLD,
+                        EffectType.DAMAGE, caster=caster, rounds=1, amount=water_dmg, dmg_type=DamageType.COLD,
                     )
                 )
             if slow_rounds > 0:
-                effects.append(
-                    EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds)
-                )
+                effects.append(EffectBuilder.create(EffectType.SLOW, rounds=slow_rounds))
             if healing > 0:
-                effects.append(
-                    EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing)
-                )
+                effects.append(EffectBuilder.create(EffectType.HEALING, rounds=1, amount=healing))
 
         return (
             Formula(

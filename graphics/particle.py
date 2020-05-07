@@ -49,12 +49,7 @@ def ascending(speed):
 
 def kill_at(max_x, max_y):
     def _kill_at(particle):
-        if (
-            particle.x < -max_x
-            or particle.x > max_x
-            or particle.y < -max_y
-            or particle.y > max_y
-        ):
+        if particle.x < -max_x or particle.x > max_x or particle.y < -max_y or particle.y > max_y:
             particle.alive = 0
 
     return _kill_at

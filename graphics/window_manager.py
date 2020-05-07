@@ -92,9 +92,7 @@ class WindowManager:
         assert wnd
         wnd.visible = True
         wnd.init(game_data, gfx_data)
-        self.windows = sorted(
-            self.windows, key=lambda wnd: wnd.drawing_priority, reverse=True
-        )
+        self.windows = sorted(self.windows, key=lambda wnd: wnd.drawing_priority, reverse=True)
 
     def get_state_for_wnd(self, wnd):
         for state, w in self.state_wnd_mapping.items():
