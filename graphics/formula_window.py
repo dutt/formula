@@ -29,6 +29,8 @@ class IngredientMarker(ClickableLabel):
     def handle_click(self, game_data, gfx_data, mouse_action):
         left_click = mouse_action.get(EventType.left_click)
         if left_click:
+            game_data.logger.log({"type" : "ingredient_clicked",
+                                  "ingredient" : self.ingredient })
             print(f"{self.ingredient} clicked")
             game_data.formula_builder.set_slot(game_data.formula_builder.currslot, self.ingredient)
             self.parent.change_slot(game_data, 1)
@@ -259,34 +261,42 @@ class FormulaWindow(Window):
         game_data.formula_builder.currslot = 0
 
     def handle_key(self, game_data, gfx_data, key_action):
+        game_data.logger.log({"action" : key_action })
         do_quit = key_action.get(EventType.exit)
         if do_quit:
+            game_data.logger.log({"type" : "close" })
             game_data.player.caster.set_formulas(game_data.formula_builder.evaluate_entity(game_data.player))
             game_data.formula_builder.currformula = 0
             return self.close(game_data, activate_for_new_state=True)
 
         formula = key_action.get("formula")
         if formula is not None and formula < game_data.formula_builder.num_formula:
+            game_data.logger.log({"type" : "change_formula" })
             game_data.formula_builder.currformula = formula
+            game_data.formula_builder.currslot = 0
 
         ingredient = key_action.get("ingredient")
-        if ingredient and game_data.formula_builder.ingredient_unlocked(ingredient) and not game_data.map.tutorial:
-            if config.conf.pickup and ingredient != Ingredient.EMPTY:
+        if not config.conf.pickup and ingredient and game_data.formula_builder.ingredient_unlocked(ingredient) and not game_data.map.tutorial:
+            if ingredient != Ingredient.EMPTY:
                 count = game_data.ingredient_storage.count_left(ingredient, game_data.formula_builder)
                 if count < 1:
                     return
+            game_data.logger.log({"type" : "set_ingredient", "ingredient" : ingredient })
             game_data.formula_builder.set_slot(game_data.formula_builder.currslot, ingredient)
             self.change_slot(game_data, 1)
 
         next_formula = key_action.get("next_formula")
         if next_formula:
+            game_data.logger.log({"type" : "next_formula", "next_formula" : next_formula })
             self.change_formula(game_data, next_formula)
 
         next_slot = key_action.get("next_slot")
         if next_slot:
+            game_data.logger.log({"type" : "next_slot", "next_slot" : next_slot })
             self.change_slot(game_data, next_slot)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
+        game_data.logger.log({ "action" : mouse_action })
         if config.conf.crafting and not game_data.map.tutorial:
             for im in self.ingredient_markers:
                 if im.is_clicked(mouse_action):
@@ -294,8 +304,10 @@ class FormulaWindow(Window):
 
         scroll_up = mouse_action.get(EventType.scroll_up)
         if scroll_up:
+            game_data.logger.log({"type" : "scroll_up" })
             self.change_slot(game_data, -1)
 
         scroll_down = mouse_action.get(EventType.scroll_down)
         if scroll_down:
+            game_data.logger.log({"type" : "scroll_down" })
             self.change_slot(game_data, 1)

@@ -92,6 +92,7 @@ class RightPanelWindow(Window):
             show_numbers=False,
         )
         self.formula_label = Label(Pos(10, 180), "Formulas")
+        self.helplabel = Label(Pos(10, 800), "Help? Tab", font=Assets.get().font_message)
         self.formula_markers = []
         self.setup_consumables(constants.num_quickslots)
         self.drawing_priority = 2
@@ -170,7 +171,7 @@ class RightPanelWindow(Window):
             self.shield_bar.draw(surface, 0, 10)
 
         if config.conf.keys:
-            if game_data.map.stairs_found:
+            if game_data.map.stairs_found or game_data.map.num_keys_found == game_data.map.num_keys_total:
                 text = "Found {}/{} keys".format(game_data.map.num_keys_found, game_data.map.num_keys_total)
             else:
                 text = "Found {}/? keys".format(game_data.map.num_keys_found)
@@ -193,6 +194,8 @@ class RightPanelWindow(Window):
         if config.conf.consumables:
             for cm in self.consumable_markers:
                 cm.draw(surface, game_data, gfx_data)
+
+        self.helplabel.draw(surface)
 
         display_text(
             surface,

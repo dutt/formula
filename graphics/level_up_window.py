@@ -51,7 +51,7 @@ class LevelUpWindow(Window):
             display_text(surface, text, gfx_data.assets.font_message, (50, y))
             y += linediff
         display_text(
-            surface, "W/S to change selection, space to choose", gfx_data.assets.font_message, (50, 500),
+            surface, "W/S or up/down to change selection, space to choose", gfx_data.assets.font_message, (50, 500),
         )
         gfx_data.main.blit(surface, self.pos.tuple())
 

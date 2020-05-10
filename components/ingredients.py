@@ -187,6 +187,60 @@ class IngredientState:
         self.heal_per_step = 2
         self.shield_per_step = 2
 
+class IngredientSerialization:
+
+    @staticmethod
+    def deserialize(value):
+        if value == "EMPTY":
+            return Ingredient.EMPTY
+        elif value == "FIRE":
+            return Ingredient.FIRE
+        elif value == "WATER":
+            return Ingredient.WATER
+        elif value == "LIFE":
+            return Ingredient.LIFE
+        elif value == "EARTH":
+            return Ingredient.EARTH
+
+        # modifiers
+        elif value == "AREA":
+            return Ingredient.AREA
+        elif value == "RANGE":
+            return Ingredient.RANGE
+        elif value == "TRAP":
+            return Ingredient.TRAP
+
+        # leveled up fire
+        elif value == "INFERNO":
+            return Ingredient.INFERNO
+        elif value == "FIRESPRAY":
+            return Ingredient.FIRESPRAY
+        elif value == "FIREBOLT":
+            return Ingredient.FIREBOLT
+
+        # leveled up cold
+        elif value == "SLEET":
+            return Ingredient.SLEET
+        elif value == "ICE":
+            return Ingredient.ICE
+        elif value == "ICEBOLT":
+            return Ingredient.ICEBOLT
+        elif value == "ICE_VORTEX":
+            return Ingredient.ICE_VORTEX
+
+        # level up life
+        elif value == "VITALITY":
+            return Ingredient.VITALITY
+
+        # leveled up earth
+        elif value == "ROCK":
+            return Ingredient.ROCK
+        elif value == "MAGMA":
+            return Ingredient.MAGMA
+        elif value == "MUD":
+            return Ingredient.MUD
+
+        raise ValueError(f"Can't parse ingredient '{value}'")
 
 class IngredientMeta:
     def setup_upgrade_to_base_map():

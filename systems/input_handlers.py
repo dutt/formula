@@ -16,27 +16,14 @@ def get_current_modifier_keys():
     return modifiers
 
 
-def handle_keys(events, state):
-    modifiers = get_current_modifier_keys()
-
-    for e in events:
-        if not config.conf.is_replaying:
-            systems.input_recorder.add_key_event(e)
+def handle_keys(events, state, modifiers=None):
+    def handle_event(e):
         if state == GameStates.PLAY:
             return handle_player_turn_keys(e.key, modifiers)
         elif state == GameStates.LEVEL_UP:
             return handle_level_up_keys(e.key, modifiers)
-        elif state in [
-            GameStates.CHARACTER_SCREEN,
-            GameStates.WELCOME_SCREEN,
-            GameStates.TARGETING,
-            GameStates.GENERAL_HELP_SCREEN,
-            GameStates.FORMULA_HELP_SCEEN,
-            GameStates.STORY_HELP_SCREEN,
-            GameStates.CRAFTING_HELP,
-            GameStates.INVENTORY_HELP,
-        ]:
-            return handle_general_keys(e.key, modifiers)
+        elif state == GameStates.TARGETING:
+            return handle_targeting(e.key, modifiers)
         elif state == GameStates.FORMULA_SCREEN:
             return handle_formula_screen_keys(e.key, modifiers)
         elif state == GameStates.STORY_SCREEN:
@@ -51,9 +38,42 @@ def handle_keys(events, state):
             return handle_crafting(e.key, modifiers)
         elif state == GameStates.INVENTORY:
             return handle_inventory(e.key, modifiers)
+        elif state in [
+            GameStates.CHARACTER_SCREEN,
+            GameStates.WELCOME_SCREEN,
+            GameStates.GENERAL_HELP_SCREEN,
+            GameStates.FORMULA_HELP_SCEEN,
+            GameStates.STORY_HELP_SCREEN,
+            GameStates.CRAFTING_HELP,
+            GameStates.INVENTORY_HELP,
+        ]:
+            return handle_general_keys(e.key, modifiers)
         else:
             raise ValueError("Input handler in unknown state")
+
+    if not modifiers:
+        modifiers = get_current_modifier_keys()
+
+    for e in events:
+        if not config.conf.is_replaying:
+            systems.input_recorder.add_key_event(e)
+        retr = handle_event(e)
+        retr["event_id"] = e.event_id
+        return retr
     return {}
+
+
+def handle_targeting(key, modifiers):
+    if key == pygame.K_w:
+        return {EventType.move: (0, -1)}
+    elif key == pygame.K_s:
+        return {EventType.move: (0, 1)}
+    elif key == pygame.K_a:
+        return {EventType.move: (-1, 0)}
+    elif key == pygame.K_d:
+        return {EventType.move: (1, 0)}
+
+    return handle_general_keys(key, modifiers)
 
 
 def handle_inventory(key, modifiers):
@@ -217,27 +237,41 @@ def handle_level_up_keys(key, modifiers):
     return handle_general_keys(key, modifiers)
 
 
-def handle_mouse(events, constants, camera):
-    modifiers = get_current_modifier_keys()
-    shift_pressed = pygame.K_RSHIFT in modifiers or pygame.K_LSHIFT in modifiers
-    for e in events:
+def handle_mouse(events, constants, camera, ignore_first_click, logger):
+    def handle_event(e):
         pos = e.pos
         cx = (pos.x - constants.right_panel_size.width) // CELL_WIDTH
         cy = pos.y // CELL_HEIGHT
         cx, cy = camera.screen_to_map(cx, cy)
-        data = AttrDict({"x": pos.x, "y": pos.y, "cx": cx, "cy": cy, "alternate": shift_pressed})
+        data = {"type" : "mouse_event",
+                "x": pos.x, "y": pos.y, "cx": cx, "cy": cy,
+                "alternate": shift_pressed, "button" : e.button }
+        logger.log(data, event_id=e.event_id)
+        e.data = AttrDict(data)
         if not config.conf.is_replaying:
-            e.data.pos.cx = cx
-            e.data.pos.cy = cy
             systems.input_recorder.add_mouse_event(e)
         if e.button == 1:
-            return {EventType.left_click: data}
+            return {EventType.left_click: e.data}
         elif e.button == 3:
-            return {EventType.right_click: data}
+            return {EventType.right_click: e.data}
         elif e.button == 4:
-            return {EventType.scroll_up: data}
+            return {EventType.scroll_up: e.data}
         elif e.button == 5:
-            return {EventType.scroll_down: data}
+            return {EventType.scroll_down: e.data}
+
+    if ignore_first_click:
+        if events:
+            logger.log({
+                "type" : "ignored_mouse_events",
+                "ids" : [e.event_id for e in events]
+            }, attach_id=False)
+        return {}
+    modifiers = get_current_modifier_keys()
+    shift_pressed = pygame.K_RSHIFT in modifiers or pygame.K_LSHIFT in modifiers
+    for e in events:
+            retr = handle_event(e)
+            retr["event_id"] = e.event_id
+            return retr
     return {}
 
 

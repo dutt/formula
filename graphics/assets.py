@@ -168,8 +168,8 @@ class Assets:
                 "bottomright": get_img(sheet, col + 2, row + 2, rotate=0),
             }
 
-        # self.player = get_animation(self.player_sheet, 1, 0)
-        self.player = get_animation(self.elemental_sheet, 4, 1)
+        self.player = get_animation(self.player_sheet, 1, 0)
+        #self.player = get_animation(self.elemental_sheet, 4, 1)
 
         self.stairs = get_img(self.decor_sheet, 2, 9)
 

@@ -66,7 +66,8 @@ class InventoryWindow(Window):
             constants.helper_window_pos, constants.helper_window_size, visible, click_mode=ClickMode.LEFT,
         )
         self.title = Label(Pos(200, 25), "Inventory")
-        self.quickslots_label = Label(Pos(200, 410), "Quickslots")
+        self.quickslots_label = Label(Pos(240, 390), "Quickslots")
+        self.bottomlabel = Label(Pos(180, 560), "Press Tab for help, Space to close")
         self.selected = 0
         self.items_per_row = 2
         self.num_quickslots = constants.num_quickslots
@@ -122,6 +123,8 @@ class InventoryWindow(Window):
         self.quickslots_label.draw(surface)
         for qm in self.quickslot_markers:
             qm.draw(surface, game_data, gfx_data)
+
+        self.bottomlabel.draw(surface)
 
         gfx_data.main.blit(surface, self.pos.tuple())
 

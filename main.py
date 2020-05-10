@@ -9,11 +9,11 @@ with contextlib.redirect_stdout(None):
 
 from attrdict import AttrDict
 
-from systems.death import kill_player, kill_monster
 from loader_functions.init_new_game import get_constants, setup_data_state
+from systems.death import kill_player, kill_monster
 from systems.messages import Message
+from systems import input_recorder, tester, balance_statistics, serialization
 from components.game_states import GameStates
-from systems import input_recorder, tester, balance_statistics
 import config
 
 
@@ -112,14 +112,14 @@ def set_seed():
     # seed = "2020-04-04 21:01:02.999223"
     # seed = "2020-04-09 22:27:51.380348"
     # seed = "2020-04-23 20:50:35.897020"
-
+    seed = "2020-05-09 09:44:45.558700"
     print("Using seed: <{}>".format(seed))
     random.seed(seed)
     return seed
 
 
-def do_setup(constants):
-    game_data, gfx_data, state = setup_data_state(constants)
+def do_setup(constants, previous_data=None):
+    game_data, gfx_data, state = setup_data_state(constants, run_tutorial=previous_data is None, previous_data=previous_data)
 
     game_data.prev_state = setup_prevstate(state)
 
@@ -136,6 +136,7 @@ def write_logs(game_data, seed, start_time, crashed):
         data = {
             "hp": game_data.player.fighter.hp,
             "cooldowns": game_data.player.caster.cooldowns,
+            "pos" : game_data.player.pos.tuple()
         }
         if game_data.player.fighter.shield:
             data["shield"] = {
@@ -152,12 +153,8 @@ def write_logs(game_data, seed, start_time, crashed):
         "messages": [msg.text for msg in game_data.log.messages] if game_data else ["no game_data"],
         "input_events": input_recorder.serialize_input(input_recorder.events),
         "crashed": crashed,
-        "game_modes": {
-            "unlock_mode": config.conf.unlock_mode,
-            "cooldown_mode": config.conf.cooldown_mode,
-            "starting_mode": config.conf.starting_mode,
-        },
         "end_state": serialize_end_state(),
+        "events" : game_data.logger.serialize()
     }
     timestamp = start_time.strftime("%Y-%m-%d_%H-%M-%S")
     if crashed:
@@ -170,7 +167,7 @@ def write_logs(game_data, seed, start_time, crashed):
         os.mkdir(dirname)
     path = os.path.abspath((os.path.join(dirname, logname)))
     with open(path, "w") as writer:
-        writer.write(json.dumps(data, indent=2))
+        writer.write(serialization.serialize(data, indent=2))
 
     print("Log file {} written".format(path))
 
@@ -179,11 +176,31 @@ def load_replay_log(path):
     with open(path, "r") as reader:
         content = reader.read()
     data = AttrDict(json.loads(content))
-    data.game_modes = AttrDict(data.game_modes)
 
-    config.conf.starting_mode = data.game_modes.starting_mode
-    config.conf.unlock_mode = data.game_modes.unlock_mode
-    config.conf.cooldown_mode = data.game_modes.cooldown_mode
+    config.conf.random_seed = data.seed
+
+    if "unlock_mode" in data.config:
+        config.conf.unlock_mode = data.config.unlock_mode
+    if "cooldown_mode" in data.config:
+        config.conf.cooldown_mode = data.config.cooldown_mode
+    if "starting_mode" in data.config:
+        config.conf.starting_mode = data.config.starting_mode
+    if "keys" in data.config:
+        config.conf.keys = data.config["keys"]
+    if "pickup" in data.config:
+        config.conf.pickup = data.config.pickup
+    if "pickupstartcount" in data.config:
+        config.conf.pickupstartcount = data.config.pickupstartcount
+    if "crafting" in data.config:
+        config.conf.crafting = data.config.crafting
+    if "consumables" in data.config:
+        config.conf.consumables = data.config.consumables
+    if "trap" in data.config:
+        config.conf.trap = data.config.trap
+    if "trapcast" in data.config:
+        config.conf.trapcast = data.config.trapcast
+    if "heal" in data.config:
+        config.conf.heal = data.config.heal
 
     events = data.input_events
     deserialized = input_recorder.deserialize_input(events)
@@ -198,6 +215,11 @@ def write_profiling_data(starting_time, profiler):
 
 
 def main():
+
+    if config.conf.stats:
+        balance_statistics.print_stats()
+        return
+
     profiler = None
     if config.conf.profiling:
         import cProfile
@@ -205,16 +227,12 @@ def main():
         profiler = cProfile.Profile()
         profiler.enable()
 
+    if config.conf.is_replaying:
+        load_replay_log(config.conf.replay_log_path)
+
     game_data = None
     now = datetime.datetime.now()
     seed = set_seed()
-
-    if config.conf.stats:
-        balance_statistics.print_stats()
-        return
-
-    if config.conf.is_replaying:
-        load_replay_log(config.conf.replay_log_path)
 
     try:
         constants = get_constants()
@@ -222,7 +240,7 @@ def main():
 
         now = datetime.datetime.now()
         while play_game(game_data, gfx_data):
-            game_data, gfx_data = do_setup(constants)
+            game_data, gfx_data = do_setup(constants, previous_data=game_data)
 
         if config.conf.profiling:
             profiler.disable()

@@ -49,7 +49,7 @@ class IngredientStorage:
             for s in slots:
                 if s.get_base_form() == ingredient_base:
                     count += 1
-        assert count <= max_count, f"count: {count}, max_count {max_count}"
+        # assert count <= max_count, f"count: {count}, max_count {max_count}"
         return max_count - count
 
     def total_count(self, ingredient):

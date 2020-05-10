@@ -82,14 +82,14 @@ parser.add_argument(
 parser.add_argument("--test", type=str, action="store", default=None, help=test_help)
 parser.add_argument("--stats", action="store_true", help=stats_help)
 parser.add_argument("--profiling", action="store_true", help=profiling_help)
-parser.add_argument("--pickup", action="store", default="find", help=ingredient_pickup_help)
+parser.add_argument("--pickup", action="store", default="unlimited", help=ingredient_pickup_help)
 parser.add_argument(
     "--pickupstartcount", action="store", default="base", help=ingredient_pickup_startcount_help,
 )
 parser.add_argument("--crafting", action="store_true", help=ingredient_crafting_help)
 parser.add_argument("--consumables", action="store_true", help=consumables_help)
 parser.add_argument("--trap", action="store_true", help=trap_help)
-parser.add_argument("--trapcast", action="store_true", help=trapcast_help)
+parser.add_argument("--trapcast", action="store_false", help=trapcast_help)
 parser.add_argument("--heal", action="store_true", help=heal_help)
 args = parser.parse_args()
 
@@ -151,7 +151,7 @@ class Config:
         self.trap = args.trap
         self.trapcast = args.trapcast
         if self.trap and self.trapcast:
-            sys.exit("Can't have both trap and trapcast enabled")
+            self.trapcast = False
 
         self.heal = args.heal
 
@@ -172,18 +172,18 @@ class Config:
         }
 
     def deserialize(self, data):
-        self.unlock_mode = data["unlock_mode"]
-        self.cooldown_mode = data["cooldown_mode"]
-        self.random_seed = data["random_seed"]
-        self.starting_mode = data["starting_mode"]
-        self.keys = data["keys"]
-        self.pickup = data["pickup"]
-        self.pickupstartcount = data["pickupstartcount"]
-        self.crafting = data["crafting"]
-        self.consumables = data["consumables"]
-        self.trap = data["trap"]
-        self.trapcast = data["trapcast"]
-        self.heal = data["heal"]
+        self.unlock_mode = data.get("unlock_mode","level_all")
+        self.cooldown_mode = data.get("cooldown_mode","unary")
+        self.random_seed = data.get("random_seed","now")
+        self.starting_mode = data.get("starting_mode","choose")
+        self.keys = data.get("keys",True)
+        self.pickup = data.get("pickup", False)
+        self.pickupstartcount = data.get("pickupstartcount","base")
+        self.crafting = data.get("crafting",False)
+        self.consumables = data.get("consumables",False)
+        self.trap = data.get("trap",False)
+        self.trapcast = data.get("trapcast",False)
+        self.heal = data.get("heal",False)
 
     def parse_test(self, filepath):
         self.test_file = os.path.abspath(filepath)
@@ -193,7 +193,8 @@ class Config:
         self.test_data = json.load(open(self.test_file, "r"))
         self.is_testing = True
         self.is_replaying = True
-        self.replay_log_path = os.path.join(testdir, self.test_data["logfile"])
+        #self.replay_log_path = os.path.join(testdir, self.test_data["logfile"])
+        self.replay_log_path = self.test_file
         if not os.path.exists(self.replay_log_path):
             raise ValueError(f"Logfile {self.replay_log_path} used in testcase {self.test_file} doesn't exist")
         self.log_data = json.load(open(self.replay_log_path, "r"))

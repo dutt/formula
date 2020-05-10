@@ -49,43 +49,45 @@ class WindowManager:
         self.windows.remove(window)
 
     def handle_click(self, game_data, gfx_data, mouse_action):
-        for wnd in reversed(self.windows):
-            if wnd.visible and wnd.is_clicked(mouse_action):
-                return wnd.handle_click(game_data, gfx_data, mouse_action)
-        return {}
+        with game_data.logger.set_active_event(mouse_action["event_id"]):
+            for wnd in reversed(self.windows):
+                if wnd.visible and wnd.is_clicked(mouse_action):
+                    return wnd.handle_click(game_data, gfx_data, mouse_action)
+            return {}
 
     def handle_key(self, game_data, gfx_data, key_action):
-        wnd = self.get_wnd_for_state(game_data.state)
-        if wnd:
-            console = key_action.get(EventType.console)
-            if console and game_data.state != GameStates.CONSOLE:
-                console_wnd = self.get_wnd_for_state(GameStates.CONSOLE)
-                console_wnd.activate(game_data, gfx_data)
-                self.activate_wnd_for_state(GameStates.CONSOLE, game_data, gfx_data)
+        with game_data.logger.set_active_event(key_action["event_id"]):
+            wnd = self.get_wnd_for_state(game_data.state)
+            if wnd:
+                console = key_action.get(EventType.console)
+                if console and game_data.state != GameStates.CONSOLE:
+                    console_wnd = self.get_wnd_for_state(GameStates.CONSOLE)
+                    console_wnd.activate(game_data, gfx_data)
+                    self.activate_wnd_for_state(GameStates.CONSOLE, game_data, gfx_data)
+                    return True, {}
+
+                res = wnd.handle_key(game_data, gfx_data, key_action)
+                if res is None:
+                    return False, key_action  # not handled, game can handle it
+
+                show_window = res.get(EventType.show_window)
+                if show_window:
+                    wnd = self.get(show_window)
+                    assert wnd
+                    game_data.prev_state.append(game_data.state)
+                    game_data.state = self.get_state_for_wnd(show_window)
+                    wnd.visible = True
+
+                activate_wnd_for_state = res.get(EventType.activate_for_new_state)
+                if activate_wnd_for_state:
+                    self.activate_wnd_for_state(game_data.state, game_data, gfx_data)
+
+                message = res.get("message")
+                if message:
+                    game_data.log.add_message(message)
+
                 return True, {}
-
-            res = wnd.handle_key(game_data, gfx_data, key_action)
-            if res is None:
-                return False, key_action  # not handled, game can handle it
-
-            show_window = res.get(EventType.show_window)
-            if show_window:
-                wnd = self.get(show_window)
-                assert wnd
-                game_data.prev_state.append(game_data.state)
-                game_data.state = self.get_state_for_wnd(show_window)
-                wnd.visible = True
-
-            activate_wnd_for_state = res.get(EventType.activate_for_new_state)
-            if activate_wnd_for_state:
-                self.activate_wnd_for_state(game_data.state, game_data, gfx_data)
-
-            message = res.get("message")
-            if message:
-                game_data.log.add_message(message)
-
-            return True, {}
-        return False, key_action
+            return False, key_action
 
     def activate_wnd_for_state(self, state, game_data, gfx_data):
         wnd = self.get_wnd_for_state(state)

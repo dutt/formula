@@ -38,23 +38,22 @@ class Clickable(Widget):
     def is_clicked(self, mouse_action):
         if not self.click_mode:
             return False
+        val = None
         if ClickMode.LEFT & self.click_mode:
             if "left_click" in mouse_action:
                 val = mouse_action["left_click"]
-            elif ClickMode.LEFT == self.click_mode:
-                return False
         if ClickMode.RIGHT & self.click_mode:
             if "right_click" in mouse_action:
                 val = mouse_action["right_click"]
-            elif ClickMode.RIGHT == self.click_mode:
-                return False
         if ClickMode.SCROLL & self.click_mode:
             if "scroll_up" in mouse_action:
                 val = mouse_action["scroll_up"]
             elif "scroll_down" in mouse_action:
                 val = mouse_action["scroll_down"]
-            elif ClickMode.SCROLL == self.click_mode:
-                return False
+        if not val:
+            return False
+
+        assert val, self
 
         x, y = val.x, val.y
         if self.parent:

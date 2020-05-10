@@ -99,21 +99,21 @@ from systems.run_planner import RunPlanner
 from systems.formula_builder import FormulaBuilder
 from systems.ingredient_storage import IngredientStorage
 from systems.inventory import Inventory
+from systems.blob_logger import BlobLogger
 from graphics.font import get_width
 from graphics.assets import Assets
 import config
 
 
-def setup_data_state(constants):
+def setup_data_state(constants, run_tutorial=True, previous_data=None):
     pygame.init()
     pygame.display.set_caption("Formula")
     pygame.mixer.quit()
-    pygame.key.set_repeat(200)
+    pygame.key.set_repeat(100)
     main = pygame.display.set_mode((constants.window_size.width, constants.window_size.height))
 
     assets = Assets.setup()
 
-    run_tutorial = True
     godmode = False
 
     fps_per_second = 30
@@ -178,26 +178,29 @@ def setup_data_state(constants):
 
     # for t in [Firebomb, Freezebomb, Teleporter, CooldownClear, Thingy, Thingmajig]:
     #    inventory.add(t())
-    inventory.add(Firebomb())
-    inventory.add(Teleporter())
+    #inventory.add(Firebomb())
+    #inventory.add(Teleporter())
 
     initial_state = GameStates.STORY_SCREEN
 
+    logger = previous_data.logger if previous_data else BlobLogger()
+
     game_data = StateData(
-        player,
-        log,
-        constants,
-        timesystem,
-        fov_map,
+        player=player,
+        log=log,
+        constants=constants,
+        timesystem=timesystem,
+        fov_map=fov_map,
         fov_recompute=True,
         story_data=story_data,
         run_planner=planner,
         formula_builder=formula_builder,
         menu_data=menu_data,
-        initial_state=initial_state,
-        initial_state_history=[GameStates.PLAY],
         ingredient_storage=ingredient_storage,
         inventory=inventory,
+        logger=logger,
+        initial_state=initial_state,
+        initial_state_history=[GameStates.PLAY],
     )
 
     camera = Camera(constants.camera_size.width, constants.camera_size.height, game_data)

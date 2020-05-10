@@ -318,10 +318,7 @@ class Player(Entity):
                 if not config.conf.is_testing:
                     time.sleep(0.2)
                 next_event = input_recorder.events.pop(0)
-                if input_recorder.events:
-                    print("Replaying event {}".format(next_event))
-                else:
-                    print("Replaying last event {}".format(next_event))
+                print(f"Replaying event {next_event}")
                 if next_event.event_type == InputType.KEY:
                     key_events = [next_event]
                     mouse_events = []
@@ -335,13 +332,15 @@ class Player(Entity):
                 key_events = [KeyEvent(e) for e in events if e.type == pygame.KEYDOWN]
                 mouse_events = [MouseEvent(e) for e in events if e.type == pygame.MOUSEBUTTONDOWN]
 
+                if key_events and self.ignore_first_click:
+                    self.ignore_first_click = False
+
             key_action = handle_keys(key_events, game_data.state)
-            mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera)
+            mouse_action = handle_mouse(mouse_events, game_data.constants, gfx_data.camera, self.ignore_first_click, game_data.logger)
 
             if mouse_action:
                 if self.ignore_first_click:
                     self.ignore_first_click = False
-                    mouse_action = {}
                 else:
                     gui_action = gfx_data.windows.handle_click(game_data, gfx_data, mouse_action)
                     if gui_action:
@@ -400,12 +399,14 @@ class Player(Entity):
                     player_action = action
 
             if left_click and game_data.state == GameStates.PLAY:
-                monster_there = False
+                valid_tile = True
+                if left_click.cx >= game_data.map.width or left_click.cy >= game_data.map.height:
+                    valid_tile = False
                 for e in game_data.map.entities:
                     if e.pos.x == left_click.cx and e.pos.y == left_click.cy:
                         if e.ai:
-                            monster_there = True
-                if not monster_there and game_data.map.tiles[left_click.cx][left_click.cy].explored:
+                            valid_tile = False
+                if valid_tile and game_data.map.tiles[left_click.cx][left_click.cy].explored:
                     # click to move
                     self.moving_towards = Pos(left_click.cx, left_click.cy)
 

@@ -16,6 +16,7 @@ class StateData:
         menu_data,
         ingredient_storage,
         inventory,
+        logger,
         initial_state,
         initial_state_history=[],
     ):
@@ -35,6 +36,7 @@ class StateData:
         self._state = initial_state
         self.prev_state = initial_state_history
         self.inventory = inventory
+        self.logger = logger
         self.stats = Statistics()
 
     @property
